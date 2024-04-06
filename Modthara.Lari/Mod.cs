@@ -17,7 +17,7 @@ public class Mod
 
     public static Mod FromStream(Stream stream)
     {
-        ValidateXml(stream);
+        stream.ValidateXml();
         Document.Load(stream);
 
         var author = GetAttributeValue(SelectModuleAttribute("Author"));
@@ -66,26 +66,6 @@ public class Mod
 
         var version = ModVersion.FromUint64(Convert.ToUInt64(GetAttributeValue(node)));
         return version;
-    }
-
-    private static void ValidateXml(Stream stream)
-    {
-        using var reader = XmlReader.Create(stream);
-        try
-        {
-            while (reader.Read())
-            {
-            }
-        }
-        catch (XmlException e)
-        {
-            var info = (IXmlLineInfo)reader;
-            throw new LsxMarkupException("Stream has invalid XML data.", (info.LineNumber, info.LinePosition), e);
-        }
-        finally
-        {
-            stream.Position = 0;
-        }
     }
 
     private const string ModuleInfoNode = "ModuleInfo";
