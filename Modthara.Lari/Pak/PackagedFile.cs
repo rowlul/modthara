@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿using System.IO.Compression;
+using System.Text;
+
+using K4os.Compression.LZ4;
 
 namespace Modthara.Lari.Pak;
 
@@ -17,6 +20,7 @@ public class PackagedFile : IDisposable
     internal ulong SizeOnDisk { get; private set; }
     internal ulong UncompressedSize { get; private set; }
 
+    public ulong Size => (Flags & 0x0F) == 0 ? SizeOnDisk : UncompressedSize;
     public bool IsDeleted => (OffsetInFile & 0x0000ffffffffffff) == 0xbeefdeadbeef;
 
     /// <summary>
@@ -48,13 +52,40 @@ public class PackagedFile : IDisposable
             throw new LspkException($"Cannot open deleted file '${Name}'.");
         }
 
-        if ((Flags & 0x0F) != 0x0)
+        OwnerStream.Seek((long)OffsetInFile, SeekOrigin.Begin);
+        var compression = (Flags & 0x0F);
+        if (compression == 0x0)
         {
-            throw new LspkException($"File {Name} is compressed which is not supported at this moment.");
+            _stream = new PackagedFileStream(OwnerStream, this);
+        }
+        else
+        {
+            var compressedBytes = new byte[SizeOnDisk];
+            var size = OwnerStream.Read(compressedBytes, 0, (int)SizeOnDisk);
+            if (size != (long)SizeOnDisk)
+            {
+                throw new InvalidDataException($"Uncompressed file size mismatch: expected {SizeOnDisk}, got {size}.");
+            }
+
+            if (compression == 0x1)
+            {
+                _stream = new MemoryStream();
+                using var compressedStream = new MemoryStream(compressedBytes);
+                using var stream = new ZLibStream(compressedStream, CompressionMode.Decompress);
+                stream.CopyTo(_stream);
+            }
+            else if (compression == 0x2)
+            {
+                var decompressedBytes = new byte[Size];
+                LZ4Codec.Decode(compressedBytes, 0, compressedBytes.Length, decompressedBytes, 0, (int)Size);
+                _stream = new MemoryStream(decompressedBytes);
+            }
+            else
+            {
+                throw new LspkException($"Invalid compression method: {compression}.");
+            }
         }
 
-        OwnerStream.Seek((long)OffsetInFile, SeekOrigin.Begin);
-        _stream = new PackagedFileStream(OwnerStream, this);
         return _stream;
     }
 
