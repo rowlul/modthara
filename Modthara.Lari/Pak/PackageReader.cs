@@ -82,6 +82,9 @@ public static class PackageReader
         return files;
     }
 
+    /// <summary>
+    /// Represents valid LSPK package signature.
+    /// </summary>
     private static readonly byte[] Signature = [0x4C, 0x53, 0x50, 0x4B];
 
     /// <summary>
