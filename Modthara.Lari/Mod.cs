@@ -8,6 +8,7 @@ public class Mod
     public required string Author { get; set; }
     public required string Description { get; set; }
     public required string FolderName { get; set; }
+    public string Md5 { get; set; } = string.Empty;
     public Guid Uuid { get; set; } = Guid.NewGuid();
     public ModVersion Version { get; set; } = 36028797018963968UL;
     public IList<Mod> Dependencies { get; set; } = [];
