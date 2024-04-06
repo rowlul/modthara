@@ -25,7 +25,7 @@ internal static class StructExtensions
 
         for (var i = 0; i < structs.Length; i++)
         {
-            var structAddress = new IntPtr(address.ToInt64() + size * i);
+            IntPtr structAddress = new(address.ToInt64() + (size * i));
             structs[i] = Marshal.PtrToStructure<TStruct>(structAddress);
         }
 

@@ -9,7 +9,7 @@ public static class PackageReader
 {
     public static Package FromStream(Stream stream)
     {
-        using var reader = new BinaryReader(stream, Encoding.UTF8, leaveOpen: true);
+        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
 
         stream.Seek(0, SeekOrigin.Begin);
         var signature = reader.ReadBytes(4);
@@ -66,7 +66,7 @@ public static class PackageReader
         var entries = new LspkEntry[numFiles];
         memoryStreamReader.ReadStructs(entries);
 
-        var files = new List<PackagedFile>();
+        List<PackagedFile> files = [];
         foreach (var entry in entries)
         {
             var file = new PackagedFile(entry);
@@ -75,6 +75,7 @@ public static class PackageReader
             {
                 throw new LspkException($"Packaged file '{file.Name}' has unsupported flags: {file.Flags}.");
             }
+
             files.Add(file);
         }
 

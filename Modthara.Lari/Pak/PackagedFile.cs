@@ -21,9 +21,9 @@ public class PackagedFile
     internal PackagedFile(LspkEntry entry)
     {
         int l;
-        for (l = 0; l < entry.Name.Length && entry.Name[l] != 0; l++) {}
-        var name = Encoding.UTF8.GetString(entry.Name, 0, l);
+        for (l = 0; l < entry.Name.Length && entry.Name[l] != 0; l++) { }
 
+        var name = Encoding.UTF8.GetString(entry.Name, 0, l);
         var offset = entry.OffsetInFile1 | ((ulong)entry.OffsetInFile2 << 32);
 
         Name = name;
