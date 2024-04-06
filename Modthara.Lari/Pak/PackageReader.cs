@@ -69,7 +69,7 @@ public static class PackageReader
         List<PackagedFile> files = [];
         foreach (var entry in entries)
         {
-            var file = new PackagedFile(entry);
+            var file = new PackagedFile(reader.BaseStream, entry);
             var compressionMethod = file.Flags & 0x0F;
             if (compressionMethod > 2 || (file.Flags & ~0x7F) != 0)
             {
