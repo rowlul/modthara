@@ -15,8 +15,8 @@ public class UncompressedPackagedFileStream(Stream ownerStream, PackagedFile own
             throw new InvalidDataException("Stream at unexpected position while reading packaged file.");
         }
 
-        long readable = (long)ownerFile.SizeOnDisk - Position;
-        int bytesToRead = (readable < count) ? (int)readable : count;
+        var readable = (long)ownerFile.SizeOnDisk - Position;
+        var bytesToRead = readable < count ? (int)readable : count;
         return ownerStream.Read(buffer, offset, bytesToRead);
     }
 
@@ -39,6 +39,7 @@ public class UncompressedPackagedFileStream(Stream ownerStream, PackagedFile own
     public override bool CanSeek => false;
     public override bool CanWrite => false;
     public override long Length => (long)ownerFile.SizeOnDisk;
+
     public override long Position
     {
         get => ownerStream.Position - (long)ownerFile.OffsetInFile;

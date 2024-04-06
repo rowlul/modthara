@@ -53,7 +53,7 @@ public class PackagedFile : IDisposable
         }
 
         OwnerStream.Seek((long)OffsetInFile, SeekOrigin.Begin);
-        var compression = (Flags & 0x0F);
+        var compression = Flags & 0x0F;
         if (compression == 0x0)
         {
             _stream = new UncompressedPackagedFileStream(OwnerStream, this);
