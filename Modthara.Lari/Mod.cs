@@ -10,7 +10,7 @@ public class Mod
     public required string FolderName { get; set; }
     public string Md5 { get; set; } = string.Empty;
     public Guid Uuid { get; set; } = Guid.NewGuid();
-    public ModVersion Version { get; set; } = 36028797018963968UL;
+    public LariVersion Version { get; set; } = 36028797018963968UL;
     public IList<Mod> Dependencies { get; set; } = [];
 
     public static XmlDocument Document { get; } = new();
@@ -57,14 +57,14 @@ public class Mod
         return attribute.Attributes["value"]!.Value;
     }
 
-    private static ModVersion GetVersion()
+    private static LariVersion GetVersion()
     {
         var node = Document.SelectSingleNode(GetAttributeAddress(ModuleInfoNode, "Version64")) ??
                    Document.SelectSingleNode(GetAttributeAddress(ModuleInfoNode, "Version32")) ??
                    Document.SelectSingleNode(GetAttributeAddress(ModuleInfoNode, "Version")) ??
                    throw new LsxMarkupException("Version attribute does not exist.");
 
-        var version = ModVersion.FromUint64(Convert.ToUInt64(GetAttributeValue(node)));
+        var version = LariVersion.FromUint64(Convert.ToUInt64(GetAttributeValue(node)));
         return version;
     }
 
