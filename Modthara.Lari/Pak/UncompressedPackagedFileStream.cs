@@ -1,6 +1,6 @@
 ﻿namespace Modthara.Lari.Pak;
 
-public class PackagedFileStream(Stream ownerStream, PackagedFile ownerFile) : Stream
+public class UncompressedPackagedFileStream(Stream ownerStream, PackagedFile ownerFile) : Stream
 {
     public override void Flush()
     {

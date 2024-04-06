@@ -56,7 +56,7 @@ public class PackagedFile : IDisposable
         var compression = (Flags & 0x0F);
         if (compression == 0x0)
         {
-            _stream = new PackagedFileStream(OwnerStream, this);
+            _stream = new UncompressedPackagedFileStream(OwnerStream, this);
         }
         else
         {
