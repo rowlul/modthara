@@ -1,9 +1,27 @@
-﻿using System.Xml;
+﻿using Modthara.Lari.Lsx;
 
 namespace Modthara.Lari;
 
 public class Mod
 {
+    public static Mod FromLsx(LsxDocument document)
+    {
+        var moduleInfoNode = LocateModuleInfo(document);
+
+        var mod = new Mod
+        {
+            Name = GetAttributeValue(moduleInfoNode, "Name") ?? ThrowMissing("Name"),
+            Author = GetAttributeValue(moduleInfoNode, "Author") ?? ThrowMissing("Author"),
+            Description = GetAttributeValue(moduleInfoNode, "Description") ?? ThrowMissing("Description"),
+            FolderName = GetAttributeValue(moduleInfoNode, "Folder") ?? ThrowMissing("Folder"),
+            Md5 = GetAttributeValue(moduleInfoNode, "Md5") ?? string.Empty,
+            Uuid = Guid.Parse(GetAttributeValue(moduleInfoNode, "UUID") ?? ThrowMissing("UUID")),
+            Version = GetVersion(moduleInfoNode)
+        };
+
+        return mod;
+    }
+
     public required string Name { get; set; }
     public required string Author { get; set; }
     public required string Description { get; set; }
@@ -13,60 +31,33 @@ public class Mod
     public LariVersion Version { get; set; } = 36028797018963968UL;
     public IList<Mod> Dependencies { get; set; } = [];
 
-    public static XmlDocument Document { get; } = new();
-
-    public static Mod FromStream(Stream stream)
+    private static LsxNode LocateModuleInfo(LsxDocument document)
     {
-        stream.ValidateXml();
-        Document.Load(stream);
-
-        var author = GetAttributeValue(SelectModuleAttribute("Author"));
-        var description = GetAttributeValue(SelectModuleAttribute("Description"));
-        var folder = GetAttributeValue(SelectModuleAttribute("Folder"));
-        var name = GetAttributeValue(SelectModuleAttribute("Name"));
-        var uuid = Guid.Parse(GetAttributeValue(SelectModuleAttribute("UUID")));
-        var version = GetVersion();
-
-        var mod = new Mod
+        var configRegion = document.Regions.FirstOrDefault(r => r.Id == "Config");
+        if (configRegion?.RootNode is { Id: "root", Children: not null })
         {
-            Author = author,
-            Description = description,
-            FolderName = folder,
-            Name = name,
-            Uuid = uuid,
-            Version = version
-        };
-
-        return mod;
-    }
-
-    private static string GetAttributeAddress(string nodeId, string attributeId) =>
-        $"/save/region[@id='Config']/node[@id='root']/children/node[@id='{nodeId}']/attribute[@id='{attributeId}']";
-
-    private static XmlNode SelectModuleAttribute(string id) =>
-        Document.SelectSingleNode(GetAttributeAddress(ModuleInfoNode, id)) ??
-        throw new LsxMarkupException($"Required attribute '{id}' does not exist.");
-
-    private static string GetAttributeValue(XmlNode attribute)
-    {
-        if (attribute.Attributes == null || string.IsNullOrEmpty(attribute.Attributes["value"]!.Value))
-        {
-            throw new LsxMarkupException($"No value for attribute '{attribute.Name}'.");
+            return configRegion.RootNode.Children.FirstOrDefault(n => n.Id == "ModuleInfo")
+                   ?? throw new LsxMarkupException("Could not find required node 'ModuleInfo'.");
         }
 
-        return attribute.Attributes["value"]!.Value;
+        throw new LsxMarkupException("Could not find required region 'Config'.");
     }
 
-    private static LariVersion GetVersion()
+    private static string? GetAttributeValue(LsxNode node, string attributeId)
     {
-        var node = Document.SelectSingleNode(GetAttributeAddress(ModuleInfoNode, "Version64")) ??
-                   Document.SelectSingleNode(GetAttributeAddress(ModuleInfoNode, "Version32")) ??
-                   Document.SelectSingleNode(GetAttributeAddress(ModuleInfoNode, "Version")) ??
-                   throw new LsxMarkupException("Version attribute does not exist.");
-
-        var version = LariVersion.FromUint64(Convert.ToUInt64(GetAttributeValue(node)));
-        return version;
+        var value = node.Attributes?.FirstOrDefault(n => n.Id == attributeId)?.Value;
+        return value;
     }
 
-    private const string ModuleInfoNode = "ModuleInfo";
+    private static string ThrowMissing(string attributeName)
+    {
+        throw new LsxMarkupException($"Required attribute '{attributeName}' is missing, null, or empty.");
+    }
+
+    private static LariVersion GetVersion(LsxNode node)
+    {
+        var value = node.Attributes?.FirstOrDefault(n => n.Id is "Version64" or "Version32" or "Version")?.Value ??
+                    ThrowMissing("Version64");
+        return Convert.ToUInt64(value);
+    }
 }
