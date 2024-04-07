@@ -11,7 +11,7 @@ public class Mod
         var mod = new Mod
         {
             Name = GetAttributeValue(moduleInfoNode, "Name") ?? ThrowIfNull("Name"),
-            Author = GetAttributeValue(moduleInfoNode, "Author") ?? ThrowIfNull("Author"),
+            Author = GetAttributeValue(moduleInfoNode, "Author") ?? string.Empty,
             Description = GetAttributeValue(moduleInfoNode, "Description") ?? string.Empty,
             FolderName = GetAttributeValue(moduleInfoNode, "Folder") ?? ThrowIfNull("Folder"),
             Md5 = GetAttributeValue(moduleInfoNode, "Md5") ?? string.Empty,
@@ -23,8 +23,8 @@ public class Mod
     }
 
     public required string Name { get; set; }
-    public required string Author { get; set; }
-    public string? Description { get; set; }
+    public string? Author { get; set; } = string.Empty;
+    public string? Description { get; set; } = string.Empty;
     public required string FolderName { get; set; }
     public string Md5 { get; set; } = string.Empty;
     public Guid Uuid { get; set; } = Guid.NewGuid();
