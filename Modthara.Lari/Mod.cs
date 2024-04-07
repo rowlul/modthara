@@ -6,7 +6,8 @@ public class Mod
 {
     public static Mod FromLsx(LsxDocument document)
     {
-        var moduleInfoNode = LocateModuleInfo(document);
+        var moduleInfoNode = LocateNodeInRoot(document, "ModuleInfo");
+        var dependenciesNode = LocateNodeInRoot(document, "Dependencies");
 
         var mod = new Mod
         {
@@ -16,7 +17,8 @@ public class Mod
             FolderName = GetAttributeValue(moduleInfoNode, "Folder") ?? ThrowIfNull("Folder"),
             Md5 = GetAttributeValue(moduleInfoNode, "Md5") ?? string.Empty,
             Uuid = Guid.Parse(GetAttributeValue(moduleInfoNode, "UUID") ?? ThrowIfNull("UUID")),
-            Version = GetVersion(moduleInfoNode)
+            Version = GetVersion(moduleInfoNode),
+            Dependencies = GetDependencies(dependenciesNode),
         };
 
         return mod;
@@ -31,13 +33,13 @@ public class Mod
     public LariVersion Version { get; set; } = 36028797018963968UL;
     public IList<Mod> Dependencies { get; set; } = [];
 
-    private static LsxNode LocateModuleInfo(LsxDocument document)
+    private static LsxNode LocateNodeInRoot(LsxDocument document, string nodeId)
     {
         var configRegion = document.Regions.FirstOrDefault(r => r.Id == "Config");
         if (configRegion?.RootNode is { Id: "root", Children: not null })
         {
-            return configRegion.RootNode.Children.FirstOrDefault(n => n.Id == "ModuleInfo")
-                   ?? throw new LsxMarkupException("Could not find required node 'ModuleInfo'.");
+            return configRegion.RootNode.Children.FirstOrDefault(n => n.Id == nodeId)
+                   ?? throw new LsxMarkupException($"Could not find required node '{nodeId}'.");
         }
 
         throw new LsxMarkupException("Could not find required region 'Config'.");
@@ -59,5 +61,25 @@ public class Mod
         var value = node.Attributes?.FirstOrDefault(n => n.Id is "Version64" or "Version32" or "Version")?.Value ??
                     ThrowIfNull("Version64");
         return Convert.ToUInt64(value);
+    }
+
+    private static List<Mod> GetDependencies(LsxNode dependenciesNode)
+    {
+        if (dependenciesNode.Children != null)
+        {
+            List<Mod> dependencies = [];
+            dependencies.AddRange(dependenciesNode.Children.Where(d => d.Id == "ModuleShortDesc")
+            .Select(d => new Mod
+            {
+                FolderName = GetAttributeValue(d, "Folder") ?? ThrowIfNull("Folder"),
+                Md5 = GetAttributeValue(d, "Md5") ?? string.Empty,
+                Name = GetAttributeValue(d, "Name") ?? ThrowIfNull("Name"),
+                Uuid = Guid.Parse(GetAttributeValue(d, "UUID") ?? ThrowIfNull("UUID")),
+                Version = GetVersion(d)
+            }));
+            return dependencies;
+        }
+
+        return [];
     }
 }
