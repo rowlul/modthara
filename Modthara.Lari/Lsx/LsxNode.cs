@@ -59,4 +59,25 @@ public class LsxNode
 
         return modules;
     }
+
+    public Mod ToMod()
+    {
+        if (this.Attributes == null)
+        {
+            throw new LsxMarkupException($"No attributes found in node with id '{Id}'.");
+        }
+
+        var mod = new Mod
+        {
+            Name = this.GetAttributeValue("Name"),
+            Author = this.GetAttributeValue("Author", string.Empty),
+            Description = this.GetAttributeValue("Description", string.Empty),
+            FolderName = this.GetAttributeValue("Folder"),
+            Md5 = this.GetAttributeValue("Md5", string.Empty),
+            Uuid = Guid.Parse(this.GetAttributeValue("UUID")),
+            Version = this.GetVersion(),
+        };
+
+        return mod;
+    }
 }
