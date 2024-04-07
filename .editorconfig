@@ -83,7 +83,7 @@ csharp_style_conditional_delegate_call = true:suggestion
 
 # Modifier preferences
 csharp_prefer_static_local_function = true:warning
-csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:silent
+csharp_preferred_modifier_order = public, private, protected, internal, static, extern, new, virtual, abstract, sealed, override, readonly, unsafe, volatile, async:silent
 
 # Code-block preferences
 csharp_prefer_braces = true:silent
@@ -148,6 +148,14 @@ csharp_space_between_square_brackets = false
 # Wrapping preferences
 csharp_preserve_single_line_blocks = true
 csharp_preserve_single_line_statements = true
+
+# Resharper line breaks
+resharper_csharp_place_type_attribute_on_same_line = never
+resharper_csharp_place_method_attribute_on_same_line = never
+resharper_csharp_place_accessorholder_attribute_on_same_line = never
+resharper_csharp_place_accessor_attribute_on_same_line = if_owner_is_single_line
+resharper_csharp_place_field_attribute_on_same_line = if_owner_is_single_line
+resharper_csharp_place_record_field_attribute_on_same_line = always
 
 # Naming rules
 
