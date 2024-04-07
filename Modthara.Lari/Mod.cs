@@ -12,7 +12,7 @@ public class Mod
         {
             Name = GetAttributeValue(moduleInfoNode, "Name") ?? ThrowIfNull("Name"),
             Author = GetAttributeValue(moduleInfoNode, "Author") ?? ThrowIfNull("Author"),
-            Description = GetAttributeValue(moduleInfoNode, "Description") ?? ThrowIfNull("Description"),
+            Description = GetAttributeValue(moduleInfoNode, "Description") ?? string.Empty,
             FolderName = GetAttributeValue(moduleInfoNode, "Folder") ?? ThrowIfNull("Folder"),
             Md5 = GetAttributeValue(moduleInfoNode, "Md5") ?? string.Empty,
             Uuid = Guid.Parse(GetAttributeValue(moduleInfoNode, "UUID") ?? ThrowIfNull("UUID")),
