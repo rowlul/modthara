@@ -6,8 +6,8 @@ public class Mod
 {
     public static Mod FromLsx(LsxDocument document)
     {
-        var moduleInfoNode = LocateNodeInRoot(document, "ModuleInfo");
-        var dependenciesNode = LocateNodeInRoot(document, "Dependencies");
+        var moduleInfoNode = document.FindNodeInRoot("Config", "ModuleInfo");
+        var dependenciesNode = document.FindNodeInRoot("Config", "Dependencies");
 
         var mod = new Mod
         {
@@ -32,18 +32,6 @@ public class Mod
     public Guid Uuid { get; set; } = Guid.NewGuid();
     public LariVersion Version { get; set; } = 36028797018963968UL;
     public IList<Mod> Dependencies { get; set; } = [];
-
-    private static LsxNode LocateNodeInRoot(LsxDocument document, string nodeId)
-    {
-        var configRegion = document.Regions.FirstOrDefault(r => r.Id == "Config");
-        if (configRegion?.RootNode is { Id: "root", Children: not null })
-        {
-            return configRegion.RootNode.Children.FirstOrDefault(n => n.Id == nodeId)
-                   ?? throw new LsxMarkupException($"Could not find required node '{nodeId}'.");
-        }
-
-        throw new LsxMarkupException("Could not find required region 'Config'.");
-    }
 
     private static string? GetAttributeValue(LsxNode node, string attributeId)
     {
