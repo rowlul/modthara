@@ -3,6 +3,8 @@ using System.Text;
 
 using K4os.Compression.LZ4;
 
+using Modthara.Lari.Extensions;
+
 namespace Modthara.Lari.Pak;
 
 public static class PackageReader

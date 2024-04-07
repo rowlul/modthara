@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Modthara.Lari.Pak;
+namespace Modthara.Lari.Extensions;
 
 internal static class StructExtensions
 {
