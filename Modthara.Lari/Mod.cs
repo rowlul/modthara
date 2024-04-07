@@ -10,12 +10,12 @@ public class Mod
 
         var mod = new Mod
         {
-            Name = GetAttributeValue(moduleInfoNode, "Name") ?? ThrowMissing("Name"),
-            Author = GetAttributeValue(moduleInfoNode, "Author") ?? ThrowMissing("Author"),
-            Description = GetAttributeValue(moduleInfoNode, "Description") ?? ThrowMissing("Description"),
-            FolderName = GetAttributeValue(moduleInfoNode, "Folder") ?? ThrowMissing("Folder"),
+            Name = GetAttributeValue(moduleInfoNode, "Name") ?? ThrowIfNull("Name"),
+            Author = GetAttributeValue(moduleInfoNode, "Author") ?? ThrowIfNull("Author"),
+            Description = GetAttributeValue(moduleInfoNode, "Description") ?? ThrowIfNull("Description"),
+            FolderName = GetAttributeValue(moduleInfoNode, "Folder") ?? ThrowIfNull("Folder"),
             Md5 = GetAttributeValue(moduleInfoNode, "Md5") ?? string.Empty,
-            Uuid = Guid.Parse(GetAttributeValue(moduleInfoNode, "UUID") ?? ThrowMissing("UUID")),
+            Uuid = Guid.Parse(GetAttributeValue(moduleInfoNode, "UUID") ?? ThrowIfNull("UUID")),
             Version = GetVersion(moduleInfoNode)
         };
 
@@ -24,7 +24,7 @@ public class Mod
 
     public required string Name { get; set; }
     public required string Author { get; set; }
-    public required string Description { get; set; }
+    public string? Description { get; set; }
     public required string FolderName { get; set; }
     public string Md5 { get; set; } = string.Empty;
     public Guid Uuid { get; set; } = Guid.NewGuid();
@@ -49,7 +49,7 @@ public class Mod
         return value;
     }
 
-    private static string ThrowMissing(string attributeName)
+    private static string ThrowIfNull(string attributeName)
     {
         throw new LsxMarkupException($"Required attribute '{attributeName}' is missing, null, or empty.");
     }
@@ -57,7 +57,7 @@ public class Mod
     private static LariVersion GetVersion(LsxNode node)
     {
         var value = node.Attributes?.FirstOrDefault(n => n.Id is "Version64" or "Version32" or "Version")?.Value ??
-                    ThrowMissing("Version64");
+                    ThrowIfNull("Version64");
         return Convert.ToUInt64(value);
     }
 }
