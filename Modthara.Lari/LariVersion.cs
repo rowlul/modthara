@@ -1,11 +1,14 @@
-﻿namespace Modthara.Lari;
+﻿using System.Xml.Serialization;
 
+namespace Modthara.Lari;
+
+[Serializable]
 public readonly struct LariVersion
 {
-    public uint Major { get; init; }
-    public uint Minor { get; init; }
-    public uint Revision { get; init; }
-    public uint Build { get; init; }
+    [XmlAttribute("major")] public uint Major { get; init; }
+    [XmlAttribute("minir")] public uint Minor { get; init; }
+    [XmlAttribute("revision")] public uint Revision { get; init; }
+    [XmlAttribute("build")] public uint Build { get; init; }
 
     public static LariVersion FromUint64(ulong version) => new()
     {
