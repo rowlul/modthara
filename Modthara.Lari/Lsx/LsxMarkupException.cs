@@ -1,4 +1,4 @@
-﻿namespace Modthara.Lari;
+﻿namespace Modthara.Lari.Lsx;
 
 using Position = (int, int);
 
