@@ -8,7 +8,7 @@ namespace Modthara.Lari.Pak;
 /// <summary>
 /// Represents an arbitrary packaged filed in an LSPK package.
 /// </summary>
-public class PackagedFile : IDisposable
+public class PackagedFile
 {
     private Stream? _stream;
 
@@ -87,12 +87,5 @@ public class PackagedFile : IDisposable
         }
 
         return _stream;
-    }
-
-    public void Dispose()
-    {
-        _stream?.Dispose();
-        _stream = null;
-        GC.SuppressFinalize(this);
     }
 }
