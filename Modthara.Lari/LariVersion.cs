@@ -5,10 +5,17 @@ namespace Modthara.Lari;
 [Serializable]
 public readonly struct LariVersion
 {
-    [XmlAttribute("major")] public uint Major { get; init; }
-    [XmlAttribute("minir")] public uint Minor { get; init; }
-    [XmlAttribute("revision")] public uint Revision { get; init; }
-    [XmlAttribute("build")] public uint Build { get; init; }
+    [XmlAttribute("major")]
+    public uint Major { get; init; }
+
+    [XmlAttribute("minir")]
+    public uint Minor { get; init; }
+
+    [XmlAttribute("revision")]
+    public uint Revision { get; init; }
+
+    [XmlAttribute("build")]
+    public uint Build { get; init; }
 
     public static LariVersion FromUint64(ulong version) => new()
     {
@@ -38,10 +45,7 @@ public readonly struct LariVersion
         (version.Revision & 0xff) << 16 |
         (version.Build & 0xffff) << 0;
 
-    public override string ToString()
-    {
-        return $"{Major}.{Minor}.{Revision}.{Build}";
-    }
+    public override string ToString() => $"{Major}.{Minor}.{Revision}.{Build}";
 
     public static implicit operator LariVersion(ulong version) => FromUint64(version);
     public static implicit operator LariVersion(uint version) => FromUint32(version);
