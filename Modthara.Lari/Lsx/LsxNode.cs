@@ -15,6 +15,16 @@ public class LsxNode
     [XmlElement("attribute")]
     public List<LsxAttribute>? Attributes { get; set; }
 
+    public bool ShouldSerializeChildren()
+    {
+        return Children != null && Children.Count != 0;
+    }
+
+    public bool ShouldSerializeAttributes()
+    {
+        return Attributes != null && Attributes.Count != 0;
+    }
+
     public string GetAttributeValue(string attributeId, string? defaultValue = null)
     {
         var value = this.Attributes?.FirstOrDefault(n => n.Id == attributeId)?.Value;
