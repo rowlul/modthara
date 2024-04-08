@@ -1,4 +1,6 @@
-﻿using Modthara.Lari.Abstractions;
+﻿using System.IO.Abstractions;
+
+using Modthara.Lari.Abstractions;
 using Modthara.Lari.Lsx;
 
 namespace Modthara.Lari;
@@ -28,18 +30,18 @@ public class ModSettings : IModOrder
         _mods = _modsNode.GetModules();
     }
 
-    public static ModSettings Read(string path)
+    public static ModSettings Read(string path, IFileStreamFactory fileStreamFactory)
     {
-        using var file = File.OpenRead(path);
+        using var file = fileStreamFactory.New(path, FileMode.Open, FileAccess.Read, FileShare.Read);
         return new ModSettings(
             LsxDocument.FromStream(file) ??
             throw new InvalidOperationException($"Document '{path}' was null."));
     }
 
-    public void Write(string path)
+    public void Write(string path, IFileStreamFactory fileStreamFactory)
     {
         using var document = _document.ToStream();
-        using var file = File.Create(path);
+        using var file = fileStreamFactory.New(path, FileMode.CreateNew, FileAccess.Write, FileShare.None);
         document.CopyTo(file);
     }
 
