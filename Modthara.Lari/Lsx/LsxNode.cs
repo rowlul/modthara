@@ -67,7 +67,7 @@ public class LsxNode
                 FolderName = module.GetAttributeValue("Folder"),
                 Md5 = module.GetAttributeValue("Md5", string.Empty),
                 Name = module.GetAttributeValue("Name"),
-                Uuid = Guid.Parse(module.GetAttributeValue("UUID")),
+                Uuid = module.GetUuid(),
                 Version = module.GetVersion()
             }));
 
@@ -83,7 +83,7 @@ public class LsxNode
             Description = this.GetAttributeValue("Description", string.Empty),
             FolderName = this.GetAttributeValue("Folder"),
             Md5 = this.GetAttributeValue("Md5", string.Empty),
-            Uuid = Guid.Parse(this.GetAttributeValue("UUID")),
+            Uuid = this.GetUuid(),
             Version = this.GetVersion(),
         };
 
