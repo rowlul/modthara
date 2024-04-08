@@ -19,6 +19,14 @@ public class LsxDocument
         return document;
     }
 
+    public Stream ToStream()
+    {
+        var serializer = new XmlSerializer(typeof(LsxDocument));
+        var stream = new MemoryStream();
+        serializer.Serialize(stream, this);
+        return stream;
+    }
+
     public LsxNode FindNodeInRoot(string regionId, string nodeId)
     {
         var configRegion = this.Regions.FirstOrDefault(r => r.Id == regionId);
