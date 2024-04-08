@@ -8,7 +8,7 @@ public readonly struct LariVersion
     [XmlAttribute("major")]
     public uint Major { get; init; }
 
-    [XmlAttribute("minir")]
+    [XmlAttribute("minor")]
     public uint Minor { get; init; }
 
     [XmlAttribute("revision")]
@@ -25,7 +25,7 @@ public readonly struct LariVersion
         Build = (uint)(version & 0x7fffffff),
     };
 
-    public static LariVersion FromUint32(uint version) => new LariVersion
+    public static LariVersion FromUint32(uint version) => new()
     {
         Major = (version >> 28) & 0x0f,
         Minor = (version >> 24) & 0x0f,
