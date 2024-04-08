@@ -1,4 +1,5 @@
-﻿using System.Xml.Serialization;
+﻿using System.Xml;
+using System.Xml.Serialization;
 
 namespace Modthara.Lari.Lsx;
 
@@ -22,8 +23,11 @@ public class LsxDocument
     public Stream ToStream()
     {
         var serializer = new XmlSerializer(typeof(LsxDocument));
+
         var stream = new MemoryStream();
-        serializer.Serialize(stream, this);
+        serializer.Serialize(stream, this,
+            new XmlSerializerNamespaces([new XmlQualifiedName(string.Empty, string.Empty)]));
+        stream.Position = 0;
         return stream;
     }
 
