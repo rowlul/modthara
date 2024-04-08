@@ -41,7 +41,7 @@ public class LsxNode
         return Convert.ToUInt64(value);
     }
 
-    public IList<Mod> GetModules()
+    public List<Mod> GetModules()
     {
         if (this.Children == null)
         {
@@ -64,11 +64,6 @@ public class LsxNode
 
     public Mod ToMod()
     {
-        if (this.Attributes == null)
-        {
-            throw new LsxMarkupException($"No attributes found in node with id '{Id}'.");
-        }
-
         var mod = new Mod
         {
             Name = this.GetAttributeValue("Name"),
