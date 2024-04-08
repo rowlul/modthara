@@ -40,6 +40,8 @@ public class LsxNode
         throw new LsxMarkupException($"Attribute with id '{attributeId}' is missing, null, or empty.");
     }
 
+    public Guid GetUuid() => Guid.Parse(this.GetAttributeValue("UUID"));
+
     public LariVersion GetVersion()
     {
         var value = this.Attributes?.FirstOrDefault(n => n.Id is "Version64" or "Version32" or "Version")?.Value;
