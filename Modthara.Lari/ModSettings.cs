@@ -59,7 +59,7 @@ public class ModSettings : IModOrder
     public void Write(string path, IFileStreamFactory fileStreamFactory)
     {
         using var document = _document.ToStream();
-        using var file = fileStreamFactory.New(path, FileMode.CreateNew, FileAccess.Write, FileShare.None);
+        using var file = fileStreamFactory.New(path, FileMode.Create, FileAccess.Write, FileShare.None);
         document.CopyTo(file);
     }
 
