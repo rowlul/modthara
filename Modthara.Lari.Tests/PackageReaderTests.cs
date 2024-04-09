@@ -1,5 +1,6 @@
 ﻿using System.IO.Abstractions;
 
+using Modthara.Lari.Lsx;
 using Modthara.Lari.Pak;
 
 namespace Modthara.Lari.Tests;
@@ -32,6 +33,19 @@ public class PackageReaderTests
         file.Size.Should().Be(0x815);
         file.SizeOnDisk.Should().Be(0x32B);
         file.UncompressedSize.Should().Be(0x815);
+    }
+
+    [Fact]
+    public void FromStream_ValidLsxInPackageFile_ReturnsPackage()
+    {
+        var fs = new FileSystem();
+        var file = PackageReader.FromStream(fs.File.OpenRead("./TestFiles/Sample_VFX_Mod.pak")).Files[1];
+        var lsx = () =>
+        {
+            using var stream = file.Open();
+            return LsxDocument.FromStream(stream);
+        };
+        lsx.Should().NotThrow();
     }
 
     [Fact]
