@@ -1,5 +1,10 @@
 ﻿namespace Modthara.Lari.Pak;
 
+/// <summary>
+/// Represents stream of an uncompressed packaged file.
+/// </summary>
+/// <param name="ownerStream">Owner package stream of the packaged file.</param>
+/// <param name="ownerFile">Packaged file to read.</param>
 public class UncompressedPackagedFileStream(Stream ownerStream, PackagedFile ownerFile) : Stream
 {
     public override void Flush()

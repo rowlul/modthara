@@ -3,6 +3,9 @@ using System.Xml.Serialization;
 
 namespace Modthara.Lari.Lsx;
 
+/// <summary>
+/// Represents an arbitrary document in LSX format.
+/// </summary>
 [Serializable]
 [XmlRoot("save")]
 public class LsxDocument
@@ -13,6 +16,13 @@ public class LsxDocument
     [XmlElement("region")]
     public required List<LsxRegion> Regions { get; set; }
 
+    /// <summary>
+    /// Creates a new instance of <see cref="LsxDocument"/> by deserializing <paramref name="stream"/>.
+    /// </summary>
+    /// <param name="stream">Stream to read from.</param>
+    /// <returns>
+    /// Instance of <see cref="LsxDocument"/>. Returns null if serialized document was null.
+    /// </returns>
     public static LsxDocument? FromStream(Stream stream)
     {
         var serializer = new XmlSerializer(typeof(LsxDocument));
@@ -20,6 +30,10 @@ public class LsxDocument
         return document;
     }
 
+    /// <summary>
+    /// Serializes instance to <see cref="Stream"/>.
+    /// </summary>
+    /// <returns>Returns stream containing the serialized document.</returns>
     public Stream ToStream()
     {
         var serializer = new XmlSerializer(typeof(LsxDocument));
@@ -31,6 +45,13 @@ public class LsxDocument
         return stream;
     }
 
+    /// <summary>
+    /// Traverses through the region and its root node to find the specified node.
+    /// </summary>
+    /// <param name="regionId">Region id to look for.</param>
+    /// <param name="nodeId">Node id to look for.</param>
+    /// <returns>Found instance of <see cref="LsxNode"/>.</returns>
+    /// <exception cref="LsxMarkupException">Throws if region or node were not found.</exception>
     public LsxNode FindNodeInRoot(string regionId, string nodeId)
     {
         var configRegion = this.Regions.FirstOrDefault(r => r.Id == regionId);

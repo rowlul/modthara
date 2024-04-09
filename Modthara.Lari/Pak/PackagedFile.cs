@@ -45,6 +45,12 @@ public class PackagedFile
         UncompressedSize = entry.UncompressedSize;
     }
 
+    /// <summary>
+    /// Creates and opens stream of the file.
+    /// </summary>
+    /// <returns>Stream of the file</returns>
+    /// <exception cref="LspkException">Throws if file is deleted or compression method is invalid.</exception>
+    /// <exception cref="InvalidDataException">Throws if file size is mismatched.</exception>
     public Stream Open()
     {
         if (IsDeleted)

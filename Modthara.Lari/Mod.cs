@@ -2,6 +2,9 @@
 
 namespace Modthara.Lari;
 
+/// <summary>
+/// Represents <c>meta.lsx</c> of a mod.
+/// </summary>
 public class Mod
 {
     public required string Name { get; set; }
@@ -13,6 +16,11 @@ public class Mod
     public LariVersion Version { get; set; } = 36028797018963968UL;
     public IList<Mod> Dependencies { get; set; } = [];
 
+    /// <summary>
+    /// Creates a new instance from <see cref="LsxDocument"/>.
+    /// </summary>
+    /// <param name="document">Document containing the <c>ModuleInfo</c> node under <c>Config</c> region.</param>
+    /// <returns>Instance of <see cref="Mod"/>.</returns>
     public static Mod FromLsx(LsxDocument document)
     {
         var mod = document.FindNodeInRoot("Config", "ModuleInfo").ToMod();
@@ -21,6 +29,10 @@ public class Mod
         return mod;
     }
 
+    /// <summary>
+    /// Maps instance to <c>Module</c> node.
+    /// </summary>
+    /// <returns>Instance of <c>Module</c> node.</returns>
     public LsxNode ToModule() =>
         new()
         {
@@ -31,6 +43,10 @@ public class Mod
             ]
         };
 
+    /// <summary>
+    /// Maps instance to <c>ModuleShortDesc</c> node.
+    /// </summary>
+    /// <returns>Instance of <c>ModuleShortDesc</c> node.</returns>
     public LsxNode ToModuleShortDesc() =>
         new()
         {
@@ -48,6 +64,10 @@ public class Mod
             ]
         };
 
+    /// <summary>
+    /// Maps instance to <c>ModuleInfo</c> node.
+    /// </summary>
+    /// <returns>Instance of <c>ModuleInfo</c> node.</returns>
     public LsxNode ToModuleInfo() =>
         new()
         {

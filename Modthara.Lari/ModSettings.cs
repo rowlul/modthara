@@ -17,6 +17,12 @@ public class ModSettings : IModOrder
     private List<Mod> _mods;
     public IReadOnlyList<Mod> Mods => _mods;
 
+    /// <summary>
+    /// <inheritdoc cref="ModSettings"/>
+    /// </summary>
+    /// <param name="document">
+    /// Document containing <c>ModOrder</c> and <c>Mods</c> node under <c>ModuleSettings</c> region..
+    /// </param>
     public ModSettings(LsxDocument document)
     {
         _document = document;
@@ -30,6 +36,13 @@ public class ModSettings : IModOrder
         _mods = _modsNode.GetModules();
     }
 
+    /// <summary>
+    /// Creates a new instance from file.
+    /// </summary>
+    /// <param name="path">Path to the file.</param>
+    /// <param name="fileStreamFactory">Wrapper for FileStream.</param>
+    /// <returns>New instance of <see cref="ModSettings"/>.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if serialized <see cref="LsxDocument"/> was null.</exception>
     public static ModSettings Read(string path, IFileStreamFactory fileStreamFactory)
     {
         using var file = fileStreamFactory.New(path, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -38,6 +51,11 @@ public class ModSettings : IModOrder
             throw new InvalidOperationException($"Document '{path}' was null."));
     }
 
+    /// <summary>
+    /// Writes changes to the specified path, overwriting the file.
+    /// </summary>
+    /// <param name="path">Path to the file.</param>
+    /// <param name="fileStreamFactory">Wrapper for FileStream.</param>
     public void Write(string path, IFileStreamFactory fileStreamFactory)
     {
         using var document = _document.ToStream();
@@ -82,6 +100,11 @@ public class ModSettings : IModOrder
         return (null, null);
     }
 
+    /// <summary>
+    /// Inserts mod at specified index.
+    /// </summary>
+    /// <param name="index">Index of the mod.</param>
+    /// <param name="mod">Mod to be inserted.</param>
     public void Insert(int index, Mod mod)
     {
         _modOrderNode.Children!.Insert(index, mod.ToModule());
@@ -89,6 +112,10 @@ public class ModSettings : IModOrder
         _mods.Insert(index, mod);
     }
 
+    /// <summary>
+    /// Appends mod at the end of the list.
+    /// </summary>
+    /// <param name="mod">Mod to be appended.</param>
     public void Append(Mod mod)
     {
         _modOrderNode.Children!.Add(mod.ToModule());
@@ -96,6 +123,10 @@ public class ModSettings : IModOrder
         _mods.Add(mod);
     }
 
+    /// <summary>
+    /// Removes mod from the list.
+    /// </summary>
+    /// <param name="mod">Mod to be removed.</param>
     public void Remove(Mod mod)
     {
         _modOrderNode.Children!.Remove(mod.ToModule());

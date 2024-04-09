@@ -2,6 +2,9 @@
 
 namespace Modthara.Lari.Lsx;
 
+/// <summary>
+/// Represents <c>region</c> element in an <see cref="LsxDocument"/>.
+/// </summary>
 [Serializable]
 public class LsxRegion
 {

@@ -7,8 +7,19 @@ using Modthara.Lari.Extensions;
 
 namespace Modthara.Lari.Pak;
 
+/// <summary>
+/// Represents the reader of LSPK packages.
+/// </summary>
 public static class PackageReader
 {
+    /// <summary>
+    /// Creates a new instance of <see cref="Package"/>.
+    /// </summary>
+    /// <param name="stream">Stream to read from.</param>
+    /// <returns>Instance of <see cref="Package"/>.</returns>
+    /// <exception cref="LspkException">
+    /// Throws upon encountering invalid package structure or unsupported features.
+    /// </exception>
     public static Package FromStream(Stream stream)
     {
         using var reader = new BinaryReader(stream, Encoding.UTF8, true);

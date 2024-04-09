@@ -2,6 +2,9 @@
 
 namespace Modthara.Lari.Lsx;
 
+/// <summary>
+/// Represents <c>attribute</c> element in an <see cref="LsxNode"/>.
+/// </summary>
 [Serializable]
 public class LsxAttribute
 {

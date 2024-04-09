@@ -2,6 +2,9 @@
 
 namespace Modthara.Lari.Lsx;
 
+/// <summary>
+/// Represents <c>node</c> element in an <see cref="LsxDocument"/>.
+/// </summary>
 [Serializable]
 public class LsxNode
 {
@@ -25,6 +28,15 @@ public class LsxNode
         return Attributes != null && Attributes.Count != 0;
     }
 
+    /// <summary>
+    /// Traverses through the node to find specified attribute.
+    /// </summary>
+    /// <param name="attributeId">Attribute id to look for.</param>
+    /// <param name="defaultValue">Fallback value if attribute was null.</param>
+    /// <returns>String value of the attribute.</returns>
+    /// <exception cref="LsxMarkupException">
+    /// Throws if attribute was null unless <paramref name="defaultValue"/> is provided.
+    /// </exception>
     public string GetAttributeValue(string attributeId, string? defaultValue = null)
     {
         var value = this.Attributes?.FirstOrDefault(n => n.Id == attributeId)?.Value;
@@ -40,6 +52,10 @@ public class LsxNode
         throw new LsxMarkupException($"Attribute with id '{attributeId}' is missing, null, or empty.");
     }
 
+    /// <summary>
+    /// Gets UUID value of the respective attribute.
+    /// </summary>
+    /// <returns>UUID of the node.</returns>
     public Guid GetUuid() => Guid.Parse(this.GetAttributeValue("UUID"));
 
     public LariVersion GetVersion()
@@ -53,6 +69,10 @@ public class LsxNode
         return Convert.ToUInt64(value);
     }
 
+    /// <summary>
+    /// Gets a list of <c>ModuleShortDesc</c> nodes.
+    /// </summary>
+    /// <returns>List of mods.</returns>
     public List<Mod> GetModules()
     {
         if (this.Children == null)
@@ -74,6 +94,10 @@ public class LsxNode
         return modules;
     }
 
+    /// <summary>
+    /// Converts node to <see cref="Mod"/>.
+    /// </summary>
+    /// <returns>Instance of <see cref="Mod"/>.</returns>
     public Mod ToMod()
     {
         var mod = new Mod

@@ -2,6 +2,9 @@
 
 namespace Modthara.Lari;
 
+/// <summary>
+/// Represents an arbitrary version.
+/// </summary>
 [Serializable]
 public readonly struct LariVersion
 {
