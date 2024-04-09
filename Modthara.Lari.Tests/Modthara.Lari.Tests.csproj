@@ -25,6 +25,7 @@
 
     <ItemGroup>
         <Using Include="Xunit"/>
+        <Using Include="FluentAssertions"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -32,6 +33,10 @@
             Include="TestFiles\**"
             CopyToOutputDirectory="PreserveNewest"
             LinkBase="TestFiles\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Modthara.Lari\Modthara.Lari.csproj" />
     </ItemGroup>
 
 </Project>

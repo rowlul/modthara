@@ -11,4 +11,8 @@
       <PackageReference Include="System.IO.Abstractions" Version="21.0.2" />
     </ItemGroup>
 
+    <ItemGroup>
+        <InternalsVisibleTo Include="Modthara.Lari.Tests" />
+    </ItemGroup>
+
 </Project>
