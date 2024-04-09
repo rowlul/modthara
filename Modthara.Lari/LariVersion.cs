@@ -20,7 +20,7 @@ public readonly struct LariVersion
     [XmlAttribute("build")]
     public uint Build { get; init; }
 
-    public static LariVersion FromUint64(ulong version) => new()
+    public static LariVersion FromUInt64(ulong version) => new()
     {
         Major = (uint)((version >> 55) & 0x7f),
         Minor = (uint)((version >> 47) & 0xff),
@@ -28,7 +28,7 @@ public readonly struct LariVersion
         Build = (uint)(version & 0x7fffffff),
     };
 
-    public static LariVersion FromUint32(uint version) => new()
+    public static LariVersion FromUInt32(uint version) => new()
     {
         Major = (version >> 28) & 0x0f,
         Minor = (version >> 24) & 0x0f,
@@ -50,8 +50,8 @@ public readonly struct LariVersion
 
     public override string ToString() => $"{Major}.{Minor}.{Revision}.{Build}";
 
-    public static implicit operator LariVersion(ulong version) => FromUint64(version);
-    public static implicit operator LariVersion(uint version) => FromUint32(version);
+    public static implicit operator LariVersion(ulong version) => FromUInt64(version);
+    public static implicit operator LariVersion(uint version) => FromUInt32(version);
     public static implicit operator ulong(LariVersion version) => ToVersion64(version);
     public static implicit operator uint(LariVersion version) => ToVersion32(version);
 }
