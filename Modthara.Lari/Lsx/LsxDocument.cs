@@ -51,16 +51,16 @@ public class LsxDocument
     /// <param name="regionId">Region id to look for.</param>
     /// <param name="nodeId">Node id to look for.</param>
     /// <returns>Found instance of <see cref="LsxNode"/>.</returns>
-    /// <exception cref="LsxMarkupException">Throws if region or node were not found.</exception>
+    /// <exception cref="LsxMissingElementException">Throws if region or node were not found.</exception>
     public LsxNode FindNodeInRoot(string regionId, string nodeId)
     {
         var configRegion = this.Regions.FirstOrDefault(r => r.Id == regionId);
         if (configRegion?.RootNode is { Id: "root", Children: not null })
         {
             return configRegion.RootNode.Children.FirstOrDefault(n => n.Id == nodeId)
-                   ?? throw new LsxMarkupException($"Could not find required node '{nodeId}'.");
+                   ?? throw new LsxMissingElementException(regionId);
         }
 
-        throw new LsxMarkupException($"Could not find required region '{regionId}'.");
+        throw new LsxMissingElementException(regionId);
     }
 }

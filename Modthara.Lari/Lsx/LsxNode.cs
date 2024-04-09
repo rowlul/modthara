@@ -34,7 +34,7 @@ public class LsxNode
     /// <param name="attributeId">Attribute id to look for.</param>
     /// <param name="defaultValue">Fallback value if attribute was null.</param>
     /// <returns>String value of the attribute.</returns>
-    /// <exception cref="LsxMarkupException">
+    /// <exception cref="LsxMissingElementException">
     /// Throws if attribute was null unless <paramref name="defaultValue"/> is provided.
     /// </exception>
     public string GetAttributeValue(string attributeId, string? defaultValue = null)
@@ -49,7 +49,7 @@ public class LsxNode
             return defaultValue;
         }
 
-        throw new LsxMarkupException($"Attribute with id '{attributeId}' is missing, null, or empty.");
+        throw new LsxMissingElementException(attributeId);
     }
 
     /// <summary>
@@ -63,7 +63,7 @@ public class LsxNode
         var value = this.Attributes?.FirstOrDefault(n => n.Id is "Version64" or "Version32" or "Version")?.Value;
         if (value == null)
         {
-            throw new LsxMarkupException("Version attribute is missing, null, or empty.");
+            throw new LsxMissingElementException("Version");
         }
 
         return Convert.ToUInt64(value);
