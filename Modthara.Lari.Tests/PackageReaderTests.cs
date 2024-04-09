@@ -11,7 +11,9 @@ public class PackageReaderTests
     public void FromStream_ValidHeader_ReturnsPackage()
     {
         var fs = new FileSystem();
-        var pak = PackageReader.FromStream(fs.File.OpenRead("./TestFiles/Sample_VFX_Mod.pak"));
+        using var s = fs.File.OpenRead("./TestFiles/Sample_VFX_Mod.pak");
+
+        var pak = PackageReader.FromStream(s);
         pak.FileListOffset.Should().Be(0x144E8);
         pak.FileListSize.Should().Be(0x1D3);
         pak.Flags.Should().Be(0x0);
@@ -24,7 +26,9 @@ public class PackageReaderTests
     public void FromStream_ValidPackagedFile_ReturnsPackage()
     {
         var fs = new FileSystem();
-        var file = PackageReader.FromStream(fs.File.OpenRead("./TestFiles/Sample_VFX_Mod.pak")).Files[1];
+        using var s = fs.File.OpenRead("./TestFiles/Sample_VFX_Mod.pak");
+
+        var file = PackageReader.FromStream(s).Files[1];
         file.ArchivePart.Should().Be(0x0);
         file.Flags.Should().Be(0x12);
         file.IsDeleted.Should().Be(false);
@@ -39,7 +43,9 @@ public class PackageReaderTests
     public void FromStream_ValidLsxInPackageFile_ReturnsPackage()
     {
         var fs = new FileSystem();
-        var file = PackageReader.FromStream(fs.File.OpenRead("./TestFiles/Sample_VFX_Mod.pak")).Files[1];
+        using var s = fs.File.OpenRead("./TestFiles/Sample_VFX_Mod.pak");
+
+        var file = PackageReader.FromStream(s).Files[1];
         var lsx = () =>
         {
             using var stream = file.Open();
