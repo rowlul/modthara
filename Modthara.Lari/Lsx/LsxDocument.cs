@@ -23,10 +23,10 @@ public class LsxDocument
     /// <returns>
     /// Instance of <see cref="LsxDocument"/>. Returns null if serialized document was null.
     /// </returns>
-    public static LsxDocument? FromStream(Stream stream)
+    public static LsxDocument FromStream(Stream stream)
     {
         var serializer = new XmlSerializer(typeof(LsxDocument));
-        var document = (LsxDocument?)serializer.Deserialize(stream);
+        var document = (LsxDocument)serializer.Deserialize(stream)!;
         return document;
     }
 

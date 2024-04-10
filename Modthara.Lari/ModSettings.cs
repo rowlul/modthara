@@ -46,9 +46,7 @@ public class ModSettings : IModOrder
     public static ModSettings Read(string path, IFileStreamFactory fileStreamFactory)
     {
         using var file = fileStreamFactory.New(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-        return new ModSettings(
-            LsxDocument.FromStream(file) ??
-            throw new InvalidOperationException($"Document '{path}' was null."));
+        return new ModSettings(LsxDocument.FromStream(file));
     }
 
     /// <summary>
