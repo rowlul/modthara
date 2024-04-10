@@ -82,14 +82,7 @@ public class LsxNode
 
         List<Mod> modules = [];
         modules.AddRange(this.Children.Where(d => d.Id == "ModuleShortDesc")
-            .Select(module => new Mod
-            {
-                FolderName = module.GetAttributeValue("Folder"),
-                Md5 = module.GetAttributeValue("Md5", string.Empty),
-                Name = module.GetAttributeValue("Name"),
-                Uuid = module.GetUuid(),
-                Version = module.GetVersion()
-            }));
+            .Select(module => module.ToMod()));
 
         return modules;
     }
