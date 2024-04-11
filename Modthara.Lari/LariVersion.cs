@@ -20,6 +20,16 @@ public readonly struct LariVersion
     [XmlAttribute("build")]
     public uint Build { get; init; }
 
+    public LariVersion(ulong version)
+    {
+        this = FromUInt64(version);
+    }
+
+    public LariVersion(uint version)
+    {
+        this = FromUInt32(version);
+    }
+
     public static LariVersion FromUInt64(ulong version) => new()
     {
         Major = (uint)((version >> 55) & 0x7f),
