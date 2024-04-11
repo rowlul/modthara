@@ -1,6 +1,5 @@
 ﻿using System.IO.Abstractions;
 
-using Modthara.Lari.Abstractions;
 using Modthara.Lari.Lsx;
 
 namespace Modthara.Lari;
@@ -8,7 +7,7 @@ namespace Modthara.Lari;
 /// <summary>
 /// Represents the means to handling <c>modsettings.lsx</c>.
 /// </summary>
-public class ModSettings : IModOrder
+public class ModSettings
 {
     private readonly LsxDocument _document;
     private readonly LsxNode _modOrderNode;
