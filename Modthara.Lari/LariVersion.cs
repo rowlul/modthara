@@ -30,6 +30,14 @@ public readonly struct LariVersion
         this = FromUInt32(version);
     }
 
+    public LariVersion(uint major, uint minor, uint revision, uint build)
+    {
+        Major = major;
+        Minor = minor;
+        Revision = revision;
+        Build = build;
+    }
+
     public static LariVersion FromUInt64(ulong version) => new()
     {
         Major = (uint)((version >> 55) & 0x7f),
