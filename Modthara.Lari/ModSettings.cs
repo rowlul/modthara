@@ -36,6 +36,35 @@ public class ModSettings
     }
 
     /// <summary>
+    /// <inheritdoc cref="ModSettings"/>
+    /// </summary>
+    /// <param name="version">
+    /// Version of the new document.
+    /// </param>
+    public ModSettings(LariVersion version = default) : this(new LsxDocument
+    {
+        Version = version,
+        Regions =
+        [
+            new LsxRegion
+            {
+                Id = "ModuleSettings",
+                RootNode = new LsxNode
+                {
+                    Id = "root",
+                    Children =
+                    [
+                        new LsxNode { Id = "ModOrder", Children = [] },
+                        new LsxNode { Id = "Mods", Children = [] },
+                    ]
+                }
+            }
+        ]
+    })
+    {
+    }
+
+    /// <summary>
     /// Creates a new instance from file.
     /// </summary>
     /// <param name="path">Path to the file.</param>
