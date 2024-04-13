@@ -4,6 +4,8 @@ using Modthara.Lari.Lsx;
 
 namespace Modthara.Lari;
 
+using Index = int;
+
 /// <summary>
 /// Represents the means to handling <c>modsettings.lsx</c>.
 /// </summary>
@@ -120,9 +122,9 @@ public class ModSettings
     /// </summary>
     /// <param name="guid">UUID to search for.</param>
     /// <returns>Matched mod by UUID and its index in the order.</returns>
-    public (int?, Mod?) Find(Guid guid)
+    public (Index?, Mod?) Find(Guid guid)
     {
-        for (int i = 0; i < new[] { _modOrderNode.Children!.Count, _modsNode.Children!.Count, _mods.Count }.Min(); i++)
+        for (var i = 0; i < new[] { _modOrderNode.Children!.Count, _modsNode.Children!.Count, _mods.Count }.Min(); i++)
         {
             var modOrderUuid = _modOrderNode.Children[i].GetUuid();
             var modUuid = _modsNode.Children[i].GetUuid();
