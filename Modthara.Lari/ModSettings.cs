@@ -39,9 +39,12 @@ public class ModSettings
     /// Creates a new instance of <see cref="ModSettings"/> with empty mod order.
     /// </summary>
     /// <param name="version">
-    /// Version of the new document.
+    /// Version of the underlying <see cref="LsxDocument"/>.
     /// </param>
-    public ModSettings(LariVersion version = default) : this(new LsxDocument
+    /// <param name="mods">
+    /// Mods to be included.
+    /// </param>
+    public ModSettings(LariVersion version = default, IList<Mod>? mods = null) : this(new LsxDocument
     {
         Version = version,
         Regions =
@@ -62,6 +65,13 @@ public class ModSettings
         ]
     })
     {
+        if (mods != null)
+        {
+            foreach (var mod in mods)
+            {
+                this.Append(mod);
+            }
+        }
     }
 
     /// <summary>
