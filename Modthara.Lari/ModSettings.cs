@@ -17,10 +17,10 @@ public class ModSettings
     public IReadOnlyList<Mod> Mods => _mods;
 
     /// <summary>
-    /// <inheritdoc cref="ModSettings"/>
+    /// Creates a new instance of <see cref="ModSettings"/> by parsing <paramref name="document"/>.
     /// </summary>
     /// <param name="document">
-    /// Document containing <c>ModOrder</c> and <c>Mods</c> node under <c>ModuleSettings</c> region..
+    /// Document containing <c>ModOrder</c> and <c>Mods</c> node under <c>ModuleSettings</c> region.
     /// </param>
     public ModSettings(LsxDocument document)
     {
@@ -36,7 +36,7 @@ public class ModSettings
     }
 
     /// <summary>
-    /// <inheritdoc cref="ModSettings"/>
+    /// Creates a new instance of <see cref="ModSettings"/> with empty mod order.
     /// </summary>
     /// <param name="version">
     /// Version of the new document.
