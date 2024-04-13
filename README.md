@@ -1,9 +1,7 @@
 ﻿# Modthara
 
 Cross-platform Baldur's Gate 3 mod manager and library. Currently provides a documented and tested public API for reading
-PAK and LSX files, as well as handling mod order at `%LOCALAPPDATA%/Larian Studios/Baldur's Gate 3/PlayerProfiles/Public/modsettings.lsx`.
-GUI is planned to be developed with Avalonia UI with capabilities of obtaining mods directly from Nexus and per-save
-orders.
+PAK and LSX files, as well as handling mod order. GUI is planned to be developed with Avalonia UI ([#1](https://github.com/rowlul/modthara/issues/1)).
 
 ## Usage
 
