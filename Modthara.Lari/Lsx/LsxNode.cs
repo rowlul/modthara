@@ -99,7 +99,7 @@ public class LsxNode
             Author = this.GetAttributeValue("Author", string.Empty),
             Description = this.GetAttributeValue("Description", string.Empty),
             FolderName = this.GetAttributeValue("Folder"),
-            Md5 = this.GetAttributeValue("Md5", string.Empty),
+            Md5 = this.GetAttributeValue("MD5", string.Empty),
             Uuid = this.GetUuid(),
             Version = this.GetVersion(),
         };
