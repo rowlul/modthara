@@ -2,7 +2,7 @@
 
 namespace Modthara.App;
 
-sealed class Program
+static class Program
 {
     [STAThread]
     public static void Main(string[] args) => BuildAvaloniaApp()
