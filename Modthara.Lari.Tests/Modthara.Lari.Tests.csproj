@@ -39,5 +39,5 @@
     <ItemGroup>
         <ProjectReference Include="..\Modthara.Lari\Modthara.Lari.csproj" />
     </ItemGroup>
-F
+
 </Project>
