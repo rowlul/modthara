@@ -20,7 +20,7 @@ public class Router
         }
     }
 
-    protected readonly Func<Type, ViewModelBase> CreateViewModel;
+    protected Func<Type, ViewModelBase> CreateViewModel { get; }
 
     public event Action<ViewModelBase>? CurrentViewModelChanged;
 
