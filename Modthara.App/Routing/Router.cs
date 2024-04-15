@@ -2,7 +2,7 @@
 
 namespace Modthara.App.Routing;
 
-public class Router
+public class Router(Func<Type, ViewModelBase> createViewModel)
 {
     private ViewModelBase? _currentViewModel;
 
@@ -20,14 +20,9 @@ public class Router
         }
     }
 
-    protected Func<Type, ViewModelBase> CreateViewModel { get; }
+    protected Func<Type, ViewModelBase> CreateViewModel { get; } = createViewModel;
 
     public event Action<ViewModelBase>? CurrentViewModelChanged;
-
-    public Router(Func<Type, ViewModelBase> createViewModel)
-    {
-        CreateViewModel = createViewModel;
-    }
 
     public virtual ViewModelBase GoTo<TViewModel>() where TViewModel : ViewModelBase
     {

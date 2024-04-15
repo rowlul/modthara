@@ -2,17 +2,13 @@
 
 namespace Modthara.App.Routing;
 
-public class PaginatedRouter : Router
+public class PaginatedRouter(Func<Type, ViewModelBase> createViewModel) : Router(createViewModel)
 {
     private int _currentIndex = -1;
     private List<ViewModelBase> _viewModels = [];
 
     public bool HasNext => _viewModels.Count > 0 && _currentIndex < _viewModels.Count - 1;
     public bool HasPrevious => _currentIndex > 0;
-
-    public PaginatedRouter(Func<Type, ViewModelBase> createViewModel) : base(createViewModel)
-    {
-    }
 
     public void Push(ViewModelBase viewModel)
     {
