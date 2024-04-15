@@ -9,6 +9,6 @@
     </Application.DataTemplates>
 
     <Application.Styles>
-        <FluentTheme />
+        <StyleInclude Source="avares://Semi.Avalonia/Themes/Index.axaml" />
     </Application.Styles>
 </Application>

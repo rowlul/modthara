@@ -19,7 +19,7 @@
     <ItemGroup>
         <PackageReference Include="Avalonia" />
         <PackageReference Include="Avalonia.Desktop" />
-        <PackageReference Include="Avalonia.Themes.Fluent" />
+        <PackageReference Include="Semi.Avalonia" />
         <PackageReference Include="Avalonia.Fonts.Inter" />
         <PackageReference Include="CommunityToolkit.Mvvm" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
