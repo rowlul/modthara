@@ -22,7 +22,7 @@ public partial class MainViewModel : ViewModelBase
 
     partial void OnSelectedItemChanged(SidebarPaneItemViewModel? value)
     {
-        // TODO: Use keyed services or recursion for navigation
+        // TODO: Use keyed services or reflection for navigation
         switch (value?.Route)
         {
             case "home":
