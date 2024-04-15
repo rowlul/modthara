@@ -1,12 +1,14 @@
-﻿using Modthara.App.ViewModels;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
+using Modthara.App.ViewModels;
 
 namespace Modthara.App.Routing;
 
-public class Router(Func<Type, ViewModelBase> createViewModel)
+public class Router<TViewModelBase>(Func<Type, ViewModelBase> createViewModel) where TViewModelBase : ObservableObject
 {
-    private ViewModelBase? _currentViewModel;
+    private TViewModelBase? _currentViewModel;
 
-    protected ViewModelBase CurrentViewModel
+    protected TViewModelBase CurrentViewModel
     {
         set
         {
@@ -22,9 +24,9 @@ public class Router(Func<Type, ViewModelBase> createViewModel)
 
     protected Func<Type, ViewModelBase> CreateViewModel { get; } = createViewModel;
 
-    public event Action<ViewModelBase>? CurrentViewModelChanged;
+    public event Action<TViewModelBase>? CurrentViewModelChanged;
 
-    public virtual ViewModelBase GoTo<TViewModel>() where TViewModel : ViewModelBase
+    public virtual TViewModel GoTo<TViewModel>() where TViewModel : TViewModelBase
     {
         var viewModel = InstantiateViewModel<TViewModel>();
         CurrentViewModel = viewModel;
@@ -32,12 +34,12 @@ public class Router(Func<Type, ViewModelBase> createViewModel)
         return viewModel;
     }
 
-    protected TViewModel InstantiateViewModel<TViewModel>() where TViewModel : ViewModelBase
+    protected TViewModel InstantiateViewModel<TViewModel>() where TViewModel : TViewModelBase
     {
         return (TViewModel)Convert.ChangeType(CreateViewModel(typeof(TViewModel)), typeof(TViewModel));
     }
 
-    private void OnCurrentViewModelChanged(ViewModelBase viewModel)
+    private void OnCurrentViewModelChanged(TViewModelBase viewModel)
     {
         CurrentViewModelChanged?.Invoke(viewModel);
     }

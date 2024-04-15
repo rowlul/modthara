@@ -1,16 +1,19 @@
-﻿using Modthara.App.ViewModels;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
+using Modthara.App.ViewModels;
 
 namespace Modthara.App.Routing;
 
-public class PaginatedRouter(Func<Type, ViewModelBase> createViewModel) : Router(createViewModel)
+public class PaginatedRouter<TViewModelBase>(Func<Type, ViewModelBase> createViewModel)
+    : Router<TViewModelBase>(createViewModel) where TViewModelBase : ObservableObject
 {
     private int _currentIndex = -1;
-    private List<ViewModelBase> _viewModels = [];
+    private List<TViewModelBase> _viewModels = [];
 
     public bool HasNext => _viewModels.Count > 0 && _currentIndex < _viewModels.Count - 1;
     public bool HasPrevious => _currentIndex > 0;
 
-    public void Push(ViewModelBase viewModel)
+    public void Push(TViewModelBase viewModel)
     {
         if (HasNext)
         {
@@ -25,7 +28,7 @@ public class PaginatedRouter(Func<Type, ViewModelBase> createViewModel) : Router
         }
     }
 
-    public ViewModelBase? Go(int offset)
+    public TViewModelBase? Go(int offset)
     {
         if (offset == 0)
         {
@@ -46,12 +49,12 @@ public class PaginatedRouter(Func<Type, ViewModelBase> createViewModel) : Router
         return viewModel;
     }
 
-    public ViewModelBase? Back() => HasPrevious ? Go(-1) : null;
-    public ViewModelBase? Forward() => HasNext ? Go(1) : null;
+    public TViewModelBase? Back() => HasPrevious ? Go(-1) : null;
+    public TViewModelBase? Forward() => HasNext ? Go(1) : null;
 
-    public override ViewModelBase GoTo<TViewModel>()
+    public override TViewModel GoTo<TViewModel>()
     {
-        var viewModel = InstantiateViewModel<ViewModelBase>();
+        var viewModel = InstantiateViewModel<TViewModel>();
         CurrentViewModel = viewModel;
         Push(viewModel);
 

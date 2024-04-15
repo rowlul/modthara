@@ -9,10 +9,8 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     private ViewModelBase? _content;
 
-    public MainViewModel(Router router)
+    public MainViewModel(Router<ViewModelBase> router)
     {
         router.CurrentViewModelChanged += viewModel => Content = viewModel;
-
-        router.GoTo<BlankViewModel>();
     }
 }

@@ -41,8 +41,10 @@ public partial class App : Application
     {
         var services = new ServiceCollection();
 
-        services.AddSingleton<Router>(s => new Router(v => (ViewModelBase)s.GetRequiredService(v)));
-        services.AddSingleton<PaginatedRouter>(s => new PaginatedRouter(v => (ViewModelBase)s.GetRequiredService(v)));
+        services.AddSingleton<Router<ViewModelBase>>(s =>
+            new Router<ViewModelBase>(v => (ViewModelBase)s.GetRequiredService(v)));
+        services.AddSingleton<PaginatedRouter<ViewModelBase>>(s =>
+            new PaginatedRouter<ViewModelBase>(v => (ViewModelBase)s.GetRequiredService(v)));
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<BlankViewModel>();
 
