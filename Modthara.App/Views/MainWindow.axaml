@@ -3,10 +3,59 @@
         xmlns:vm="using:Modthara.App.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:i="https://github.com/projektanker/icons.avalonia"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="450"
         x:Class="Modthara.App.Views.MainWindow"
         x:DataType="vm:MainViewModel"
         Title="Modthara.App">
 
-    <ContentControl Content="{Binding Content}" />
+    <Grid>
+        <SplitView Name="SidebarMenu"
+                   OpenPaneLength="300"
+                   CompactPaneLength="48"
+                   DisplayMode="CompactInline">
+            <SplitView.Pane>
+                <StackPanel>
+                    <Grid ColumnDefinitions="Auto * Auto">
+                        <ToggleSwitch Name="PaneToggle"
+                                      Margin="0 20"
+                                      Theme="{DynamicResource ButtonToggleSwitch}"
+                                      IsChecked="{Binding #SidebarMenu.IsPaneOpen}">
+                            <ToggleSwitch.OnContent>
+                                <i:Icon Value="fa-solid fa-bars-staggered" />
+                            </ToggleSwitch.OnContent>
+                            <ToggleSwitch.OffContent>
+                                <i:Icon Value="fa-solid fa-bars" />
+                            </ToggleSwitch.OffContent>
+                        </ToggleSwitch>
+                        <ComboBox Grid.Column="2"
+                                  Classes="Bordered"
+                                  SelectedIndex="0"
+                                  VerticalAlignment="Center"
+                                  MaxWidth="200"
+                                  Margin="5 5 20 0"
+                                  PlaceholderText="Mod order">
+                        </ComboBox>
+                    </Grid>
+                    <ListBox ItemsSource="{Binding SidebarPaneItems}"
+                             SelectedItem="{Binding SelectedItem}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type vm:SidebarPaneItemViewModel}">
+                                <Grid ColumnDefinitions="30, 12, *" Height="36">
+                                    <i:Icon Value="{Binding IconValue}" />
+                                    <TextBlock Grid.Column="2"
+                                               VerticalAlignment="Center"
+                                               FontWeight="Medium"
+                                               Text="{Binding Header}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+            </SplitView.Pane>
+            <SplitView.Content>
+                <TransitioningContentControl Grid.Row="1" Content="{Binding Content}" />
+            </SplitView.Content>
+        </SplitView>
+    </Grid>
 </Window>
