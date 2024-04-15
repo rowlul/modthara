@@ -46,7 +46,13 @@ public partial class App : Application
         services.AddSingleton<PaginatedRouter<ViewModelBase>>(s =>
             new PaginatedRouter<ViewModelBase>(v => (ViewModelBase)s.GetRequiredService(v)));
         services.AddSingleton<MainViewModel>();
-        services.AddSingleton<BlankViewModel>();
+        services.AddTransient<BlankViewModel>();
+        services.AddTransient<HomeViewModel>();
+        services.AddTransient<PackagesViewModel>();
+        services.AddTransient<OverridesView>();
+        services.AddTransient<NativeModsView>();
+        services.AddTransient<SettingsView>();
+        services.AddTransient<AboutView>();
 
         return services.BuildServiceProvider();
     }
