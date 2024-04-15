@@ -49,10 +49,10 @@ public partial class App : Application
         services.AddTransient<BlankViewModel>();
         services.AddTransient<HomeViewModel>();
         services.AddTransient<PackagesViewModel>();
-        services.AddTransient<OverridesView>();
-        services.AddTransient<NativeModsView>();
-        services.AddTransient<SettingsView>();
-        services.AddTransient<AboutView>();
+        services.AddTransient<OverridesViewModel>();
+        services.AddTransient<NativeModsViewModel>();
+        services.AddTransient<SettingsViewModel>();
+        services.AddTransient<AboutViewModel>();
 
         return services.BuildServiceProvider();
     }
