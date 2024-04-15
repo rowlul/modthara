@@ -21,8 +21,8 @@
         <PackageReference Include="Avalonia.Desktop" />
         <PackageReference Include="Avalonia.Themes.Fluent" />
         <PackageReference Include="Avalonia.Fonts.Inter" />
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+        <PackageReference Include="CommunityToolkit.Mvvm" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
 
         <PackageReference Include="Avalonia.Diagnostics"
                           Condition="'$(Configuration)' == 'Debug'" />
