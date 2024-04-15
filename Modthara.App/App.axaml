@@ -1,11 +1,11 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Modthara.App.App"
-             xmlns:local="using:Modthara.App"
+             xmlns:routing="clr-namespace:Modthara.App.Routing"
              RequestedThemeVariant="Default">
 
     <Application.DataTemplates>
-        <local:ViewLocator />
+        <routing:ViewLocator />
     </Application.DataTemplates>
 
     <Application.Styles>
