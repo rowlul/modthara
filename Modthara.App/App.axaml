@@ -4,11 +4,21 @@
              xmlns:routing="clr-namespace:Modthara.App.Routing"
              RequestedThemeVariant="Default">
 
+    <Application.Resources>
+        <FontFamily x:Key="ContentControlThemeFontFamily">fonts:Inter#Inter</FontFamily>
+        <x:Double x:Key="ControlContentThemeFontSize">13</x:Double>
+    </Application.Resources>
+
     <Application.DataTemplates>
         <routing:ViewLocator />
     </Application.DataTemplates>
 
     <Application.Styles>
         <StyleInclude Source="avares://Semi.Avalonia/Themes/Index.axaml" />
+
+        <Style Selector="Window">
+            <Setter Property="FontSize" Value="{DynamicResource ControlContentThemeFontSize}" />
+            <Setter Property="FontFamily" Value="{DynamicResource ContentControlThemeFontFamily}" />
+        </Style>
     </Application.Styles>
 </Application>
