@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
+using Modthara.App.Models;
 using Modthara.App.Routing;
 
 namespace Modthara.App.ViewModels;
@@ -8,12 +9,12 @@ public partial class MainViewModel : ViewModelBase
 {
     private readonly Router<ViewModelBase> _router;
 
-    [ObservableProperty] private SidebarItemViewModel? _selectedItem;
+    [ObservableProperty] private SidebarItem? _selectedItem;
 
     [ObservableProperty]
     private ViewModelBase? _content;
 
-    public static IReadOnlyList<SidebarItemViewModel> SidebarItems => [
+    public static IReadOnlyList<SidebarItem> SidebarItems => [
         // TODO: implement home view
         // new("Home", "home", "fa-solid fa-home"),
         new("Packages", "packages", "fa-solid fa-box"),
@@ -33,7 +34,7 @@ public partial class MainViewModel : ViewModelBase
         SelectedItem = SidebarItems[0];
     }
 
-    partial void OnSelectedItemChanged(SidebarItemViewModel? value)
+    partial void OnSelectedItemChanged(SidebarItem? value)
     {
         switch (value?.Route)
         {
