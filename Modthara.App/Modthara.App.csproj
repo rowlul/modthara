@@ -21,6 +21,7 @@
         <PackageReference Include="Avalonia.Desktop" />
         <PackageReference Include="Avalonia.Fonts.Inter" />
         <PackageReference Include="Avalonia.Controls.DataGrid" />
+        <PackageReference Include="Avalonia.Xaml.Behaviors" />
         <PackageReference Include="Semi.Avalonia" />
         <PackageReference Include="Semi.Avalonia.DataGrid" />
         <PackageReference Include="Projektanker.Icons.Avalonia" />
