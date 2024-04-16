@@ -15,7 +15,7 @@ public class Mod
     public Guid Uuid { get; set; } = Guid.NewGuid();
     public LariVersion Version { get; set; } = 36028797018963968UL;
     public IList<Mod> Dependencies { get; set; } = [];
-    public bool IsEnabled { get; set; }
+    public bool IsEnabled { get; internal set; }
 
     /// <summary>
     /// Creates a new instance from <see cref="LsxDocument"/>.
