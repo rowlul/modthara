@@ -8,12 +8,12 @@ public partial class MainViewModel : ViewModelBase
 {
     private readonly Router<ViewModelBase> _router;
 
-    [ObservableProperty] private SidebarPaneItemViewModel? _selectedItem;
+    [ObservableProperty] private SidebarItemViewModel? _selectedItem;
 
     [ObservableProperty]
     private ViewModelBase? _content;
 
-    public static IReadOnlyList<SidebarPaneItemViewModel> SidebarItems => [
+    public static IReadOnlyList<SidebarItemViewModel> SidebarItems => [
         new("Home", "home", "fa-solid fa-home"),
         new("Packages", "packages", "fa-solid fa-box"),
         new("Overrides", "overrides", "fa-solid fa-folder"),
@@ -29,7 +29,7 @@ public partial class MainViewModel : ViewModelBase
         router.CurrentViewModelChanged += viewModel => Content = viewModel;
     }
 
-    partial void OnSelectedItemChanged(SidebarPaneItemViewModel? value)
+    partial void OnSelectedItemChanged(SidebarItemViewModel? value)
     {
         switch (value?.Route)
         {

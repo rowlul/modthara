@@ -39,7 +39,7 @@
                     <ListBox ItemsSource="{Binding SidebarItems}"
                              SelectedItem="{Binding SelectedItem}">
                         <ListBox.ItemTemplate>
-                            <DataTemplate DataType="{x:Type vm:SidebarPaneItemViewModel}">
+                            <DataTemplate DataType="{x:Type vm:SidebarItemViewModel}">
                                 <Grid ColumnDefinitions="30, 12, *" Height="36">
                                     <i:Icon Value="{Binding IconValue}" />
                                     <TextBlock Grid.Column="2"
