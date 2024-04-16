@@ -16,7 +16,7 @@
                    DisplayMode="CompactInline">
             <SplitView.Pane>
                 <StackPanel Margin="0 20">
-                    <Grid ColumnDefinitions="Auto * Auto 15" Margin="0 0 0 20">
+                    <Grid ColumnDefinitions="Auto * 5 Auto 15" Margin="0 0 0 20">
                         <ToggleSwitch Name="PaneToggle"
                                       Theme="{DynamicResource ButtonToggleSwitch}"
                                       IsChecked="{Binding #SidebarMenu.IsPaneOpen}">
@@ -27,7 +27,7 @@
                                 <i:Icon Value="fa-solid fa-bars" />
                             </ToggleSwitch.OffContent>
                         </ToggleSwitch>
-                        <ComboBox Grid.Column="2"
+                        <ComboBox Grid.Column="3"
                                   Classes="Bordered"
                                   SelectedIndex="0"
                                   VerticalAlignment="Center"
