@@ -15,10 +15,9 @@
                    CompactPaneLength="48"
                    DisplayMode="CompactInline">
             <SplitView.Pane>
-                <StackPanel>
-                    <Grid ColumnDefinitions="Auto * Auto">
+                <StackPanel Margin="0, 20">
+                    <Grid ColumnDefinitions="Auto * Auto" Margin="0 0 0 20">
                         <ToggleSwitch Name="PaneToggle"
-                                      Margin="0 20"
                                       Theme="{DynamicResource ButtonToggleSwitch}"
                                       IsChecked="{Binding #SidebarMenu.IsPaneOpen}">
                             <ToggleSwitch.OnContent>
@@ -37,7 +36,7 @@
                                   PlaceholderText="Mod order">
                         </ComboBox>
                     </Grid>
-                    <ListBox ItemsSource="{Binding SidebarPaneItems}"
+                    <ListBox ItemsSource="{Binding SidebarItems}"
                              SelectedItem="{Binding SelectedItem}">
                         <ListBox.ItemTemplate>
                             <DataTemplate DataType="{x:Type vm:SidebarPaneItemViewModel}">

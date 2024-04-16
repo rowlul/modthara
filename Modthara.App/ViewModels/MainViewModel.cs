@@ -8,8 +8,12 @@ public partial class MainViewModel : ViewModelBase
 {
     private readonly Router<ViewModelBase> _router;
 
+    [ObservableProperty] private SidebarPaneItemViewModel? _selectedItem;
+
     [ObservableProperty]
-    private IReadOnlyList<SidebarPaneItemViewModel> _sidebarPaneItems = [
+    private ViewModelBase? _content;
+
+    public static IReadOnlyList<SidebarPaneItemViewModel> SidebarItems => [
         new("Home", "home", "fa-solid fa-home"),
         new("Packages", "packages", "fa-solid fa-box"),
         new("Overrides", "overrides", "fa-solid fa-folder"),
@@ -18,11 +22,15 @@ public partial class MainViewModel : ViewModelBase
         new("About", "about", "fa-solid fa-circle-info")
     ];
 
-    [ObservableProperty] private SidebarPaneItemViewModel? _selectedItem;
+    public MainViewModel(Router<ViewModelBase> router)
+    {
+        _router = router;
+
+        router.CurrentViewModelChanged += viewModel => Content = viewModel;
+    }
 
     partial void OnSelectedItemChanged(SidebarPaneItemViewModel? value)
     {
-        // TODO: Use keyed services or reflection for navigation
         switch (value?.Route)
         {
             case "home":
@@ -43,19 +51,6 @@ public partial class MainViewModel : ViewModelBase
             case "about":
                 _router.GoTo<AboutViewModel>();
                 break;
-            default:
-                _router.GoTo<BlankViewModel>();
-                break;
         }
-    }
-
-    [ObservableProperty]
-    private ViewModelBase? _content;
-
-    public MainViewModel(Router<ViewModelBase> router)
-    {
-        _router = router;
-
-        router.CurrentViewModelChanged += viewModel => Content = viewModel;
     }
 }
