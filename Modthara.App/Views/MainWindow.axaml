@@ -16,7 +16,7 @@
                    DisplayMode="CompactInline">
             <SplitView.Pane>
                 <StackPanel Margin="0 20">
-                    <Grid ColumnDefinitions="Auto * 5 Auto 15" Margin="0 0 0 20">
+                    <Grid ColumnDefinitions="Auto * 15 Auto 15" Margin="0 0 0 20">
                         <ToggleSwitch Name="PaneToggle"
                                       Theme="{DynamicResource ButtonToggleSwitch}"
                                       IsChecked="{Binding #SidebarMenu.IsPaneOpen}">
