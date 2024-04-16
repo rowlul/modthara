@@ -27,6 +27,7 @@ public partial class MainViewModel : ViewModelBase
         _router = router;
 
         router.CurrentViewModelChanged += viewModel => Content = viewModel;
+        SelectedItem = SidebarItems[0];
     }
 
     partial void OnSelectedItemChanged(SidebarItemViewModel? value)
