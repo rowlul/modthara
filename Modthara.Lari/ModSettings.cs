@@ -15,8 +15,8 @@ public class ModSettings
     private readonly LsxNode _modOrderNode;
     private readonly LsxNode _modsNode;
 
-    private List<Mod> _mods;
-    public IReadOnlyList<Mod> Mods => _mods;
+    private List<ModMetadata> _mods;
+    public IReadOnlyList<ModMetadata> Mods => _mods;
 
     /// <summary>
     /// Creates a new instance of <see cref="ModSettings"/> by parsing <paramref name="document"/>.
@@ -46,7 +46,7 @@ public class ModSettings
     /// <param name="mods">
     /// Mods to be included.
     /// </param>
-    public ModSettings(LariVersion version = default, IList<Mod>? mods = null) : this(new LsxDocument
+    public ModSettings(LariVersion version = default, IList<ModMetadata>? mods = null) : this(new LsxDocument
     {
         Version = version,
         Regions =
@@ -149,7 +149,7 @@ public class ModSettings
     /// </summary>
     /// <param name="guid">UUID to search for.</param>
     /// <returns>Matched mod by UUID and its index in the order.</returns>
-    public (Index?, Mod?) Find(Guid guid)
+    public (Index?, ModMetadata?) Find(Guid guid)
     {
         for (var i = 0; i < new[] { _modOrderNode.Children!.Count, _modsNode.Children!.Count, _mods.Count }.Min(); i++)
         {
@@ -158,7 +158,7 @@ public class ModSettings
 
             if (modOrderUuid == guid && modUuid == guid && _mods[i].Uuid == guid)
             {
-                return (i, _modsNode.Children[i].ToMod());
+                return (i, _modsNode.Children[i].ToModMetadata());
             }
         }
 
@@ -169,33 +169,33 @@ public class ModSettings
     /// Inserts mod at specified index.
     /// </summary>
     /// <param name="index">Index of the mod.</param>
-    /// <param name="mod">Mod to be inserted.</param>
-    public void Insert(int index, Mod mod)
+    /// <param name="modMetadata">Mod to be inserted.</param>
+    public void Insert(int index, ModMetadata modMetadata)
     {
-        _modOrderNode.Children!.Insert(index, mod.ToModule());
-        _modsNode.Children!.Insert(index, mod.ToModuleShortDesc());
-        _mods.Insert(index, mod);
+        _modOrderNode.Children!.Insert(index, modMetadata.ToModule());
+        _modsNode.Children!.Insert(index, modMetadata.ToModuleShortDesc());
+        _mods.Insert(index, modMetadata);
     }
 
     /// <summary>
     /// Appends mod at the end of the list.
     /// </summary>
-    /// <param name="mod">Mod to be appended.</param>
-    public void Append(Mod mod)
+    /// <param name="modMetadata">Mod to be appended.</param>
+    public void Append(ModMetadata modMetadata)
     {
-        _modOrderNode.Children!.Add(mod.ToModule());
-        _modsNode.Children!.Add(mod.ToModuleShortDesc());
-        _mods.Add(mod);
+        _modOrderNode.Children!.Add(modMetadata.ToModule());
+        _modsNode.Children!.Add(modMetadata.ToModuleShortDesc());
+        _mods.Add(modMetadata);
     }
 
     /// <summary>
     /// Removes mod from the list.
     /// </summary>
-    /// <param name="mod">Mod to be removed.</param>
-    public void Remove(Mod mod)
+    /// <param name="modMetadata">Mod to be removed.</param>
+    public void Remove(ModMetadata modMetadata)
     {
-        _modOrderNode.Children!.Remove(mod.ToModule());
-        _modsNode.Children!.Remove(mod.ToModuleShortDesc());
-        _mods.Remove(mod);
+        _modOrderNode.Children!.Remove(modMetadata.ToModule());
+        _modsNode.Children!.Remove(modMetadata.ToModuleShortDesc());
+        _mods.Remove(modMetadata);
     }
 }

@@ -5,9 +5,9 @@ namespace Modthara.Lari.Tests;
 
 public class ModSettingsTests
 {
-    private static readonly List<Mod> Mods =
+    private static readonly List<ModMetadata> Mods =
     [
-        new Mod
+        new ModMetadata
         {
             FolderName = "GustavDev",
             Md5 = "e41378521136e6646b5491305373f538",
@@ -15,7 +15,7 @@ public class ModSettingsTests
             Uuid = new Guid("28ac9ce2-2aba-8cda-b3b5-6e922f71b6b8"),
             Version = 144961330997915191
         },
-        new Mod
+        new ModMetadata
         {
             FolderName = "ModtharaTest",
             Md5 = "",
@@ -90,7 +90,7 @@ public class ModSettingsTests
     public void Find_MissingMod_ReturnsNullNullTuple()
     {
         var order = new ModSettings();
-        (int?, Mod?) expected = (null, null);
+        (int?, ModMetadata?) expected = (null, null);
         var actual = order.Find(Mods[1].Uuid);
         actual.Should().BeEquivalentTo(expected);
     }

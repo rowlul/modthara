@@ -4,7 +4,7 @@ using Modthara.Lari.Lsx;
 
 namespace Modthara.Lari.Tests;
 
-public class ModTests
+public class ModMetadataTests
 {
     [Fact]
     public void FromLsx_ExampleMeta_ReturnsMod()
@@ -13,7 +13,7 @@ public class ModTests
         using var s = fs.File.OpenRead("./TestFiles/meta.lsx");
         var lsx = LsxDocument.FromStream(s);
 
-        var expected = new Mod
+        var expected = new ModMetadata
         {
             Name = "Modthara test mod",
             Author = "rowlul",
@@ -23,7 +23,7 @@ public class ModTests
             Uuid = new Guid("adc05d68-6d4e-4763-9724-ac47bfb68c7b"),
             Version = 36028797018963968UL,
             Dependencies = [
-                new Mod
+                new ModMetadata
                 {
                     FolderName = "SharedDev",
                     Md5 = "",
@@ -34,7 +34,7 @@ public class ModTests
             ]
         };
 
-        var actual = Mod.FromLsx(lsx);
+        var actual = ModMetadata.FromLsx(lsx);
         actual.Should().BeEquivalentTo(expected);
     }
 }

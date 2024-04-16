@@ -5,7 +5,7 @@ namespace Modthara.Lari;
 /// <summary>
 /// Represents <c>meta.lsx</c> of a mod.
 /// </summary>
-public class Mod
+public class ModMetadata
 {
     public required string Name { get; set; }
     public string? Author { get; set; } = string.Empty;
@@ -14,16 +14,16 @@ public class Mod
     public string Md5 { get; set; } = string.Empty;
     public Guid Uuid { get; set; } = Guid.NewGuid();
     public LariVersion Version { get; set; } = 36028797018963968UL;
-    public IList<Mod> Dependencies { get; set; } = [];
+    public IList<ModMetadata> Dependencies { get; set; } = [];
 
     /// <summary>
     /// Creates a new instance from <see cref="LsxDocument"/>.
     /// </summary>
     /// <param name="document">Document containing the <c>ModuleInfo</c> node under <c>Config</c> region.</param>
-    /// <returns>Instance of <see cref="Mod"/>.</returns>
-    public static Mod FromLsx(LsxDocument document)
+    /// <returns>Instance of <see cref="ModMetadata"/>.</returns>
+    public static ModMetadata FromLsx(LsxDocument document)
     {
-        var mod = document.FindNodeInRoot("Config", "ModuleInfo").ToMod();
+        var mod = document.FindNodeInRoot("Config", "ModuleInfo").ToModMetadata();
         mod.Dependencies = document.FindNodeInRoot("Config", "Dependencies").GetModules();
 
         return mod;

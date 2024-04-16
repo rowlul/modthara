@@ -73,27 +73,27 @@ public class LsxNode
     /// Gets a list of <c>ModuleShortDesc</c> nodes.
     /// </summary>
     /// <returns>List of mods.</returns>
-    public List<Mod> GetModules()
+    public List<ModMetadata> GetModules()
     {
         if (this.Children == null)
         {
             return [];
         }
 
-        List<Mod> modules = [];
+        List<ModMetadata> modules = [];
         modules.AddRange(this.Children.Where(d => d.Id == "ModuleShortDesc")
-            .Select(module => module.ToMod()));
+            .Select(module => module.ToModMetadata()));
 
         return modules;
     }
 
     /// <summary>
-    /// Converts node to <see cref="Mod"/>.
+    /// Converts node to <see cref="ModMetadata"/>.
     /// </summary>
-    /// <returns>Instance of <see cref="Mod"/>.</returns>
-    public Mod ToMod()
+    /// <returns>Instance of <see cref="ModMetadata"/>.</returns>
+    public ModMetadata ToModMetadata()
     {
-        var mod = new Mod
+        var mod = new ModMetadata
         {
             Name = this.GetAttributeValue("Name"),
             Author = this.GetAttributeValue("Author", string.Empty),
