@@ -13,7 +13,8 @@ public class ModSettingsTests
             Md5 = "e41378521136e6646b5491305373f538",
             Name = "GustavDev",
             Uuid = new Guid("28ac9ce2-2aba-8cda-b3b5-6e922f71b6b8"),
-            Version = 144961330997915191
+            Version = 144961330997915191,
+            IsEnabled = true
         },
         new Mod
         {
@@ -21,7 +22,8 @@ public class ModSettingsTests
             Md5 = "",
             Name = "Modthara test mod",
             Uuid = new Guid("adc05d68-6d4e-4763-9724-ac47bfb68c7b"),
-            Version = 36028797018963968
+            Version = 36028797018963968,
+            IsEnabled = true
         }
     ];
 
@@ -32,11 +34,12 @@ public class ModSettingsTests
 
         var fs = new FileSystem();
         var actual = ModSettings.Read("./TestFiles/modsettings_sanitized.lsx", fs.FileStream);
-        actual.Should().BeEquivalentTo(expected);
+        actual.Should().BeEquivalentTo(expected,
+            o => o.For(m => m.Mods).Exclude(x => x.IsEnabled));
     }
 
     [Fact]
-    public void Write_EmptyOrder()
+    public void Write_EmptyOrder_CreatesModSettingsFile()
     {
         const string expected =
             """
@@ -66,7 +69,6 @@ public class ModSettingsTests
     [Theory]
     [InlineData("duplicates")]
     [InlineData("order")]
-    [InlineData("unpaired", Skip = "Not yet implemented")] // TODO: Implement unpaired sanitization
     public void Sanitize_UnsanitizedLsx_ReturnsModSettings(string variation)
     {
         var expected = new ModSettings(new LariVersion(4, 0, 9, 331), Mods);
@@ -78,20 +80,20 @@ public class ModSettingsTests
     }
 
     [Fact]
-    public void Find_ExistingMod_ReturnsIndexModTuple()
+    public void FindOrdered_ExistingMod_ReturnsIndexModTuple()
     {
         var order = new ModSettings(new LariVersion(4, 0, 9, 331), Mods);
         var expected = (1, Mods[1]);
-        var actual = order.Find(Mods[1].Uuid);
-        actual.Should().BeEquivalentTo(expected);
+        var actual = order.FindOrdered(Mods[1].Uuid);
+        actual.Should().BeEquivalentTo(expected, o => o.Excluding(x => x.Item2.IsEnabled));
     }
 
     [Fact]
-    public void Find_MissingMod_ReturnsNullNullTuple()
+    public void FindOrdered_MissingMod_ReturnsNullNullTuple()
     {
         var order = new ModSettings();
         (int?, Mod?) expected = (null, null);
-        var actual = order.Find(Mods[1].Uuid);
+        var actual = order.FindOrdered(Mods[1].Uuid);
         actual.Should().BeEquivalentTo(expected);
     }
 }

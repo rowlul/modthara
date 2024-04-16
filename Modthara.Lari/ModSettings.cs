@@ -130,7 +130,7 @@ public class ModSettings
 
     /// <summary>
     /// Sanitizes the mod list in the correct order according to <c>ModOrder</c> node.
-    /// Removes any duplicates or single unpaired module nodes.
+    /// Removes any duplicates.
     /// </summary>
     public void Sanitize()
     {
@@ -142,6 +142,16 @@ public class ModSettings
         _mods = _mods.DistinctBy(x => x.Uuid)
             .OrderBy(m => _modOrderNode.Children.FindIndex(o => o.GetUuid() == m.Uuid))
             .ToList();
+
+        foreach (var mod in _mods)
+        {
+            mod.IsEnabled = _modsNode.Children.Any(modNode =>
+                Guid.Parse(modNode.GetAttributeValue("UUID")) == mod.Uuid
+                && _modOrderNode.Children.Any(modOrderNode =>
+                    Guid.Parse(modOrderNode.GetAttributeValue("UUID")) == mod.Uuid
+                )
+            );
+        }
     }
 
     /// <summary>
@@ -149,7 +159,7 @@ public class ModSettings
     /// </summary>
     /// <param name="guid">UUID to search for.</param>
     /// <returns>Matched mod by UUID and its index in the order.</returns>
-    public (Index?, Mod?) Find(Guid guid)
+    public (Index?, Mod?) FindOrdered(Guid guid)
     {
         for (var i = 0; i < new[] { _modOrderNode.Children!.Count, _modsNode.Children!.Count, _mods.Count }.Min(); i++)
         {
@@ -163,6 +173,69 @@ public class ModSettings
         }
 
         return (null, null);
+    }
+
+    /// <summary>
+    /// Finds mod by UUID without order.
+    /// </summary>
+    /// <param name="guid">UUID to search for.</param>
+    /// <returns>Matched mod by UUID and its index <c>Mods</c> node.</returns>
+    public (Index?, Mod?) Find(Guid guid)
+    {
+        for (var i = 0; i < Math.Min(_modsNode.Children!.Count, _mods.Count); i++)
+        {
+            var modUuid = _modsNode.Children[i].GetUuid();
+            if (modUuid == guid && _mods[i].Uuid == guid)
+            {
+                return (i, _modsNode.Children[i].ToMod());
+            }
+        }
+
+        return (null, null);
+    }
+
+    /// <summary>
+    /// Enables mod in the order.
+    /// </summary>
+    /// <param name="guid">UUID of the mod to enable.</param>
+    public void Enable(Guid guid)
+    {
+        var (idx, mod) = Find(guid);
+
+        if (idx == null || mod == null)
+        {
+            return;
+        }
+
+        if (mod.IsEnabled)
+        {
+            return;
+        }
+
+        _modOrderNode.Children!.Insert(idx.Value, mod.ToModule());
+        mod.IsEnabled = true;
+    }
+
+    /// <summary>
+    /// Disables mod in the order.
+    /// </summary>
+    /// <param name="guid">UUID of the mod to enable.</param>
+    public void Disable(Guid guid)
+    {
+        var (idx, mod) = Find(guid);
+
+        if (idx == null || mod == null)
+        {
+            return;
+        }
+
+        if (!mod.IsEnabled)
+        {
+            return;
+        }
+
+        _modOrderNode.Children!.RemoveAt(idx.Value);
+        mod.IsEnabled = false;
     }
 
     /// <summary>
