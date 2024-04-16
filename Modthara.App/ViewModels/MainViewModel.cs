@@ -14,12 +14,15 @@ public partial class MainViewModel : ViewModelBase
     private ViewModelBase? _content;
 
     public static IReadOnlyList<SidebarItemViewModel> SidebarItems => [
-        new("Home", "home", "fa-solid fa-home"),
+        // TODO: implement home view
+        // new("Home", "home", "fa-solid fa-home"),
         new("Packages", "packages", "fa-solid fa-box"),
+#if DEBUG // TODO: implement the rest of the views
         new("Overrides", "overrides", "fa-solid fa-folder"),
         new("Native Mods", "nativeMods", "fa-solid fa-cubes"),
         new("Settings", "settings", "fa-solid fa-wrench"),
         new("About", "about", "fa-solid fa-circle-info")
+#endif
     ];
 
     public MainViewModel(Router<ViewModelBase> router)
