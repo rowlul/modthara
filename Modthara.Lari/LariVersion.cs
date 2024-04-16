@@ -30,7 +30,7 @@ public readonly struct LariVersion
         this = FromUInt32(version);
     }
 
-    public LariVersion(uint major, uint minor, uint revision, uint build)
+    public LariVersion(uint major, uint minor = 0, uint revision = 0, uint build = 0)
     {
         Major = major;
         Minor = minor;
