@@ -52,7 +52,9 @@
                 </StackPanel>
             </SplitView.Pane>
             <SplitView.Content>
-                <TransitioningContentControl Grid.Row="1" Content="{Binding Content}" />
+                <TransitioningContentControl Grid.Row="1"
+                                             Content="{Binding Content}"
+                                             Padding="12" />
             </SplitView.Content>
         </SplitView>
     </Grid>
