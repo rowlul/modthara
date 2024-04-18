@@ -34,6 +34,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Modthara.Lari\Modthara.Lari.csproj" />
+      <ProjectReference Include="..\Modthara.Essentials\Modthara.Essentials.csproj" />
     </ItemGroup>
 
 </Project>
