@@ -1,5 +1,6 @@
 ﻿namespace Modthara.Essentials.Packaging;
 
+[Flags]
 public enum ModFlags
 {
     None,
