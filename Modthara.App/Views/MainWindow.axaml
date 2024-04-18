@@ -16,41 +16,98 @@
                    CompactPaneLength="48"
                    DisplayMode="CompactInline">
             <SplitView.Pane>
-                <StackPanel Margin="0 20">
-                    <Grid ColumnDefinitions="Auto * 15 Auto 15" Margin="0 0 0 20">
-                        <ToggleSwitch Name="PaneToggle"
-                                      Theme="{DynamicResource ButtonToggleSwitch}"
-                                      IsChecked="{Binding #SidebarMenu.IsPaneOpen}">
-                            <ToggleSwitch.OnContent>
-                                <i:Icon Value="fa-solid fa-bars-staggered" />
-                            </ToggleSwitch.OnContent>
-                            <ToggleSwitch.OffContent>
-                                <i:Icon Value="fa-solid fa-bars" />
-                            </ToggleSwitch.OffContent>
-                        </ToggleSwitch>
-                        <ComboBox Grid.Column="3"
-                                  Classes="Bordered"
-                                  SelectedIndex="0"
-                                  VerticalAlignment="Center"
-                                  MaxWidth="200"
-                                  PlaceholderText="Mod order">
-                        </ComboBox>
+                <Grid RowDefinitions="20 Auto * Auto Auto 20">
+                    <StackPanel Grid.Row="1">
+                        <Grid ColumnDefinitions="Auto * 15 Auto 15">
+                            <ToggleSwitch Name="PaneToggle"
+                                          Theme="{DynamicResource ButtonToggleSwitch}"
+                                          IsChecked="{Binding #SidebarMenu.IsPaneOpen}">
+                                <ToggleSwitch.OnContent>
+                                    <i:Icon Value="fa-solid fa-bars-staggered" />
+                                </ToggleSwitch.OnContent>
+                                <ToggleSwitch.OffContent>
+                                    <i:Icon Value="fa-solid fa-bars" />
+                                </ToggleSwitch.OffContent>
+                            </ToggleSwitch>
+                            <ComboBox Grid.Column="3"
+                                      Classes="Small"
+                                      SelectedIndex="0"
+                                      VerticalAlignment="Center"
+                                      MaxWidth="200"
+                                      PlaceholderText="Mod order">
+                            </ComboBox>
+                        </Grid>
+                        <ListBox ItemsSource="{Binding SidebarItems}"
+                                 SelectedItem="{Binding SelectedItem}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate DataType="{x:Type m:SidebarItem}">
+                                    <Grid ColumnDefinitions="30, 12, *" Height="36">
+                                        <i:Icon Value="{Binding IconValue}" />
+                                        <TextBlock Grid.Column="2"
+                                                   VerticalAlignment="Center"
+                                                   FontWeight="Medium"
+                                                   Text="{Binding Header}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </StackPanel>
+                    <StackPanel Grid.Row="3" Margin="5" Spacing="5" Orientation="Horizontal">
+                        <Button i:Attached.Icon="fa-solid fa-rotate-left"
+                                Classes="Tertiary" Theme="{DynamicResource BorderlessButton}"
+                                Height="36">
+                            <ToolTip.Placement>Bottom</ToolTip.Placement>
+                            <ToolTip.Tip>
+                                Undo
+                            </ToolTip.Tip>
+                        </Button>
+                        <Button i:Attached.Icon="fa-solid fa-rotate-right"
+                                Classes="Tertiary"
+                                Height="36">
+                            <ToolTip.Placement>Bottom</ToolTip.Placement>
+                            <ToolTip.Tip>
+                                Redo
+                            </ToolTip.Tip>
+                        </Button>
+                    </StackPanel>
+                    <Grid Grid.Row="4" ColumnDefinitions="48, *, 15">
+                        <StackPanel Grid.Column="0" Spacing="5" HorizontalAlignment="Center">
+                            <Button i:Attached.Icon="fa-solid fa-wrench"
+                                    Classes="Tertiary" Theme="{DynamicResource BorderlessButton}"
+                                    Command="{Binding NavigateCommand}" CommandParameter="settings"
+                                    Height="36">
+                                <ToolTip.Placement>Bottom</ToolTip.Placement>
+                                <ToolTip.Tip>
+                                    Settings
+                                </ToolTip.Tip>
+                            </Button>
+                            <Button i:Attached.Icon="fa-solid fa-circle-info"
+                                    Classes="Tertiary" Theme="{DynamicResource BorderlessButton}"
+                                    Command="{Binding NavigateCommand}" CommandParameter="about"
+                                    Height="36">
+                                <ToolTip.Placement>Bottom</ToolTip.Placement>
+                                <ToolTip.Tip>
+                                    About Modthara
+                                </ToolTip.Tip>
+                            </Button>
+                        </StackPanel>
+                        <Border Grid.Column="1"
+                                Theme="{StaticResource CardBorder}"
+                                Classes="Hover">
+                            <TextBlock HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       TextAlignment="Center"
+                                       FontSize="11"
+                                       Classes="Quaternary">
+                                Drop files here
+                                <LineBreak />
+                                Or click me
+                                <Run />
+                                <i:Icon Value="fa-regular fa-folder-open" />
+                            </TextBlock>
+                        </Border>
                     </Grid>
-                    <ListBox ItemsSource="{Binding SidebarItems}"
-                             SelectedItem="{Binding SelectedItem}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate DataType="{x:Type m:SidebarItem}">
-                                <Grid ColumnDefinitions="30, 12, *" Height="36">
-                                    <i:Icon Value="{Binding IconValue}" />
-                                    <TextBlock Grid.Column="2"
-                                               VerticalAlignment="Center"
-                                               FontWeight="Medium"
-                                               Text="{Binding Header}" />
-                                </Grid>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </StackPanel>
+                </Grid>
             </SplitView.Pane>
             <SplitView.Content>
                 <TransitioningContentControl Grid.Row="1"

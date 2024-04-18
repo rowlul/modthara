@@ -1,4 +1,7 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Windows.Input;
+
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 using Modthara.App.Models;
 using Modthara.App.Routing;
@@ -15,15 +18,10 @@ public partial class MainViewModel : ViewModelBase
     private ViewModelBase? _content;
 
     public static IReadOnlyList<SidebarItem> SidebarItems => [
-        // TODO: implement home view
-        // new("Home", "home", "fa-solid fa-home"),
+        new("Home", "home", "fa-solid fa-home"),
         new("Packages", "packages", "fa-solid fa-box"),
-#if DEBUG // TODO: implement the rest of the views
         new("Overrides", "overrides", "fa-solid fa-folder"),
-        new("Native Mods", "nativeMods", "fa-solid fa-cubes"),
-        new("Settings", "settings", "fa-solid fa-wrench"),
-        new("About", "about", "fa-solid fa-circle-info")
-#endif
+        new("Native Mods", "nativeMods", "fa-solid fa-cubes")
     ];
 
     public MainViewModel(Router<ViewModelBase> router)
@@ -34,9 +32,12 @@ public partial class MainViewModel : ViewModelBase
         SelectedItem = SidebarItems[0];
     }
 
-    partial void OnSelectedItemChanged(SidebarItem? value)
+    partial void OnSelectedItemChanged(SidebarItem? value) => Navigate(value?.Route);
+
+    [RelayCommand]
+    private void Navigate(string? route)
     {
-        switch (value?.Route)
+        switch (route)
         {
             case "home":
                 _router.GoTo<HomeViewModel>();
@@ -52,9 +53,11 @@ public partial class MainViewModel : ViewModelBase
                 break;
             case "settings":
                 _router.GoTo<SettingsViewModel>();
+                SelectedItem = null;
                 break;
             case "about":
                 _router.GoTo<AboutViewModel>();
+                SelectedItem = null;
                 break;
         }
     }
