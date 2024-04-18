@@ -2,6 +2,7 @@
 
 public enum ModFlags
 {
+    None,
     HasOwnContent,
     HasGameOverrides,
     HasModFixer,
