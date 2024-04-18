@@ -1,4 +1,4 @@
-﻿namespace Modthara.App.Models;
+﻿namespace Modthara.Essentials.Packaging;
 
 public enum ModFlags
 {

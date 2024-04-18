@@ -1,11 +1,12 @@
 ﻿using Modthara.Lari;
+using Modthara.Lari.Pak;
 
-namespace Modthara.App.Models;
+namespace Modthara.Essentials.Packaging;
 
-public class ModtharaMod : ModMetadata
+public class ModPackage : ModMetadata
 {
     public required bool IsEnabled { get; set; }
-    public required string FilePath { get; init; }
+    public required Package Package { get; init; }
     public required ModFlags Flags { get; init; }
     public DateOnly LastModified { get; set; } = DateOnly.FromDateTime(DateTime.Today);
 
