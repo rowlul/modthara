@@ -13,8 +13,8 @@ public interface IPackager
     /// <returns>
     /// List of packages.
     /// </returns>
-    public IList<ModPackage> ReadPackages();
+    public IEnumerable<ModPackage> ReadPackages();
 
     /// <inheritdoc cref="ReadPackages"/>
-    public Task<IList<ModPackage>> ReadPackagesAsync();
+    public IAsyncEnumerable<ModPackage> ReadPackagesAsync();
 }

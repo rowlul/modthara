@@ -28,7 +28,7 @@ public partial class Packager : IPackager
 
 
     /// <inheritdoc cref="IPackager.ReadPackages"/>
-    public IList<ModPackage> ReadPackages()
+    public IEnumerable<ModPackage> ReadPackages()
     {
         List<ModPackage> modPackages = [];
 
@@ -44,20 +44,16 @@ public partial class Packager : IPackager
     }
 
     /// <inheritdoc cref="IPackager.ReadPackages"/>
-    public async Task<IList<ModPackage>> ReadPackagesAsync()
+    public async IAsyncEnumerable<ModPackage> ReadPackagesAsync()
     {
-        List<ModPackage> modPackages = [];
-
         foreach (var path in _fileSystem.Directory.EnumerateFiles(_modsPath, "*.pak", SearchOption.TopDirectoryOnly))
         {
             await using var fileStream = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read,
                 FileShare.Read, bufferSize: 4096, useAsync: true);
             var pak = PackageReader.FromStream(fileStream);
             var modPackage = CreateModPackage(pak, path);
-            modPackages.Add(modPackage);
+            yield return modPackage;
         }
-
-        return modPackages;
     }
 
     internal ModPackage CreateModPackage(Package pak, string path)
