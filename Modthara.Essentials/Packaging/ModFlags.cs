@@ -3,9 +3,11 @@
 [Flags]
 public enum ModFlags
 {
-    None,
-    HasOwnContent,
-    HasGameOverrides,
-    HasModFixer,
-    RequiresScriptExtender
+    // @formatter:off
+    None                   = 0b0,
+    HasModFiles            = 0b_0001,
+    AltersGameFiles        = 0b_0010,
+    HasModFixer            = 0b_0100,
+    RequiresScriptExtender = 0b_1000,
+    // @formatter:on
 }
