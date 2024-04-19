@@ -7,6 +7,8 @@ public readonly struct LariUuid(string uuid)
 {
     public string Uuid { get; init; } = uuid;
 
+    public static LariUuid New() => new(new Guid().ToString());
+
     public bool TryParse(out Guid guid) => Guid.TryParse(Uuid, out guid);
 
     public static bool operator ==(LariUuid a, LariUuid b) => a.Uuid == b.Uuid;
@@ -20,6 +22,7 @@ public readonly struct LariUuid(string uuid)
         {
             return false;
         }
+
         return aGuid == b;
     }
 
@@ -30,6 +33,7 @@ public readonly struct LariUuid(string uuid)
         {
             return true;
         }
+
         return aGuid != b;
     }
 
