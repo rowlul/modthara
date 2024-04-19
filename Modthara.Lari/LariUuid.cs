@@ -7,7 +7,7 @@ public readonly struct LariUuid(string uuid)
 {
     public string Uuid { get; init; } = uuid;
 
-    public static LariUuid New() => new(new Guid().ToString());
+    public static LariUuid NewGuid() => new(new Guid().ToString());
 
     public bool TryParse(out Guid guid) => Guid.TryParse(Uuid, out guid);
 
