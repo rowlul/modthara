@@ -8,7 +8,7 @@ public class ModPackage : ModMetadata
     public bool IsEnabled { get; set; }
     public required Package Package { get; init; }
     public required ModFlags Flags { get; init; }
-    public DateOnly LastModified { get; set; } = DateOnly.FromDateTime(DateTime.Today);
+    public DateTime LastModified { get; set; } = DateTime.Now;
 
     public string StringifiedVersion => Version.ToString();
 }
