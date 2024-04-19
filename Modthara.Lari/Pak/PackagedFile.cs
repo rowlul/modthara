@@ -75,10 +75,13 @@ public class PackagedFile
 
             if (compression == 0x1)
             {
-                _stream = new MemoryStream();
+                var decompressedStream = new MemoryStream();
                 using var compressedStream = new MemoryStream(compressedBytes);
-                using var stream = new ZLibStream(compressedStream, CompressionMode.Decompress);
-                stream.CopyTo(_stream);
+                using var zlibStream = new ZLibStream(compressedStream, CompressionMode.Decompress);
+                zlibStream.CopyTo(decompressedStream);
+
+                decompressedStream.Position = 0;
+                _stream = decompressedStream;
             }
             else if (compression == 0x2)
             {
