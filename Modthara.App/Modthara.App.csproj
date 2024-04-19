@@ -27,7 +27,6 @@
         <PackageReference Include="Projektanker.Icons.Avalonia.FontAwesome" />
         <PackageReference Include="CommunityToolkit.Mvvm" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-        <PackageReference Include="Humanizer.Core" />
 
         <PackageReference Include="Avalonia.Diagnostics"
                           Condition="'$(Configuration)' == 'Debug'" />
