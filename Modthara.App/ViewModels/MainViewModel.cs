@@ -12,6 +12,9 @@ public partial class MainViewModel : ViewModelBase
 {
     private readonly Router<ViewModelBase> _router;
 
+    [ObservableProperty] private double _progressValue;
+    [ObservableProperty] private bool _isProgressIndeterminate;
+
     [ObservableProperty] private SidebarItem? _selectedItem;
 
     [ObservableProperty]

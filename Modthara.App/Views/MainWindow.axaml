@@ -11,10 +11,11 @@
         Title="Modthara.App">
 
     <Grid>
-        <SplitView Name="SidebarMenu"
-                   OpenPaneLength="300"
-                   CompactPaneLength="48"
-                   DisplayMode="CompactInline">
+        <SplitView
+            Name="SidebarMenu"
+            OpenPaneLength="300"
+            CompactPaneLength="48"
+            DisplayMode="CompactInline">
             <SplitView.Pane>
                 <Grid RowDefinitions="20 Auto * Auto Auto 20">
                     <StackPanel Grid.Row="1">
@@ -110,9 +111,18 @@
                 </Grid>
             </SplitView.Pane>
             <SplitView.Content>
-                <TransitioningContentControl Grid.Row="1"
-                                             Content="{Binding Content}"
-                                             Padding="12" />
+                <Grid RowDefinitions="*, 20">
+                    <TransitioningContentControl Content="{Binding Content}"
+                                                 Padding="12" />
+                    <ProgressBar
+                        Grid.Row="1"
+                        Classes="Left"
+                        Maximum="100"
+                        Minimum="0"
+                        ShowProgressText="False"
+                        Value="{Binding ProgressValue}"
+                        IsIndeterminate="{Binding IsProgressIndeterminate}" />
+                </Grid>
             </SplitView.Content>
         </SplitView>
     </Grid>
