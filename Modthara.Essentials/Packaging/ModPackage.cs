@@ -1,4 +1,6 @@
-﻿using Modthara.Lari;
+﻿using Humanizer;
+
+using Modthara.Lari;
 using Modthara.Lari.Pak;
 
 namespace Modthara.Essentials.Packaging;
@@ -11,4 +13,5 @@ public class ModPackage : ModMetadata
     public DateTime LastModified { get; set; } = DateTime.Now;
 
     public string StringifiedVersion => Version.ToString();
+    public string HumanizedLastModified => LastModified.Humanize();
 }
