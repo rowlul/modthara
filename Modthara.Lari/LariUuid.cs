@@ -3,17 +3,17 @@
 /// <summary>
 /// Wrapper for <see cref="System.Guid"/> that accepts non-valid values.
 /// </summary>
-public readonly struct LariUuid(string uuid)
+public readonly struct LariUuid(string guid)
 {
-    public string Uuid { get; init; } = uuid;
+    public string Value { get; init; } = guid;
 
     public static LariUuid NewGuid() => new(new Guid().ToString());
 
-    public bool TryParse(out Guid guid) => Guid.TryParse(Uuid, out guid);
+    public bool TryParse(out Guid guid) => Guid.TryParse(Value, out guid);
 
-    public static bool operator ==(LariUuid a, LariUuid b) => a.Uuid == b.Uuid;
+    public static bool operator ==(LariUuid a, LariUuid b) => a.Value == b.Value;
 
-    public static bool operator !=(LariUuid a, LariUuid b) => a.Uuid != b.Uuid;
+    public static bool operator !=(LariUuid a, LariUuid b) => a.Value != b.Value;
 
     public static bool operator ==(LariUuid a, Guid b)
     {
@@ -61,7 +61,7 @@ public readonly struct LariUuid(string uuid)
 
     public bool Equals(LariUuid other)
     {
-        return Uuid == other.Uuid;
+        return Value == other.Value;
     }
 
     public override bool Equals(object? obj)
@@ -76,6 +76,6 @@ public readonly struct LariUuid(string uuid)
             return guid.GetHashCode();
         }
 
-        return Uuid.GetHashCode();
+        return Value.GetHashCode();
     }
 }
