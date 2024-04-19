@@ -21,10 +21,6 @@ NuGet release is WIP.
 > `PackageReader` only accepts PAK files versioned no later than V18 (Baldur's Gate 3 Release). Mod Fixer is one of the
 > famous examples that is V15, which corresponds to Early Access package format.
 
-> [!WARNING]
-> UUID parse fails if the string from LSX contains non-hexadecimal characters. So mods like Carry Weight Increased need
-> to be updated to have a valid UUID.
-
 ## Credits
 
 Many thanks to:
