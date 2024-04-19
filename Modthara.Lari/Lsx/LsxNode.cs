@@ -56,7 +56,7 @@ public class LsxNode
     /// Gets UUID value of the respective attribute.
     /// </summary>
     /// <returns>UUID of the node.</returns>
-    public Guid GetUuid() => Guid.Parse(this.GetAttributeValue("UUID"));
+    public LariUuid GetUuid() => new(this.GetAttributeValue("UUID"));
 
     public LariVersion GetVersion()
     {

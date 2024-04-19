@@ -147,16 +147,16 @@ public class ModSettings
     /// <summary>
     /// Finds mod by UUID via traversing <c>ModOrder</c> and <c>Mods</c> node children and comparing indices.
     /// </summary>
-    /// <param name="guid">UUID to search for.</param>
+    /// <param name="uuid">UUID to search for.</param>
     /// <returns>Matched mod by UUID and its index in the order.</returns>
-    public (Index?, ModMetadata?) Find(Guid guid)
+    public (Index?, ModMetadata?) Find(LariUuid uuid)
     {
         for (var i = 0; i < new[] { _modOrderNode.Children!.Count, _modsNode.Children!.Count, _mods.Count }.Min(); i++)
         {
             var modOrderUuid = _modOrderNode.Children[i].GetUuid();
             var modUuid = _modsNode.Children[i].GetUuid();
 
-            if (modOrderUuid == guid && modUuid == guid && _mods[i].Uuid == guid)
+            if (modOrderUuid == uuid && modUuid == uuid && _mods[i].Uuid == uuid)
             {
                 return (i, _modsNode.Children[i].ToModMetadata());
             }

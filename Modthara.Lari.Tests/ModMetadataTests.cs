@@ -20,7 +20,7 @@ public class ModMetadataTests
             Description = "Modthara test mod",
             FolderName = "ModtharaTest",
             Md5 = "",
-            Uuid = new Guid("adc05d68-6d4e-4763-9724-ac47bfb68c7b"),
+            Uuid = new LariUuid("adc05d68-6d4e-4763-9724-ac47bfb68c7b"),
             Version = 36028797018963968UL,
             Dependencies = [
                 new ModMetadata
@@ -28,7 +28,7 @@ public class ModMetadataTests
                     FolderName = "SharedDev",
                     Md5 = "",
                     Name = "SharedDev",
-                    Uuid = new Guid("3d0c5ff8-c95d-c907-ff3e-34b204f1c630"),
+                    Uuid = new LariUuid("3d0c5ff8-c95d-c907-ff3e-34b204f1c630"),
                     Version = 36028797022722506UL
                 }
             ]

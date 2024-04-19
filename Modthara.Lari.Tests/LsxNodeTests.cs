@@ -55,7 +55,7 @@ public class LsxNodeTests
     }
 
     [Fact]
-    public void GetUuid_ExistingAttribute_ReturnsGuid()
+    public void GetUuid_ExistingAttribute_ReturnsLarUuid()
     {
         var node = new LsxNode
         {
@@ -66,7 +66,7 @@ public class LsxNodeTests
             ]
         };
 
-        var expected = new Guid("adc05d68-6d4e-4763-9724-ac47bfb68c7b");
+        var expected = new LariUuid("adc05d68-6d4e-4763-9724-ac47bfb68c7b");
         var actual = node.GetUuid();
         actual.Should().Be(expected);
     }

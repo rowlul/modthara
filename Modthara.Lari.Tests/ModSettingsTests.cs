@@ -12,7 +12,7 @@ public class ModSettingsTests
             FolderName = "GustavDev",
             Md5 = "e41378521136e6646b5491305373f538",
             Name = "GustavDev",
-            Uuid = new Guid("28ac9ce2-2aba-8cda-b3b5-6e922f71b6b8"),
+            Uuid = new LariUuid("28ac9ce2-2aba-8cda-b3b5-6e922f71b6b8"),
             Version = 144961330997915191
         },
         new ModMetadata
@@ -20,7 +20,7 @@ public class ModSettingsTests
             FolderName = "ModtharaTest",
             Md5 = "",
             Name = "Modthara test mod",
-            Uuid = new Guid("adc05d68-6d4e-4763-9724-ac47bfb68c7b"),
+            Uuid = new LariUuid("adc05d68-6d4e-4763-9724-ac47bfb68c7b"),
             Version = 36028797018963968
         }
     ];

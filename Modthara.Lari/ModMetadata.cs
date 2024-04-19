@@ -12,7 +12,7 @@ public class ModMetadata
     public string? Description { get; set; } = string.Empty;
     public required string FolderName { get; set; }
     public string Md5 { get; set; } = string.Empty;
-    public Guid Uuid { get; set; } = Guid.NewGuid();
+    public LariUuid Uuid { get; set; } = LariUuid.NewGuid();
     public LariVersion Version { get; set; } = 36028797018963968UL;
     public IList<ModMetadata> Dependencies { get; set; } = [];
 
@@ -39,7 +39,7 @@ public class ModMetadata
             Id = "Module",
             Attributes =
             [
-                new LsxAttribute { Id = "UUID", Type = "FixedString", Value = this.Uuid.ToString() },
+                new LsxAttribute { Id = "UUID", Type = "FixedString", Value = this.Uuid.Value },
             ]
         };
 
@@ -56,7 +56,7 @@ public class ModMetadata
                 new LsxAttribute { Id = "Folder", Type = "LSString", Value = this.FolderName },
                 new LsxAttribute { Id = "MD5", Type = "LSString", Value = this.Md5 },
                 new LsxAttribute { Id = "Name", Type = "LSString", Value = this.Name },
-                new LsxAttribute { Id = "UUID", Type = "FixedString", Value = this.Uuid.ToString() },
+                new LsxAttribute { Id = "UUID", Type = "FixedString", Value = this.Uuid.Value },
                 new LsxAttribute
                 {
                     Id = "Version64", Type = "int64", Value = LariVersion.ToVersion64(this.Version).ToString()
@@ -89,7 +89,7 @@ public class ModMetadata
                 new LsxAttribute { Id = "StartupLevelName", Type = "FixedString", Value = string.Empty },
                 new LsxAttribute { Id = "Tags", Type = "LSWString", Value = string.Empty },
                 new LsxAttribute { Id = "Type", Type = "FixedString", Value = "Add-on" },
-                new LsxAttribute { Id = "UUID", Type = "FixedString", Value = this.Uuid.ToString() },
+                new LsxAttribute { Id = "UUID", Type = "FixedString", Value = this.Uuid.Value },
                 new LsxAttribute
                 {
                     Id = "Version64", Type = "int64", Value = LariVersion.ToVersion64(this.Version).ToString()
