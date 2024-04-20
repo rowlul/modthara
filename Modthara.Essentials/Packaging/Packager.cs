@@ -51,7 +51,7 @@ public partial class Packager : IPackager
             await using var fileStream = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read,
                 FileShare.Read, bufferSize: 4096, useAsync: true);
             var pak = PackageReader.FromStream(fileStream);
-            var modPackage = CreateModPackage(pak, path);
+            var modPackage = await CreateModPackageAsync(pak, path);
             yield return modPackage;
         }
     }
@@ -60,11 +60,64 @@ public partial class Packager : IPackager
     {
         var meta = FindMeta(pak);
 
-        var hasOwnFiles = HasModFiles(pak);
+        var hasModFiles = HasModFiles(pak);
         var altersGameFiles = AltersGameFiles(pak);
         var hasForceRecompile = HasForceRecompile(pak);
         var requiresScriptExtender = RequiresScriptExtender(pak);
-        var flags = hasOwnFiles | altersGameFiles | hasForceRecompile | requiresScriptExtender;
+        var flags = hasModFiles | altersGameFiles | hasForceRecompile | requiresScriptExtender;
+
+        var lastModified = _fileSystem.FileInfo.New(path).LastWriteTime;
+
+        ModMetadata modMeta;
+        if (meta != null)
+        {
+            using var metaStream = meta.Open();
+            var lsx = LsxDocument.FromStream(metaStream);
+            modMeta = ModMetadata.FromLsx(lsx);
+        }
+        else
+        {
+            modMeta = new ModMetadata
+            {
+                Name = _fileSystem.Path.GetFileNameWithoutExtension(path), FolderName = string.Empty
+            };
+        }
+
+        var modPackage = new ModPackage
+        {
+            Name = modMeta.Name,
+            Author = modMeta.Author,
+            Description = modMeta.Description,
+            FolderName = modMeta.FolderName,
+            Md5 = modMeta.Md5,
+            Uuid = modMeta.Uuid,
+            Version = modMeta.Version,
+            Dependencies = modMeta.Dependencies,
+            Package = pak,
+            Flags = flags,
+            LastModified = lastModified
+        };
+        return modPackage;
+    }
+
+    internal async ValueTask<ModPackage> CreateModPackageAsync(Package pak, string path)
+    {
+        var t1 = Task.Run(() => FindMeta(pak));
+        var t2 = Task.Run(() => HasModFiles(pak));
+        var t3 = Task.Run(() => AltersGameFiles(pak));
+        var t4 = Task.Run(() => HasForceRecompile(pak));
+        var t5 = Task.Run(() => RequiresScriptExtender(pak));
+
+        List<Task> tasks = [t1, t2, t3, t4, t5];
+        await Task.WhenAll(tasks);
+
+        var meta = t1.Result;
+        var hasModFiles = t2.Result;
+        var altersGameFiles = t3.Result;
+        var hasForceRecompile = t4.Result;
+        var requiresScriptExtender = t5.Result;
+
+        var flags = hasModFiles | altersGameFiles | hasForceRecompile | requiresScriptExtender;
 
         var lastModified = _fileSystem.FileInfo.New(path).LastWriteTime;
 
@@ -72,8 +125,8 @@ public partial class Packager : IPackager
         if (meta != null)
         {
             var metaStream = meta.Open();
-            var lsx = LsxDocument.FromStream(metaStream);
-            modMeta = ModMetadata.FromLsx(lsx);
+            var lsx = await Task.Run(() => LsxDocument.FromStream(metaStream));
+            modMeta = await Task.Run(() => ModMetadata.FromLsx(lsx));
         }
         else
         {
