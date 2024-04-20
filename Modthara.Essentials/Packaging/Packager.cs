@@ -50,7 +50,7 @@ public partial class Packager : IPackager
         {
             await using var fileStream = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read,
                 FileShare.Read, bufferSize: 4096, useAsync: true);
-            var pak = PackageReader.FromStream(fileStream);
+            var pak = await Task.Run(() => PackageReader.FromStream(fileStream));
             var modPackage = await CreateModPackageAsync(pak, path);
             yield return modPackage;
         }
@@ -127,6 +127,7 @@ public partial class Packager : IPackager
             var metaStream = meta.Open();
             var lsx = await Task.Run(() => LsxDocument.FromStream(metaStream));
             modMeta = await Task.Run(() => ModMetadata.FromLsx(lsx));
+            await metaStream.DisposeAsync();
         }
         else
         {
