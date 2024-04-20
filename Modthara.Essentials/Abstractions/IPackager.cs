@@ -15,6 +15,11 @@ public interface IPackager
     IEnumerable<ModPackage> Cache { get; }
 
     /// <summary>
+    /// Amount of cached mods.
+    /// </summary>
+    int CachedModCount { get; }
+
+    /// <summary>
     /// Reads packages in Mods folder.
     /// </summary>
     /// <returns>

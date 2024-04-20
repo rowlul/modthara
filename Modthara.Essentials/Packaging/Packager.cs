@@ -25,6 +25,9 @@ public partial class Packager : IPackager
     /// <inheritdoc cref="IPackager.Cache"/>
     public IEnumerable<ModPackage> Cache => _cache;
 
+    /// <inheritdoc cref="IPackager.CachedModCount"/>
+    public int CachedModCount => _cache.Count;
+
     /// <summary>
     /// Creates an instance of the service.
     /// </summary>
