@@ -48,10 +48,12 @@ public partial class Packager : IPackager
     {
         foreach (var path in _fileSystem.Directory.EnumerateFiles(_modsPath, "*.pak", SearchOption.TopDirectoryOnly))
         {
-            await using var fileStream = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read,
+            var fileStream = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read,
                 FileShare.Read, bufferSize: 4096, useAsync: true);
-            var pak = await Task.Run(() => PackageReader.FromStream(fileStream));
-            var modPackage = await CreateModPackageAsync(pak, path);
+            var pak = await Task.Run(() => PackageReader.FromStream(fileStream)).ConfigureAwait(false);
+            await fileStream.DisposeAsync().ConfigureAwait(false);
+
+            var modPackage = await CreateModPackageAsync(pak, path).ConfigureAwait(false);
             yield return modPackage;
         }
     }
@@ -109,7 +111,7 @@ public partial class Packager : IPackager
         var t5 = Task.Run(() => RequiresScriptExtender(pak));
 
         List<Task> tasks = [t1, t2, t3, t4, t5];
-        await Task.WhenAll(tasks);
+        await Task.WhenAll(tasks).ConfigureAwait(false);
 
         var meta = t1.Result;
         var hasModFiles = t2.Result;
@@ -125,9 +127,9 @@ public partial class Packager : IPackager
         if (meta != null)
         {
             var metaStream = meta.Open();
-            var lsx = await Task.Run(() => LsxDocument.FromStream(metaStream));
-            modMeta = await Task.Run(() => ModMetadata.FromLsx(lsx));
-            await metaStream.DisposeAsync();
+            var lsx = await Task.Run(() => LsxDocument.FromStream(metaStream)).ConfigureAwait(false);
+            modMeta = await Task.Run(() => ModMetadata.FromLsx(lsx)).ConfigureAwait(false);
+            await metaStream.DisposeAsync().ConfigureAwait(false);
         }
         else
         {
