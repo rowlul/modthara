@@ -8,13 +8,22 @@ using Modthara.Lari;
 using Modthara.Lari.Lsx;
 using Modthara.Lari.Pak;
 
+using Index = int;
+
 namespace Modthara.Essentials.Packaging;
+
+public delegate Task AsyncPackageCallback(Index idx, ModPackage package);
 
 /// <inheritdoc cref="IPackager"/>
 public partial class Packager : IPackager
 {
     private readonly string _modsPath;
     private readonly IFileSystem _fileSystem;
+
+    private readonly List<ModPackage> _cache = [];
+
+    /// <inheritdoc cref="IPackager.Cache"/>
+    public IEnumerable<ModPackage> Cache => _cache;
 
     /// <summary>
     /// Creates an instance of the service.
@@ -59,6 +68,23 @@ public partial class Packager : IPackager
             var modPackage = await CreateModPackageAsync(pak, path).ConfigureAwait(false);
             await fileStream.DisposeAsync().ConfigureAwait(false);
             yield return modPackage;
+        }
+    }
+
+    /// <inheritdoc cref="IPackager.LoadPackagesToCacheAsync"/>
+    public async Task LoadPackagesToCacheAsync(AsyncPackageCallback? asyncPackageCallback = null)
+    {
+        await using var e = ReadPackagesAsync().GetAsyncEnumerator();
+
+        int i = 0;
+        while (await e.MoveNextAsync().ConfigureAwait(false))
+        {
+            i++;
+            if (asyncPackageCallback != null)
+            {
+                await asyncPackageCallback.Invoke(i, e.Current).ConfigureAwait(false);
+            }
+            _cache.Add(e.Current);
         }
     }
 
