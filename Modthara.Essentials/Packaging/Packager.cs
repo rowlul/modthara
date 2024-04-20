@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
 using System.Text.RegularExpressions;
 
@@ -26,7 +27,6 @@ public partial class Packager : IPackager
         _fileSystem = fileSystem;
     }
 
-
     /// <inheritdoc cref="IPackager.ReadPackages"/>
     public IEnumerable<ModPackage> ReadPackages()
     {
@@ -46,8 +46,13 @@ public partial class Packager : IPackager
     /// <inheritdoc cref="IPackager.ReadPackages"/>
     public async IAsyncEnumerable<ModPackage> ReadPackagesAsync()
     {
-        foreach (var path in _fileSystem.Directory.EnumerateFiles(_modsPath, "*.pak", SearchOption.TopDirectoryOnly))
+        using var e = await Task.Run([SuppressMessage("ReSharper", "NotDisposedResourceIsReturned")]() =>
+                _fileSystem.Directory.EnumerateFiles(_modsPath, "*.pak", SearchOption.TopDirectoryOnly).GetEnumerator())
+            .ConfigureAwait(false);
+
+        while (await Task.Run(() => e.MoveNext()).ConfigureAwait(false))
         {
+            var path = e.Current;
             var fileStream = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read,
                 FileShare.Read, bufferSize: 4096, useAsync: true);
             var pak = await Task.Run(() => PackageReader.FromStream(fileStream)).ConfigureAwait(false);
@@ -55,6 +60,25 @@ public partial class Packager : IPackager
             await fileStream.DisposeAsync().ConfigureAwait(false);
             yield return modPackage;
         }
+    }
+
+    /// <inheritdoc cref="IPackager.Count"/>
+    public int Count() =>
+        _fileSystem.Directory.EnumerateFiles(_modsPath, "*.pak", SearchOption.TopDirectoryOnly).Count();
+
+    public async ValueTask<int> CountAsync()
+    {
+        using var e = await Task.Run([SuppressMessage("ReSharper", "NotDisposedResourceIsReturned")]() =>
+                _fileSystem.Directory.EnumerateFiles(_modsPath, "*.pak", SearchOption.TopDirectoryOnly).GetEnumerator())
+            .ConfigureAwait(false);
+
+        int i = 0;
+        while (await Task.Run(() => e.MoveNext()).ConfigureAwait(false))
+        {
+            i++;
+        }
+
+        return i;
     }
 
     internal ModPackage CreateModPackage(Package pak, string path)
