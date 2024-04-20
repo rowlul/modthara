@@ -51,9 +51,8 @@ public partial class Packager : IPackager
             var fileStream = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read,
                 FileShare.Read, bufferSize: 4096, useAsync: true);
             var pak = await Task.Run(() => PackageReader.FromStream(fileStream)).ConfigureAwait(false);
-            await fileStream.DisposeAsync().ConfigureAwait(false);
-
             var modPackage = await CreateModPackageAsync(pak, path).ConfigureAwait(false);
+            await fileStream.DisposeAsync().ConfigureAwait(false);
             yield return modPackage;
         }
     }
