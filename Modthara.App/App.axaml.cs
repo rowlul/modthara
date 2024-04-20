@@ -1,4 +1,7 @@
+using System.Collections.ObjectModel;
 using System.IO.Abstractions;
+
+using AsyncAwaitBestPractices;
 
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -32,11 +35,21 @@ public partial class App : Application
         ServiceProvider services = ConfigureServices();
         Ioc.Default.ConfigureServices(services);
 
+        var viewModel = services.GetRequiredService<MainViewModel>();
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            var viewModel = services.GetRequiredService<MainViewModel>();
             desktop.MainWindow = new MainWindow { DataContext = viewModel };
         }
+
+        viewModel.LoadPackages().ContinueWith(_ =>
+        {
+            var packager = services.GetRequiredService<IPackager>();
+            if (packager.CachedModCount > 0)
+            {
+                var packagesVm = services.GetRequiredService<PackagesViewModel>();
+                packagesVm.Mods = new ObservableCollection<ModPackage>(packager.Cache);
+            }
+        }).SafeFireAndForget();
 
         base.OnFrameworkInitializationCompleted();
     }

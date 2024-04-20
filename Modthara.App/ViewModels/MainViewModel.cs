@@ -1,14 +1,9 @@
-﻿using System.Collections.ObjectModel;
-
-using AsyncAwaitBestPractices;
-
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 using Modthara.App.Models;
 using Modthara.App.Routing;
 using Modthara.Essentials.Abstractions;
-using Modthara.Essentials.Packaging;
 
 namespace Modthara.App.ViewModels;
 
@@ -17,7 +12,7 @@ public partial class MainViewModel : ViewModelBase
     private readonly Router<ViewModelBase> _router;
     private readonly IPackager _packager;
 
-    [ObservableProperty] private string _progressStatus;
+    [ObservableProperty] private string _progressStatus = string.Empty;
     [ObservableProperty] private double _progressMax = 100;
     [ObservableProperty] private double _progressValue;
     [ObservableProperty] private bool _isProgressIndeterminate;
@@ -55,7 +50,7 @@ public partial class MainViewModel : ViewModelBase
                 _router.GoTo<HomeViewModel>();
                 break;
             case "packages":
-                HandlePackages().SafeFireAndForget();
+                _router.GoTo<PackagesViewModel>();
                 break;
             case "overrides":
                 _router.GoTo<OverridesViewModel>();
@@ -74,32 +69,27 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
-    private async Task HandlePackages()
+    public async Task LoadPackages()
     {
-        var vm = _router.GoTo<PackagesViewModel>();
-
-        if (vm.Mods != null || IsBusy)
+        if (IsBusy)
         {
             return;
         }
 
-        var mods = new ObservableCollection<ModPackage>();
         var modCount = await _packager.CountAsync();
-
-        int i = 0;
-        await using var e = _packager.ReadPackagesAsync().GetAsyncEnumerator();
-        while (await e.MoveNextAsync())
+        if (modCount == 0)
         {
-            i++;
-
-            IsBusy = true;
-            IsProgressIndeterminate = true;
-            ProgressStatus = $"({i}/{modCount}) Processing package: {e.Current.Name}";
-
-            mods.Add(e.Current);
+            return;
         }
 
-        vm.Mods = mods;
+        IsBusy = true;
+        IsProgressIndeterminate = true;
+
+        await _packager.LoadPackagesToCacheAsync((idx, pak) =>
+        {
+            ProgressStatus = $"({idx}/{modCount}) Processing package: {pak.Name}";
+            return Task.CompletedTask;
+        });
 
         IsBusy = false;
         IsProgressIndeterminate = false;
