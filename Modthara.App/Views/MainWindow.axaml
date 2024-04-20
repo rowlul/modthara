@@ -111,17 +111,29 @@
                 </Grid>
             </SplitView.Pane>
             <SplitView.Content>
-                <Grid RowDefinitions="*, 20">
+                <Grid RowDefinitions="*, 25">
                     <TransitioningContentControl Content="{Binding Content}"
                                                  Padding="12" />
-                    <ProgressBar
-                        Grid.Row="1"
-                        Classes="Left"
-                        Maximum="100"
-                        Minimum="0"
-                        ShowProgressText="False"
-                        Value="{Binding ProgressValue}"
-                        IsIndeterminate="{Binding IsProgressIndeterminate}" />
+                    <Grid Grid.Row="1"
+                          RowDefinitions="*, 10"
+                          ColumnDefinitions="*, Auto, Auto"
+                          VerticalAlignment="Center"
+                          IsVisible="{Binding IsBusy}">
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding ProgressStatus}"
+                                   Classes="Quaternary"
+                                   FontSize="11" />
+                        <ProgressBar
+                            Grid.Column="2"
+                            Classes="Left"
+                            Maximum="{Binding ProgressMax}"
+                            Minimum="0"
+                            ShowProgressText="False"
+                            Value="{Binding ProgressValue}"
+                            IsIndeterminate="{Binding IsProgressIndeterminate}"
+                            IsVisible="True"
+                            Margin="10 0 15 0" />
+                    </Grid>
                 </Grid>
             </SplitView.Content>
         </SplitView>

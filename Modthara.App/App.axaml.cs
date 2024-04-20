@@ -1,3 +1,5 @@
+using System.IO.Abstractions;
+
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
@@ -10,6 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Modthara.App.Routing;
 using Modthara.App.ViewModels;
 using Modthara.App.Views;
+using Modthara.Essentials.Abstractions;
+using Modthara.Essentials.Packaging;
 
 namespace Modthara.App;
 
@@ -45,10 +49,19 @@ public partial class App : Application
             new Router<ViewModelBase>(v => (ViewModelBase)s.GetRequiredService(v)));
         services.AddSingleton<PaginatedRouter<ViewModelBase>>(s =>
             new PaginatedRouter<ViewModelBase>(v => (ViewModelBase)s.GetRequiredService(v)));
+
+        services.AddSingleton<IFileSystem, FileSystem>();
+        services.AddSingleton<IPackager>(s =>
+            new Packager(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) +
+                @"\Larian Studios\Baldur's Gate 3\Mods",
+                s.GetRequiredService<IFileSystem>()));
+
         services.AddSingleton<MainViewModel>();
+        services.AddSingleton<PackagesViewModel>();
+
         services.AddTransient<BlankViewModel>();
         services.AddTransient<HomeViewModel>();
-        services.AddTransient<PackagesViewModel>();
         services.AddTransient<OverridesViewModel>();
         services.AddTransient<NativeModsViewModel>();
         services.AddTransient<SettingsViewModel>();

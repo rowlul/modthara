@@ -8,8 +8,43 @@
              x:Class="Modthara.App.Views.PackagesView">
 
     <Grid RowDefinitions="*" ColumnDefinitions="*">
-        <DataGrid>
-
+        <DataGrid
+            ItemsSource="{Binding Mods}"
+            AutoGenerateColumns="False"
+            CanUserReorderColumns="True"
+            CanUserResizeColumns="True"
+            CanUserSortColumns="True"
+            HeadersVisibility="All"
+            GridLinesVisibility="All">
+            <DataGrid.Columns>
+                <DataGridCheckBoxColumn IsReadOnly="False"
+                                        CanUserResize="False"
+                                        CanUserReorder="True" />
+                <DataGridTextColumn Header="Name"
+                                    Binding="{Binding Name}"
+                                    MinWidth="300"
+                                    IsReadOnly="True" />
+                <DataGridTextColumn Header="Flags"
+                                    Binding="{Binding Flags}"
+                                    MinWidth="75"
+                                    IsReadOnly="True"
+                                    IsVisible="{Binding IsFlagsColumnVisible}" />
+                <DataGridTextColumn Header="Version"
+                                    Binding="{Binding StringifiedVersion}"
+                                    MinWidth="75"
+                                    IsReadOnly="True"
+                                    IsVisible="{Binding IsVersionColumnVisible}" />
+                <DataGridTextColumn Header="Author"
+                                    Binding="{Binding Author}"
+                                    MinWidth="75"
+                                    IsReadOnly="True"
+                                    IsVisible="{Binding IsAuthorColumnVisible}" />
+                <DataGridTextColumn Header="Last Modified"
+                                    Binding="{Binding HumanizedLastModified}"
+                                    MinWidth="115"
+                                    IsReadOnly="True"
+                                    IsVisible="{Binding IsLastModifiedColumnVisible}" />
+            </DataGrid.Columns>
         </DataGrid>
     </Grid>
 </UserControl>
