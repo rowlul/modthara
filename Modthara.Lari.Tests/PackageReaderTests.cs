@@ -1,6 +1,4 @@
-﻿using System.IO.Abstractions;
-
-using Modthara.Lari.Lsx;
+﻿using Modthara.Lari.Lsx;
 using Modthara.Lari.Pak;
 
 namespace Modthara.Lari.Tests;
@@ -10,8 +8,7 @@ public class PackageReaderTests
     [Fact]
     public void FromStream_ValidHeader_ReturnsPackage()
     {
-        var fs = new FileSystem();
-        using var s = fs.File.OpenRead("./TestFiles/Sample_VFX_Mod.pak");
+        using var s = File.OpenRead("./TestFiles/Sample_VFX_Mod.pak");
 
         var pak = PackageReader.FromStream(s);
         pak.FileListOffset.Should().Be(0x144E8);
@@ -25,8 +22,7 @@ public class PackageReaderTests
     [Fact]
     public void FromStream_ValidPackagedFile_ReturnsPackage()
     {
-        var fs = new FileSystem();
-        using var s = fs.File.OpenRead("./TestFiles/Sample_VFX_Mod.pak");
+        using var s = File.OpenRead("./TestFiles/Sample_VFX_Mod.pak");
 
         var file = PackageReader.FromStream(s).Files[1];
         file.ArchivePart.Should().Be(0x0);
@@ -42,8 +38,7 @@ public class PackageReaderTests
     [Fact]
     public void FromStream_ValidLsxInPackageFile_ReturnsPackage()
     {
-        var fs = new FileSystem();
-        using var s = fs.File.OpenRead("./TestFiles/Sample_VFX_Mod.pak");
+        using var s = File.OpenRead("./TestFiles/Sample_VFX_Mod.pak");
 
         var file = PackageReader.FromStream(s).Files[1];
         var lsx = () =>
@@ -57,8 +52,7 @@ public class PackageReaderTests
     [Fact]
     public void FromStream_UnsupportedVersion_ThrowsException()
     {
-        var fs = new FileSystem();
-        var s = () => PackageReader.FromStream(fs.File.OpenRead("./TestFiles/mod_v15.pak"));
+        var s = () => PackageReader.FromStream(File.OpenRead("./TestFiles/mod_v15.pak"));
         s.Should().Throw<LspkException>().WithMessage("Unsupported package version: expected 18, got 15.");
     }
 }
