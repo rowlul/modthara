@@ -1,5 +1,4 @@
-﻿using System.IO.Abstractions;
-using System.IO.Abstractions.TestingHelpers;
+﻿using Modthara.Lari.Lsx;
 
 namespace Modthara.Lari.Tests;
 
@@ -25,54 +24,17 @@ public class ModSettingsTests
         }
     ];
 
-    [Fact]
-    public void Read_SanitizedLsx_ReturnsModSettings()
-    {
-        var expected = new ModSettings(new LariVersion(4, 0, 9, 331), Mods);
-
-        var fs = new FileSystem();
-        var actual = ModSettings.Read("./TestFiles/modsettings_sanitized.lsx", fs.FileStream);
-        actual.Should().BeEquivalentTo(expected);
-    }
-
-    [Fact]
-    public void Write_EmptyOrder()
-    {
-        const string expected =
-            """
-            <?xml version="1.0" encoding="UTF-8"?>
-            <save>
-                <version major="0" minor="0" revision="0" build="0" />
-                <region id="ModuleSettings">
-                    <node id="root">
-                        <children>
-                            <node id="ModOrder" />
-                            <node id="Mods" />
-                        </children>
-                    </node>
-                </region>
-            </save>
-            """;
-
-        var fs = new MockFileSystem();
-        var path = @"c:\modsettings.lsx";
-        var order = new ModSettings();
-        order.Write(path, fs.FileStream);
-
-        var actual = fs.File.ReadAllText(path).ReplaceLineEndings("\n");
-        actual.Should().Be(expected);
-    }
-
     [Theory]
     [InlineData("duplicates")]
     [InlineData("order")]
-    [InlineData("unpaired", Skip = "Not yet implemented")] // TODO: Implement unpaired sanitization
     public void Sanitize_UnsanitizedLsx_ReturnsModSettings(string variation)
     {
         var expected = new ModSettings(new LariVersion(4, 0, 9, 331), Mods);
 
-        var fs = new FileSystem();
-        var actual = ModSettings.Read($"./TestFiles/modsettings_unsanitized_{variation}.lsx", fs.FileStream);
+        using var s = File.OpenRead($"./TestFiles/modsettings_unsanitized_{variation}.lsx");
+        var lsx = LsxDocument.FromStream(s);
+        var actual = new ModSettings(lsx);
+
         actual.Sanitize();
         actual.Should().BeEquivalentTo(expected);
     }

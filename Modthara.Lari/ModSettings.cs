@@ -1,6 +1,4 @@
-﻿using System.IO.Abstractions;
-
-using Modthara.Lari.Lsx;
+﻿using Modthara.Lari.Lsx;
 
 namespace Modthara.Lari;
 
@@ -76,57 +74,8 @@ public class ModSettings
         }
     }
 
-    /// <summary>
-    /// Creates a new instance from file.
-    /// </summary>
-    /// <param name="path">Path to the file.</param>
-    /// <param name="fileStreamFactory">Wrapper for FileStream.</param>
-    /// <returns>New instance of <see cref="ModSettings"/>.</returns>
-    /// <exception cref="InvalidOperationException">Thrown if serialized <see cref="LsxDocument"/> was null.</exception>
-    public static ModSettings Read(string path, IFileStreamFactory fileStreamFactory)
-    {
-        using var file = fileStreamFactory.New(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-        return new ModSettings(LsxDocument.FromStream(file));
-    }
-
-    /// <summary>
-    /// Creates a new instance from file.
-    /// </summary>
-    /// <param name="path">Path to the file.</param>
-    /// <param name="fileStreamFactory">Wrapper for FileStream.</param>
-    /// <returns>New instance of <see cref="ModSettings"/>.</returns>
-    /// <exception cref="InvalidOperationException">Thrown if serialized <see cref="LsxDocument"/> was null.</exception>
-    public async static Task<ModSettings> ReadAsync(string path, IFileStreamFactory fileStreamFactory)
-    {
-        await using var file = fileStreamFactory.New(path, FileMode.Open, FileAccess.Read, FileShare.Read,
-            bufferSize: 4096, useAsync: true);
-        return new ModSettings(LsxDocument.FromStream(file));
-    }
-
-    /// <summary>
-    /// Writes changes to the specified path, overwriting the file.
-    /// </summary>
-    /// <param name="path">Path to the file.</param>
-    /// <param name="fileStreamFactory">Wrapper for FileStream.</param>
-    public void Write(string path, IFileStreamFactory fileStreamFactory)
-    {
-        using var document = _document.ToStream();
-        using var file = fileStreamFactory.New(path, FileMode.Create, FileAccess.Write, FileShare.None);
-        document.CopyTo(file);
-    }
-
-    /// <summary>
-    /// Writes changes to the specified path, overwriting the file.
-    /// </summary>
-    /// <param name="path">Path to the file.</param>
-    /// <param name="fileStreamFactory">Wrapper for FileStream.</param>
-    public async Task WriteAsync(string path, IFileStreamFactory fileStreamFactory)
-    {
-        await using var document = _document.ToStream();
-        await using var file = fileStreamFactory.New(path, FileMode.Create, FileAccess.Write, FileShare.None,
-            bufferSize: 4096, useAsync: true);
-        await document.CopyToAsync(file);
-    }
+    /// <inheritdoc cref="LsxDocument.ToStream"/>
+    public Stream ToStream() => _document.ToStream();
 
     /// <summary>
     /// Sanitizes the mod list in the correct order according to <c>ModOrder</c> node.

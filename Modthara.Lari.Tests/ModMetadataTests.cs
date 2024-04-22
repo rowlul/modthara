@@ -1,6 +1,4 @@
-﻿using System.IO.Abstractions;
-
-using Modthara.Lari.Lsx;
+﻿using Modthara.Lari.Lsx;
 
 namespace Modthara.Lari.Tests;
 
@@ -9,8 +7,7 @@ public class ModMetadataTests
     [Fact]
     public void FromLsx_ExampleMeta_ReturnsMod()
     {
-        var fs = new FileSystem();
-        using var s = fs.File.OpenRead("./TestFiles/meta.lsx");
+        using var s = File.OpenRead("./TestFiles/meta.lsx");
         var lsx = LsxDocument.FromStream(s);
 
         var expected = new ModMetadata
@@ -22,7 +19,8 @@ public class ModMetadataTests
             Md5 = "",
             Uuid = new LariUuid("adc05d68-6d4e-4763-9724-ac47bfb68c7b"),
             Version = 36028797018963968UL,
-            Dependencies = [
+            Dependencies =
+            [
                 new ModMetadata
                 {
                     FolderName = "SharedDev",
