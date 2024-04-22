@@ -89,6 +89,11 @@ public partial class MainViewModel : ViewModelBase
         {
             ProgressStatus = $"({idx}/{modCount}) Processing package: {pak.Name}";
             return Task.CompletedTask;
+        }, e =>
+        {
+            // TODO: use serilog and user-friendly notifications
+            Console.WriteLine(e);
+            return Task.CompletedTask;
         });
 
         IsBusy = false;
