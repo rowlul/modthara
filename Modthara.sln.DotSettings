@@ -1,4 +1,16 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:Boolean x:Key="/Default/Dpa/AspIssuesOutdateTimeoutEnable/@EntryValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/Dpa/EnableInspections/=AllocationClosure/@EntryIndexedValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/Dpa/EnableInspections/=AllocationLoh/@EntryIndexedValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/Dpa/EnableInspections/=AllocationTopSoh/@EntryIndexedValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/Dpa/EnableInspections/=AspControllerActionDuration/@EntryIndexedValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/Dpa/EnableInspections/=AspHandlerDuration/@EntryIndexedValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/Dpa/EnableInspections/=AspViewComponentDuration/@EntryIndexedValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/Dpa/EnableInspections/=SqlCommandCount/@EntryIndexedValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/Dpa/EnableInspections/=SqlCommandDuration/@EntryIndexedValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/Dpa/EnableInspections/=SqlConnectionCount/@EntryIndexedValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/Dpa/EnableInspections/=SqlRecordCount/@EntryIndexedValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/Dpa/IsSqlAutoDisable/@EntryValue">False</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Avalonia/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=loca/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Lspk/@EntryIndexedValue">True</s:Boolean>
