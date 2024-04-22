@@ -56,7 +56,7 @@ public partial class Packager : IPackager
     }
 
     /// <inheritdoc cref="IPackager.ReadPackages"/>
-    public async IAsyncEnumerable<ModPackage> ReadPackagesAsync()
+    public async IAsyncEnumerable<ModPackage> ReadPackagesAsync(Func<Exception, Task>? onException = null)
     {
         using var e = await Task.Run([SuppressMessage("ReSharper", "NotDisposedResourceIsReturned")]() =>
                 _fileSystem.Directory.EnumerateFiles(_modsPath, "*.pak", SearchOption.TopDirectoryOnly).GetEnumerator())
@@ -67,17 +67,37 @@ public partial class Packager : IPackager
             var path = e.Current;
             var fileStream = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read,
                 FileShare.Read, bufferSize: 4096, useAsync: true);
-            var pak = await Task.Run(() => PackageReader.FromStream(fileStream)).ConfigureAwait(false);
-            var modPackage = await CreateModPackageAsync(pak, path).ConfigureAwait(false);
-            await fileStream.DisposeAsync().ConfigureAwait(false);
+
+            ModPackage modPackage;
+            try
+            {
+                var pak = await Task.Run(() => PackageReader.FromStream(fileStream))
+                    .ConfigureAwait(false);
+                modPackage = await CreateModPackageAsync(pak, path).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                if (onException != null)
+                {
+                    await onException.Invoke(ex).ConfigureAwait(false);
+                }
+
+                continue;
+            }
+            finally
+            {
+                await fileStream.DisposeAsync().ConfigureAwait(false);
+            }
+
             yield return modPackage;
         }
     }
 
     /// <inheritdoc cref="IPackager.LoadPackagesToCacheAsync"/>
-    public async Task LoadPackagesToCacheAsync(AsyncPackageCallback? asyncPackageCallback = null)
+    public async Task LoadPackagesToCacheAsync(AsyncPackageCallback? asyncPackageCallback = null,
+        Func<Exception, Task>? onException = null)
     {
-        await using var e = ReadPackagesAsync().GetAsyncEnumerator();
+        await using var e = ReadPackagesAsync(onException).GetAsyncEnumerator();
 
         int i = 0;
         while (await e.MoveNextAsync().ConfigureAwait(false))

@@ -27,15 +27,31 @@ public interface IPackager
     /// </returns>
     public IEnumerable<ModPackage> ReadPackages();
 
-    /// <inheritdoc cref="ReadPackages"/>
-    public IAsyncEnumerable<ModPackage> ReadPackagesAsync();
+    /// <summary>
+    /// Reads packages in Mods folder.
+    /// </summary>
+    /// <param name="onException">
+    /// Method that is executed whenever <see cref="IAsyncEnumerator{T}"/> throws an exception. If null, rethrows the
+    /// exception.
+    /// </param>
+    /// <returns>
+    /// List of packages.
+    /// </returns>
+    public IAsyncEnumerable<ModPackage> ReadPackagesAsync(Func<Exception, Task>? onException = null);
 
     /// <summary>
     /// Loads packages to <see cref="Cache"/> for cached access.
     /// </summary>
-    /// <param name="asyncPackageCallback">Callback for each enumerated package.</param>
+    /// <param name="asyncPackageCallback">
+    /// Callback for each enumerated package.
+    /// </param>
+    /// <param name="onException">
+    /// Method that is executed whenever <see cref="IAsyncEnumerator{T}"/> in <see cref="ReadPackagesAsync"/> throws
+    /// an exception. If null, rethrows the exception.
+    /// </param>
     /// <returns></returns>
-    public Task LoadPackagesToCacheAsync(AsyncPackageCallback? asyncPackageCallback = null);
+    public Task LoadPackagesToCacheAsync(AsyncPackageCallback? asyncPackageCallback = null,
+        Func<Exception, Task>? onException = null);
 
     /// <summary>
     /// Counts mods in Mods folder.
