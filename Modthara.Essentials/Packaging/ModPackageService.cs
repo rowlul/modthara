@@ -24,41 +24,7 @@ public partial class ModPackageService : IModPackageService
     }
 
     /// <inheritdoc />
-    public async IAsyncEnumerable<ModPackage> ReadPackagesAsync(string path, Action<Exception>? onException = null,
-        PackageReadCallback? packageReadCallback = null)
-    {
-        using var e = await Task.Run([SuppressMessage("ReSharper", "NotDisposedResourceIsReturned")]() =>
-                _fileSystem.Directory.EnumerateFiles(path, "*.pak", SearchOption.TopDirectoryOnly).GetEnumerator())
-            .ConfigureAwait(false);
-
-        int i = 0;
-        while (await Task.Run(() => e.MoveNext()).ConfigureAwait(false))
-        {
-            i++;
-            var file = e.Current;
-
-            ModPackage modPackage;
-            try
-            {
-                modPackage = await CreateModPackageAsync(file).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                onException?.Invoke(ex);
-                continue;
-            }
-
-            packageReadCallback?.Invoke(i, modPackage);
-            yield return modPackage;
-        }
-    }
-
-    /// <inheritdoc />
-    public int CountPackages(string path) =>
-        _fileSystem.Directory.GetFiles(path, "*.pak", SearchOption.TopDirectoryOnly).Length;
-
-    /// <inheritdoc />
-    public async ValueTask<ModPackage> CreateModPackageAsync(string path)
+    public async ValueTask<ModPackage> ReadPackageAsync(string path)
     {
         var fileStream = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read,
             FileShare.Read, bufferSize: 4096, useAsync: true);
@@ -122,6 +88,40 @@ public partial class ModPackageService : IModPackageService
             await fileStream.DisposeAsync().ConfigureAwait(false);
         }
     }
+
+    /// <inheritdoc />
+    public async IAsyncEnumerable<ModPackage> ReadPackagesAsync(string path, Action<Exception>? onException = null,
+        PackageReadCallback? packageReadCallback = null)
+    {
+        using var e = await Task.Run([SuppressMessage("ReSharper", "NotDisposedResourceIsReturned")]() =>
+                _fileSystem.Directory.EnumerateFiles(path, "*.pak", SearchOption.TopDirectoryOnly).GetEnumerator())
+            .ConfigureAwait(false);
+
+        int i = 0;
+        while (await Task.Run(() => e.MoveNext()).ConfigureAwait(false))
+        {
+            i++;
+            var file = e.Current;
+
+            ModPackage modPackage;
+            try
+            {
+                modPackage = await ReadPackageAsync(file).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                onException?.Invoke(ex);
+                continue;
+            }
+
+            packageReadCallback?.Invoke(i, modPackage);
+            yield return modPackage;
+        }
+    }
+
+    /// <inheritdoc />
+    public int CountPackages(string path) =>
+        _fileSystem.Directory.GetFiles(path, "*.pak", SearchOption.TopDirectoryOnly).Length;
 
     public PackagedFile? FindMeta(Package pak)
     {

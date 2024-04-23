@@ -9,6 +9,17 @@ namespace Modthara.Essentials.Abstractions;
 public interface IModPackageService
 {
     /// <summary>
+    /// Processes <paramref name="pak"/> and creates a <see cref="ModPackage"/>.
+    /// </summary>
+    /// <param name="path">
+    /// Path to package.
+    /// </param>
+    /// <returns>
+    /// Mod package.
+    /// </returns>
+    ValueTask<ModPackage> ReadPackageAsync(string path);
+
+    /// <summary>
     /// Reads packages in Mods folder.
     /// </summary>
     /// <param name="path">
@@ -37,17 +48,6 @@ public interface IModPackageService
     /// Package count.
     /// </returns>
     int CountPackages(string path);
-
-    /// <summary>
-    /// Processes <paramref name="pak"/> and creates a <see cref="ModPackage"/>.
-    /// </summary>
-    /// <param name="path">
-    /// Path to package.
-    /// </param>
-    /// <returns>
-    /// Mod package.
-    /// </returns>
-    ValueTask<ModPackage> CreateModPackageAsync(string path);
 
     // TODO: docs docs docs
 
