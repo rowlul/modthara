@@ -78,7 +78,8 @@ public partial class ModPackageService : IModPackageService
                 Dependencies = modMeta.Dependencies,
                 Package = pak,
                 Flags = flags,
-                LastModified = lastModified
+                LastModified = lastModified,
+                Path = path
             };
             return modPackage;
         }
