@@ -10,7 +10,7 @@ namespace Modthara.App.ViewModels;
 public partial class MainViewModel : ViewModelBase
 {
     private readonly Router<ViewModelBase> _router;
-    private readonly IPackager _packager;
+    private readonly IModsDirectory _modsDirectory;
 
     [ObservableProperty] private string _progressStatus = string.Empty;
     [ObservableProperty] private double _progressMax = 100;
@@ -30,10 +30,10 @@ public partial class MainViewModel : ViewModelBase
         new("Native Mods", "nativeMods", "fa-solid fa-cubes")
     ];
 
-    public MainViewModel(Router<ViewModelBase> router, IPackager packager)
+    public MainViewModel(Router<ViewModelBase> router, IModsDirectory modsDirectory)
     {
         _router = router;
-        _packager = packager;
+        _modsDirectory = modsDirectory;
 
         router.CurrentViewModelChanged += viewModel => Content = viewModel;
         SelectedItem = SidebarItems[0];
@@ -76,7 +76,7 @@ public partial class MainViewModel : ViewModelBase
             return;
         }
 
-        var modCount = await _packager.CountAsync();
+        var modCount = _modsDirectory.CountPackages();
         if (modCount == 0)
         {
             return;
@@ -85,15 +85,9 @@ public partial class MainViewModel : ViewModelBase
         IsBusy = true;
         IsProgressIndeterminate = true;
 
-        await _packager.LoadPackagesToCacheAsync((idx, pak) =>
+        await _modsDirectory.LoadPackagesAsync(Console.WriteLine, (idx, pak) =>
         {
             ProgressStatus = $"({idx}/{modCount}) Processing package: {pak.Name}";
-            return Task.CompletedTask;
-        }, e =>
-        {
-            // TODO: use serilog and user-friendly notifications
-            Console.WriteLine(e);
-            return Task.CompletedTask;
         });
 
         IsBusy = false;

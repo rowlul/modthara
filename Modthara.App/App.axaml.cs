@@ -7,6 +7,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 
 using CommunityToolkit.Mvvm.DependencyInjection;
 
@@ -35,20 +36,17 @@ public partial class App : Application
         ServiceProvider services = ConfigureServices();
         Ioc.Default.ConfigureServices(services);
 
-        var viewModel = services.GetRequiredService<MainViewModel>();
+        var mainVm = services.GetRequiredService<MainViewModel>();
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow { DataContext = viewModel };
+            desktop.MainWindow = new MainWindow { DataContext = mainVm };
         }
 
-        viewModel.LoadPackages().ContinueWith(_ =>
+        mainVm.LoadPackages().ContinueWith(_ =>
         {
-            var packager = services.GetRequiredService<IPackager>();
-            if (packager.CachedModCount > 0)
-            {
-                var packagesVm = services.GetRequiredService<PackagesViewModel>();
-                packagesVm.Mods = new ObservableCollection<ModPackage>(packager.Cache);
-            }
+            var modsDirectory = services.GetRequiredService<IModsDirectory>();
+            var packagesVm = services.GetRequiredService<PackagesViewModel>();
+            packagesVm.Mods = new ObservableCollection<ModPackage>(modsDirectory.Packages);
         }).SafeFireAndForget();
 
         base.OnFrameworkInitializationCompleted();
@@ -60,15 +58,14 @@ public partial class App : Application
 
         services.AddSingleton<Router<ViewModelBase>>(s =>
             new Router<ViewModelBase>(v => (ViewModelBase)s.GetRequiredService(v)));
-        services.AddSingleton<PaginatedRouter<ViewModelBase>>(s =>
-            new PaginatedRouter<ViewModelBase>(v => (ViewModelBase)s.GetRequiredService(v)));
 
-        services.AddSingleton<IFileSystem, FileSystem>();
-        services.AddSingleton<IPackager>(s =>
-            new Packager(
+        services.AddScoped<IFileSystem, FileSystem>();
+        services.AddTransient<IModPackageService, ModPackageService>();
+        services.AddSingleton<IModsDirectory>(s =>
+            new UserModsDirectory(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) +
                 @"\Larian Studios\Baldur's Gate 3\Mods",
-                s.GetRequiredService<IFileSystem>()));
+                s.GetRequiredService<IModPackageService>()));
 
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<PackagesViewModel>();
