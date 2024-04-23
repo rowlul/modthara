@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.IO.Abstractions;
+﻿using System.IO.Abstractions;
 using System.Text.RegularExpressions;
 
 using Modthara.Essentials.Abstractions;
@@ -93,15 +92,10 @@ public partial class ModPackageService : IModPackageService
     public async IAsyncEnumerable<ModPackage> ReadPackagesAsync(string path, Action<Exception>? onException = null,
         PackageReadCallback? packageReadCallback = null)
     {
-        using var e = await Task.Run([SuppressMessage("ReSharper", "NotDisposedResourceIsReturned")]() =>
-                _fileSystem.Directory.EnumerateFiles(path, "*.pak", SearchOption.TopDirectoryOnly).GetEnumerator())
-            .ConfigureAwait(false);
-
         int i = 0;
-        while (await Task.Run(() => e.MoveNext()).ConfigureAwait(false))
+        foreach (var file in _fileSystem.Directory.EnumerateFiles(path, "*.pak", SearchOption.TopDirectoryOnly))
         {
             i++;
-            var file = e.Current;
 
             ModPackage modPackage;
             try
