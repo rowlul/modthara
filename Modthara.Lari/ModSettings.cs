@@ -44,9 +44,9 @@ public class ModSettings
     /// <param name="mods">
     /// Mods to be included.
     /// </param>
-    public ModSettings(LariVersion version = default, IList<ModMetadata>? mods = null) : this(new LsxDocument
+    public ModSettings(LariVersion? version = null, IList<ModMetadata>? mods = null) : this(new LsxDocument
     {
-        Version = version,
+        Version = DefaultLariVersion,
         Regions =
         [
             new LsxRegion
@@ -147,4 +147,6 @@ public class ModSettings
         _modsNode.Children!.Remove(modMetadata.ToModuleShortDesc());
         _mods.Remove(modMetadata);
     }
+
+    private static readonly LariVersion DefaultLariVersion = 144959613005988740;
 }
