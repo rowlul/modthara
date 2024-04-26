@@ -13,7 +13,7 @@ public class ModMetadata
     public required string FolderName { get; set; }
     public string Md5 { get; set; } = string.Empty;
     public LariUuid Uuid { get; set; } = LariUuid.NewGuid();
-    public LariVersion Version { get; set; } = 36028797018963968UL;
+    public LariVersion Version { get; set; } = DefaultLariVersion;
     public IList<ModMetadata> Dependencies { get; set; } = [];
 
     /// <summary>
@@ -128,4 +128,6 @@ public class ModMetadata
                 }
             ]
         };
+
+    private static readonly LariVersion DefaultLariVersion = 36028797018963968UL;
 }
