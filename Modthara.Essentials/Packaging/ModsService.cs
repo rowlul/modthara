@@ -54,7 +54,7 @@ public class ModsService : IModsService
     }
 
     /// <inheritdoc />
-    public async Task<ModPackage> ImportModPackageAsync(string path)
+    public async ValueTask<ModPackage> ImportModPackageAsync(string path)
     {
         var package = await _modPackageManager.ReadModPackageAsync(path).ConfigureAwait(false);
 

@@ -46,7 +46,7 @@ public interface IModsService
     /// <returns>
     /// Imported package.
     /// </returns>
-    Task<ModPackage> ImportModPackageAsync(string path);
+    ValueTask<ModPackage> ImportModPackageAsync(string path);
 
     /// <summary>
     /// Deletes package from <paramref name="path"/>.
