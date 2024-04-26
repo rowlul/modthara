@@ -3,14 +3,14 @@ using CommunityToolkit.Mvvm.Input;
 
 using Modthara.App.Models;
 using Modthara.App.Routing;
-using Modthara.Essentials.Abstractions;
+using Modthara.Essentials.Packaging;
 
 namespace Modthara.App.ViewModels;
 
 public partial class MainViewModel : ViewModelBase
 {
     private readonly Router<ViewModelBase> _router;
-    private readonly IModsDirectory _modsDirectory;
+    private readonly IModsService _modsService;
 
     [ObservableProperty] private string _progressStatus = string.Empty;
     [ObservableProperty] private double _progressMax = 100;
@@ -30,10 +30,10 @@ public partial class MainViewModel : ViewModelBase
         new("Native Mods", "nativeMods", "fa-solid fa-cubes")
     ];
 
-    public MainViewModel(Router<ViewModelBase> router, IModsDirectory modsDirectory)
+    public MainViewModel(Router<ViewModelBase> router, IModsService modsService)
     {
         _router = router;
-        _modsDirectory = modsDirectory;
+        _modsService = modsService;
 
         router.CurrentViewModelChanged += viewModel => Content = viewModel;
         SelectedItem = SidebarItems[0];
@@ -76,7 +76,7 @@ public partial class MainViewModel : ViewModelBase
             return;
         }
 
-        var modCount = _modsDirectory.CountPackages();
+        var modCount = _modsService.CountModPackages();
         if (modCount == 0)
         {
             return;
@@ -85,7 +85,7 @@ public partial class MainViewModel : ViewModelBase
         IsBusy = true;
         IsProgressIndeterminate = true;
 
-        await _modsDirectory.LoadPackagesAsync(Console.WriteLine, (idx, pak) =>
+        await _modsService.LoadModPackagesAsync(Console.WriteLine, (idx, pak) =>
         {
             ProgressStatus = $"({idx}/{modCount}) Processing package: {pak.Name}";
         });

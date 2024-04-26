@@ -16,7 +16,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Modthara.App.Routing;
 using Modthara.App.ViewModels;
 using Modthara.App.Views;
-using Modthara.Essentials.Abstractions;
 using Modthara.Essentials.Packaging;
 
 namespace Modthara.App;
@@ -44,9 +43,9 @@ public partial class App : Application
 
         mainVm.LoadPackages().ContinueWith(_ =>
         {
-            var modsDirectory = services.GetRequiredService<IModsDirectory>();
+            var modsDirectory = services.GetRequiredService<IModsService>();
             var packagesVm = services.GetRequiredService<PackagesViewModel>();
-            packagesVm.Mods = new ObservableCollection<ModPackage>(modsDirectory.Packages);
+            packagesVm.Mods = new ObservableCollection<ModPackage>(modsDirectory.ModPackages);
         }).SafeFireAndForget();
 
         base.OnFrameworkInitializationCompleted();
@@ -60,12 +59,12 @@ public partial class App : Application
             new Router<ViewModelBase>(v => (ViewModelBase)s.GetRequiredService(v)));
 
         services.AddScoped<IFileSystem, FileSystem>();
-        services.AddTransient<IModPackageService, ModPackageService>();
-        services.AddSingleton<IModsDirectory>(s =>
-            new UserModsDirectory(
+        services.AddTransient<IModPackageManager, ModPackageManager>();
+        services.AddSingleton<IModsService>(s =>
+            new ModsService(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) +
                 @"\Larian Studios\Baldur's Gate 3\Mods",
-                s.GetRequiredService<IModPackageService>(),
+                s.GetRequiredService<IModPackageManager>(),
                 s.GetRequiredService<IFileSystem>()));
 
         services.AddSingleton<MainViewModel>();

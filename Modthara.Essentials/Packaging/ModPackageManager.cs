@@ -1,7 +1,6 @@
 ﻿using System.IO.Abstractions;
 using System.Text.RegularExpressions;
 
-using Modthara.Essentials.Abstractions;
 using Modthara.Lari;
 using Modthara.Lari.Lsx;
 using Modthara.Lari.Pak;
@@ -12,18 +11,18 @@ namespace Modthara.Essentials.Packaging;
 
 public delegate void PackageReadCallback(Index idx, ModPackage package);
 
-/// <inheritdoc cref="IModPackageService"/>
-public partial class ModPackageService : IModPackageService
+/// <inheritdoc />
+public partial class ModPackageManager : IModPackageManager
 {
     private readonly IFileSystem _fileSystem;
 
-    public ModPackageService(IFileSystem fileSystem)
+    public ModPackageManager(IFileSystem fileSystem)
     {
         _fileSystem = fileSystem;
     }
 
     /// <inheritdoc />
-    public async ValueTask<ModPackage> ReadPackageAsync(string path)
+    public async ValueTask<ModPackage> ReadModPackageAsync(string path)
     {
         var fileStream = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read,
             FileShare.Read, bufferSize: 4096, useAsync: true);
@@ -36,7 +35,7 @@ public partial class ModPackageService : IModPackageService
             var t2 = Task.Run(() => HasModFiles(pak));
             var t3 = Task.Run(() => AltersGameFiles(pak));
             var t4 = Task.Run(() => HasForceRecompile(pak));
-            var t5 = Task.Run(() => RequiresScriptExtender(pak));
+            var t5 = Task.Run(() => FindScriptExtenderConfig(pak));
 
             await Task.WhenAll(t1, t2, t3, t4, t5).ConfigureAwait(false);
 
@@ -44,7 +43,7 @@ public partial class ModPackageService : IModPackageService
             var hasModFiles = t2.Result;
             var altersGameFiles = t3.Result;
             var hasForceRecompile = t4.Result;
-            var requiresScriptExtender = t5.Result;
+            var requiresScriptExtender = t5.Result != null ? ModFlags.RequiresScriptExtender : ModFlags.None;
 
             var flags = hasModFiles | altersGameFiles | hasForceRecompile | requiresScriptExtender;
 
@@ -79,7 +78,8 @@ public partial class ModPackageService : IModPackageService
                 Package = pak,
                 Flags = flags,
                 LastModified = lastModified,
-                Path = path
+                Path = path,
+                ScriptExtenderConfig = t5.Result
             };
             return modPackage;
         }
@@ -90,7 +90,7 @@ public partial class ModPackageService : IModPackageService
     }
 
     /// <inheritdoc />
-    public async IAsyncEnumerable<ModPackage> ReadPackagesAsync(string path, Action<Exception>? onException = null,
+    public async IAsyncEnumerable<ModPackage> ReadModPackagesAsync(string path, Action<Exception>? onException = null,
         PackageReadCallback? packageReadCallback = null)
     {
         int i = 0;
@@ -101,7 +101,7 @@ public partial class ModPackageService : IModPackageService
             ModPackage modPackage;
             try
             {
-                modPackage = await ReadPackageAsync(file).ConfigureAwait(false);
+                modPackage = await ReadModPackageAsync(file).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -115,10 +115,10 @@ public partial class ModPackageService : IModPackageService
     }
 
     /// <inheritdoc />
-    public int CountPackages(string path) =>
+    public int CountModPackages(string path) =>
         _fileSystem.Directory.GetFiles(path, "*.pak", SearchOption.TopDirectoryOnly).Length;
 
-    public PackagedFile? FindMeta(Package pak)
+    private PackagedFile? FindMeta(Package pak)
     {
         foreach (var file in pak.Files)
         {
@@ -132,7 +132,7 @@ public partial class ModPackageService : IModPackageService
         return null;
     }
 
-    public PackagedFile? FindScriptExtenderConfig(Package pak)
+    private PackagedFile? FindScriptExtenderConfig(Package pak)
     {
         foreach (var file in pak.Files)
         {
@@ -146,15 +146,12 @@ public partial class ModPackageService : IModPackageService
         return null;
     }
 
-    public ModFlags RequiresScriptExtender(Package pak) =>
-        FindScriptExtenderConfig(pak) != null ? ModFlags.RequiresScriptExtender : ModFlags.None;
-
-    public ModFlags HasForceRecompile(Package pak) =>
+    private ModFlags HasForceRecompile(Package pak) =>
         pak.Files.Select(file => ForceRecompileRegex().Match(file.Name)).Any(match => match.Success)
-            ? ModFlags.HasModFixer
+            ? ModFlags.HasForceRecompile
             : ModFlags.None;
 
-    public ModFlags AltersGameFiles(Package pak) =>
+    private ModFlags AltersGameFiles(Package pak) =>
         pak.Files.Any(file => file.Name.StartsWith("Video/") ||
                               CommonAlteredGameFiles.Any(f =>
                                   file.Name.StartsWith("Public/" + f) ||
@@ -164,7 +161,7 @@ public partial class ModPackageService : IModPackageService
             ? ModFlags.AltersGameFiles
             : ModFlags.None;
 
-    public ModFlags HasModFiles(Package pak)
+    private ModFlags HasModFiles(Package pak)
     {
         foreach (var file in pak.Files)
         {

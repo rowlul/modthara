@@ -1,16 +1,17 @@
-﻿using Modthara.Essentials.Packaging;
+﻿namespace Modthara.Essentials.Packaging;
 
-namespace Modthara.Essentials.Abstractions;
-
-public interface IModsDirectory
+/// <summary>
+/// Represents a Mods directory.
+/// </summary>
+public interface IModsService
 {
     /// <summary>
     /// List of cached packages.
     /// </summary>
-    IReadOnlyList<ModPackage> Packages { get; }
+    IReadOnlyList<ModPackage> ModPackages { get; }
 
     /// <summary>
-    /// Loads packages to <see cref="Packages"/> for cached access.
+    /// Loads packages to <see cref="ModPackages"/> for cached access.
     /// </summary>
     /// <param name="asyncPackageCallback">
     /// Callback for each enumerated package.
@@ -18,23 +19,23 @@ public interface IModsDirectory
     /// <param name="onException">
     /// Method to be executed whenever enumerator throws an exception. If null, rethrows the exception.
     /// </param>
-    Task LoadPackagesAsync(Action<Exception>? onException = null, PackageReadCallback? asyncPackageCallback = null);
+    Task LoadModPackagesAsync(Action<Exception>? onException = null, PackageReadCallback? asyncPackageCallback = null);
 
     /// <summary>
-    /// Counts packages in mods directory.
+    /// Counts packages in Mods directory.
     /// </summary>
     /// <returns>
     /// Package count.
     /// </returns>
-    int CountPackages();
+    int CountModPackages();
 
     /// <summary>
-    /// Finds duplicate packages.
+    /// Finds duplicate packages in Mods directory.
     /// </summary>
     /// <returns>
     /// Hash set of duplicate packages.
     /// </returns>
-    IReadOnlySet<(ModPackage, ModPackage)> FindDuplicates();
+    IReadOnlySet<(ModPackage, ModPackage)> FindDuplicateModPackages();
 
     /// <summary>
     /// Reads package from <paramref name="path"/> and copies it to Mods directory.
@@ -45,13 +46,13 @@ public interface IModsDirectory
     /// <returns>
     /// Imported package.
     /// </returns>
-    Task<ModPackage> ImportPackageAsync(string path);
+    Task<ModPackage> ImportModPackageAsync(string path);
 
     /// <summary>
-    /// Delets package from <paramref name="path"/>.
+    /// Deletes package from <paramref name="path"/>.
     /// </summary>
     /// <param name="path">
     /// Path to package.
     /// </param>
-    void DeletePackage(string path);
+    void DeleteModPackage(string path);
 }

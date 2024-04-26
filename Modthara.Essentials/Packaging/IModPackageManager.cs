@@ -1,29 +1,26 @@
-﻿using Modthara.Essentials.Packaging;
-using Modthara.Lari.Pak;
-
-namespace Modthara.Essentials.Abstractions;
+﻿namespace Modthara.Essentials.Packaging;
 
 /// <summary>
 /// Represents a service that handles packages.
 /// </summary>
-public interface IModPackageService
+public interface IModPackageManager
 {
     /// <summary>
-    /// Processes <paramref name="pak"/> and creates a <see cref="ModPackage"/>.
+    /// Reads package from PAK file.
     /// </summary>
     /// <param name="path">
     /// Path to package.
     /// </param>
     /// <returns>
-    /// Mod package.
+    /// Instance of <see cref="ModPackage"/>.
     /// </returns>
-    ValueTask<ModPackage> ReadPackageAsync(string path);
+    ValueTask<ModPackage> ReadModPackageAsync(string path);
 
     /// <summary>
-    /// Reads packages in Mods folder.
+    /// Reads packages from a directory of PAK files.
     /// </summary>
     /// <param name="path">
-    /// Path to directory with packages.
+    /// Path to directory.
     /// </param>
     /// <param name="onException">
     /// Method that is executed whenever <see cref="IAsyncEnumerator{T}"/> throws an exception. If null, rethrows the
@@ -35,11 +32,11 @@ public interface IModPackageService
     /// <returns>
     /// List of packages.
     /// </returns>
-    IAsyncEnumerable<ModPackage> ReadPackagesAsync(string path, Action<Exception>? onException = null,
+    IAsyncEnumerable<ModPackage> ReadModPackagesAsync(string path, Action<Exception>? onException = null,
         PackageReadCallback? packageReadCallback = null);
 
     /// <summary>
-    /// Returns package count in <paramref name="path"/>.
+    /// Counts packages in specified path.
     /// </summary>
     /// <param name="path">
     /// Path to directory with packages.
@@ -47,19 +44,5 @@ public interface IModPackageService
     /// <returns>
     /// Package count.
     /// </returns>
-    int CountPackages(string path);
-
-    // TODO: docs docs docs
-
-    PackagedFile? FindMeta(Package pak);
-
-    PackagedFile? FindScriptExtenderConfig(Package pak);
-
-    ModFlags RequiresScriptExtender(Package pak);
-
-    ModFlags HasForceRecompile(Package pak);
-
-    ModFlags AltersGameFiles(Package pak);
-
-    ModFlags HasModFiles(Package pak);
+    int CountModPackages(string path);
 }

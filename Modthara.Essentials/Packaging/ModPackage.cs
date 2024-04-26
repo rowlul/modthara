@@ -7,11 +7,11 @@ namespace Modthara.Essentials.Packaging;
 
 public class ModPackage : ModMetadata
 {
-    public bool IsEnabled { get; set; }
     public required string Path { get; set; }
     public required Package Package { get; init; }
     public required ModFlags Flags { get; init; }
     public DateTime LastModified { get; set; } = DateTime.Now;
+    public PackagedFile? ScriptExtenderConfig { get; set; }
 
     public string StringifiedVersion => Version.ToString();
     public string HumanizedLastModified => LastModified.Humanize();

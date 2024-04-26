@@ -1,21 +1,22 @@
 ﻿using System.IO.Abstractions;
 
-using Modthara.Essentials.Abstractions;
 using Modthara.Lari;
 using Modthara.Lari.Lsx;
 
 namespace Modthara.Essentials.Packaging;
 
-public class OrderManager : IOrderManager
+/// <inheritdoc />
+public class ModSettingsManager : IModSettingsManager
 {
     private readonly IFileSystem _fileSystem;
 
-    public OrderManager(IFileSystem fileSystem)
+    public ModSettingsManager(IFileSystem fileSystem)
     {
         _fileSystem = fileSystem;
     }
 
-    public async Task<ModSettings> ReadOrderAsync(string path)
+    /// <inheritdoc />
+    public async Task<ModSettings> ReadModSettingsAsync(string path)
     {
         await using var file = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read, FileShare.Read,
             bufferSize: 4096, useAsync: true);
@@ -27,7 +28,8 @@ public class OrderManager : IOrderManager
         return order;
     }
 
-    public async Task SaveOrderAsync(string path, ModSettings modSettings)
+    /// <inheritdoc />
+    public async Task SaveModSettingsAsync(string path, ModSettings modSettings)
     {
         await using var stream = modSettings.ToStream();
         await using var file = _fileSystem.FileStream.New(path, FileMode.Create, FileAccess.Write, FileShare.None,
