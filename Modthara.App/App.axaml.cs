@@ -65,7 +65,8 @@ public partial class App : Application
             new UserModsDirectory(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) +
                 @"\Larian Studios\Baldur's Gate 3\Mods",
-                s.GetRequiredService<IModPackageService>()));
+                s.GetRequiredService<IModPackageService>(),
+                s.GetRequiredService<IFileSystem>()));
 
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<PackagesViewModel>();

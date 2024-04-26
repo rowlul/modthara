@@ -27,4 +27,31 @@ public interface IModsDirectory
     /// Package count.
     /// </returns>
     int CountPackages();
+
+    /// <summary>
+    /// Finds duplicate packages.
+    /// </summary>
+    /// <returns>
+    /// Hash set of duplicate packages.
+    /// </returns>
+    IReadOnlySet<(ModPackage, ModPackage)> FindDuplicates();
+
+    /// <summary>
+    /// Reads package from <paramref name="path"/> and copies it to Mods directory.
+    /// </summary>
+    /// <param name="path">
+    /// Path to package.
+    /// </param>
+    /// <returns>
+    /// Imported package.
+    /// </returns>
+    Task<ModPackage> ImportPackageAsync(string path);
+
+    /// <summary>
+    /// Delets package from <paramref name="path"/>.
+    /// </summary>
+    /// <param name="path">
+    /// Path to package.
+    /// </param>
+    void DeletePackage(string path);
 }
