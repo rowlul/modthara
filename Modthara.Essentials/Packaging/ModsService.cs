@@ -62,15 +62,13 @@ public class ModsService : IModsService
         var filename = _fileSystem.Path.GetFileName(path);
         var destPath = _fileSystem.Path.Combine(path, filename);
 
-        const int bufferSize = 4096;
-
         await using var sourceStream = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read,
-            FileShare.Read, bufferSize, useAsync: true);
+            FileShare.Read, StreamBufferSize, useAsync: true);
 
-        await using var destStream = _fileSystem.FileStream.New(destPath, FileMode.Open, FileAccess.Read,
-            FileShare.Read, bufferSize, useAsync: true);
+        await using var destStream = _fileSystem.FileStream.New(destPath, FileMode.Create, FileAccess.Write,
+            FileShare.Write, StreamBufferSize, useAsync: true);
 
-        await sourceStream.CopyToAsync(destStream, bufferSize).ConfigureAwait(false);
+        await sourceStream.CopyToAsync(destStream, StreamBufferSize).ConfigureAwait(false);
 
         _modPackages.Add(package);
         return package;
@@ -121,4 +119,6 @@ public class ModsService : IModsService
         _fileSystem.Directory.Delete(path);
         _modPackages.Remove(package);
     }
+
+    private const int StreamBufferSize = 0x1000;
 }
