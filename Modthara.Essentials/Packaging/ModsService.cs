@@ -1,4 +1,5 @@
 ﻿using System.IO.Abstractions;
+using System.IO.Compression;
 
 namespace Modthara.Essentials.Packaging;
 
@@ -73,6 +74,37 @@ public class ModsService : IModsService
 
         _modPackages.Add(package);
         return package;
+    }
+
+    /// <inheritdoc />
+    public async IAsyncEnumerable<ModPackage> ImportArchivedModPackagesAsync(string path)
+    {
+        var zipFileStream = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read,
+            FileShare.Read, 4096, useAsync: true);
+
+        using var zipArchive =
+            await Task.Run(() => new ZipArchive(zipFileStream, ZipArchiveMode.Read)).ConfigureAwait(false);
+
+        foreach (var entry in zipArchive.Entries)
+        {
+            if (entry.FullName.EndsWith(".pak", StringComparison.OrdinalIgnoreCase))
+            {
+                await using var pakStream = entry.Open();
+
+                var modPackagePath = _fileSystem.Path.Combine(_path, entry.FullName);
+                var modPackage = await _modPackageManager.ReadModPackageAsync(pakStream, modPackagePath, true)
+                    .ConfigureAwait(false);
+                _modPackages.Add(modPackage);
+
+                pakStream.Position = 0;
+
+                await using var pakFileStream = _fileSystem.FileStream.New(path, FileMode.Create, FileAccess.Write,
+                    FileShare.Write, 4096, useAsync: true);
+                await pakStream.CopyToAsync(pakFileStream).ConfigureAwait(false);
+
+                yield return modPackage;
+            }
+        }
     }
 
     /// <inheritdoc />

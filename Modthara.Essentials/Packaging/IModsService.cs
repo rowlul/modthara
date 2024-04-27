@@ -49,6 +49,17 @@ public interface IModsService
     ValueTask<ModPackage> ImportModPackageAsync(string path);
 
     /// <summary>
+    /// Reads archived packages from <paramref name="path"/>, extracts and copies them to Mods directory.
+    /// </summary>
+    /// <param name="path">
+    /// Path to zip archive.
+    /// </param>
+    /// <returns>
+    /// Imported packages.
+    /// </returns>
+    IAsyncEnumerable<ModPackage> ImportArchivedModPackagesAsync(string path);
+
+    /// <summary>
     /// Deletes package from <paramref name="path"/>.
     /// </summary>
     /// <param name="path">
