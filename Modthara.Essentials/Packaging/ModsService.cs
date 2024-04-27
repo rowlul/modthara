@@ -105,6 +105,8 @@ public class ModsService : IModsService
                 yield return modPackage;
             }
         }
+
+        await zipFileStream.DisposeAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc />
