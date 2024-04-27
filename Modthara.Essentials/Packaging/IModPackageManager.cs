@@ -11,10 +11,30 @@ public interface IModPackageManager
     /// <param name="path">
     /// Path to package.
     /// </param>
+    /// <param name="leaveOpen">
+    /// Determines whether to leave underlying <see cref="FileStream"/> open or not.
+    /// </param>
     /// <returns>
     /// Instance of <see cref="ModPackage"/>.
     /// </returns>
-    ValueTask<ModPackage> ReadModPackageAsync(string path);
+    ValueTask<ModPackage> ReadModPackageAsync(string path, bool leaveOpen = false);
+
+    /// <summary>
+    /// Reads package from stream.
+    /// </summary>
+    /// <param name="stream">
+    /// Stream of the package.
+    /// </param>
+    /// <param name="path">
+    /// Path to package.
+    /// </param>
+    /// <param name="leaveOpen">
+    /// Determines whether to leave underlying <see cref="FileStream"/> open or not.
+    /// </param>
+    /// <returns>
+    /// Instance of <see cref="ModPackage"/>.
+    /// </returns>
+    ValueTask<ModPackage> ReadModPackageAsync(Stream stream, string path, bool leaveOpen = false);
 
     /// <summary>
     /// Reads packages from a directory of PAK files.

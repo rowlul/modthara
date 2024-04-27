@@ -22,14 +22,20 @@ public partial class ModPackageManager : IModPackageManager
     }
 
     /// <inheritdoc />
-    public async ValueTask<ModPackage> ReadModPackageAsync(string path)
+    public ValueTask<ModPackage> ReadModPackageAsync(string path, bool leaveOpen = false)
     {
-        var fileStream = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read,
-            FileShare.Read, bufferSize: 4096, useAsync: true);
+        var fileStream = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read, FileShare.Read,
+            bufferSize: 4096, useAsync: true);
 
+        return ReadModPackageAsync(fileStream, path, leaveOpen);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<ModPackage> ReadModPackageAsync(Stream stream, string path, bool leaveOpen = false)
+    {
         try
         {
-            var pak = await Task.Run(() => PackageReader.FromStream(fileStream)).ConfigureAwait(false);
+            var pak = await Task.Run(() => PackageReader.FromStream(stream)).ConfigureAwait(false);
 
             var t1 = Task.Run(() => FindMeta(pak));
             var t2 = Task.Run(() => HasModFiles(pak));
@@ -85,7 +91,10 @@ public partial class ModPackageManager : IModPackageManager
         }
         finally
         {
-            await fileStream.DisposeAsync().ConfigureAwait(false);
+            if (!leaveOpen)
+            {
+                await stream.DisposeAsync().ConfigureAwait(false);
+            }
         }
     }
 
