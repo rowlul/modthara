@@ -69,6 +69,7 @@ public readonly struct LariUuid(string guid)
         return obj is LariUuid other && Equals(other);
     }
 
+    /// <inheritdoc />
     public override int GetHashCode()
     {
         if (this.TryParse(out Guid guid))
@@ -78,4 +79,7 @@ public readonly struct LariUuid(string guid)
 
         return Value.GetHashCode();
     }
+
+    /// <inheritdoc />
+    public override string ToString() => Value;
 }
