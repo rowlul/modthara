@@ -66,7 +66,7 @@ public class ModsService : IModsService
             FileShare.Read, StreamBufferSize, useAsync: true);
 
         await using var destStream = _fileSystem.FileStream.New(destPath, FileMode.Create, FileAccess.Write,
-            FileShare.Write, StreamBufferSize, useAsync: true);
+            FileShare.None, StreamBufferSize, useAsync: true);
 
         await sourceStream.CopyToAsync(destStream, StreamBufferSize).ConfigureAwait(false);
 
@@ -97,7 +97,7 @@ public class ModsService : IModsService
                 pakStream.Position = 0;
 
                 await using var pakFileStream = _fileSystem.FileStream.New(modPackagePath, FileMode.Create, FileAccess.Write,
-                    FileShare.Write, 4096, useAsync: true);
+                    FileShare.None, 4096, useAsync: true);
                 await pakStream.CopyToAsync(pakFileStream).ConfigureAwait(false);
 
                 yield return modPackage;
