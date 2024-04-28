@@ -1,7 +1,7 @@
 ﻿namespace Modthara.Essentials.Packaging;
 
 /// <summary>
-/// Represents a service that handles packages.
+/// Manages PAK files.
 /// </summary>
 public interface IModPackageManager
 {
