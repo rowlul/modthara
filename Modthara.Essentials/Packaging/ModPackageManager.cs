@@ -114,8 +114,13 @@ public partial class ModPackageManager : IModPackageManager
             }
             catch (Exception ex)
             {
-                onException?.Invoke(ex);
-                continue;
+                if (onException != null)
+                {
+                    onException(ex);
+                    continue;
+                }
+
+                throw;
             }
 
             packageReadCallback?.Invoke(i, modPackage);
