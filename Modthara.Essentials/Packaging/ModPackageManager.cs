@@ -137,7 +137,7 @@ public partial class ModPackageManager : IModPackageManager
         foreach (var file in pak.Files)
         {
             var match = MetaRegex().Match(file.Name);
-            if (match.Success)
+            if (match.Success && CommonAlteredGameFiles.All(gameFile => match.Groups[1].Value != gameFile))
             {
                 return file;
             }
