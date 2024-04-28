@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.IO.Compression;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 using Modthara.Lari;
@@ -50,7 +51,7 @@ public interface IModSettingsManager
     ValueTask<ModSettings> LoadJsonOrderAsync(string path, IReadOnlyList<ModPackage> modPackages);
 
     /// <summary>
-    /// Loads json order to <see cref="ModSettings"/>.
+    /// Loads json order into mod settings.
     /// </summary>
     /// <param name="rootElement">
     /// Root element that contains Order array.
@@ -87,4 +88,22 @@ public interface IModSettingsManager
     /// Json object with Order array that has entries with UUID and Name.
     /// </returns>
     JsonObject CreateJsonOrderFromModSettings(ModSettings modSettings);
+
+    /// <summary>
+    /// Extracts json order and loads it into mod settings.
+    /// </summary>
+    /// <param name="zipArchive">
+    /// Zip archive to extract.
+    /// </param>
+    /// <param name="modPackages">
+    /// List of available mod packages.
+    /// </param>
+    /// <param name="orderName">
+    /// Order name to find if it is known.
+    /// </param>
+    /// <returns>
+    /// Instance of <see cref="ModSettings"/> if order was found, false if order was not found.
+    /// </returns>
+    ValueTask<ModSettings?> ExtractJsonOrderAsync(ZipArchive zipArchive, IReadOnlyList<ModPackage> modPackages,
+        string? orderName = null);
 }

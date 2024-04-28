@@ -1,4 +1,5 @@
 ﻿using System.IO.Abstractions;
+using System.IO.Compression;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -105,5 +106,45 @@ public class ModSettingsManager : IModSettingsManager
 
         var root = new JsonObject { { "Order", order } };
         return root;
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<ModSettings?> ExtractJsonOrderAsync(ZipArchive zipArchive,
+        IReadOnlyList<ModPackage> modPackages, string? orderName = null)
+    {
+        ZipArchiveEntry? orderEntry = null;
+
+        var orderNameEntry = zipArchive.GetEntry(orderName + ".json");
+        var currentEntry = zipArchive.GetEntry("Current.json");
+
+        if (orderName != null && orderNameEntry != null)
+        {
+            orderEntry = orderNameEntry;
+        }
+        else if (currentEntry != null)
+        {
+            orderEntry = currentEntry;
+        }
+        else
+        {
+            foreach (var entry in zipArchive.Entries)
+            {
+                if (entry.FullName.EndsWith(".json"))
+                {
+                    orderEntry = entry;
+                }
+            }
+        }
+
+        if (orderEntry == null)
+        {
+            return null;
+        }
+
+        await using var orderEntryStream = orderEntry.Open();
+        var document = await JsonDocument.ParseAsync(orderEntryStream).ConfigureAwait(false);
+        var order = await Task.Run(() => LoadJsonOrder(document.RootElement, modPackages)).ConfigureAwait(false);
+
+        return order;
     }
 }
