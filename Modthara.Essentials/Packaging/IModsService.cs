@@ -1,4 +1,6 @@
-﻿namespace Modthara.Essentials.Packaging;
+﻿using System.IO.Compression;
+
+namespace Modthara.Essentials.Packaging;
 
 /// <summary>
 /// Represents a Mods directory.
@@ -38,32 +40,26 @@ public interface IModsService
     IReadOnlySet<(ModPackage, ModPackage)> FindDuplicateModPackages();
 
     /// <summary>
-    /// Reads package from <paramref name="path"/> and copies it to Mods directory.
+    /// Copies mod package to Mods directory and adds it to <see cref="ModPackages"/>.
     /// </summary>
-    /// <param name="path">
-    /// Path to package.
+    /// <param name="modPackage">
+    /// Mod package to import.
     /// </param>
-    /// <returns>
-    /// Imported package.
-    /// </returns>
-    ValueTask<ModPackage> ImportModPackageAsync(string path);
+    Task ImportModPackageAsync(ModPackage modPackage);
 
     /// <summary>
-    /// Reads archived packages from <paramref name="path"/>, extracts and copies them to Mods directory.
+    /// Extracts archived mod packages and copies them to Mods directory.
     /// </summary>
-    /// <param name="path">
-    /// Path to zip archive.
+    /// <param name="zipArchive">
+    /// Zip archive to extract.
     /// </param>
-    /// <returns>
-    /// Imported packages.
-    /// </returns>
-    IAsyncEnumerable<ModPackage> ImportArchivedModPackagesAsync(string path);
+    Task ImportArchivedModPackagesAsync(ZipArchive zipArchive);
 
     /// <summary>
-    /// Deletes package from <paramref name="path"/>.
+    /// Deletes package from Mods directory.
     /// </summary>
-    /// <param name="path">
-    /// Path to package.
+    /// <param name="modPackage">
+    /// Mod package to delete.
     /// </param>
-    void DeleteModPackage(string path);
+    void DeleteModPackage(ModPackage modPackage);
 }

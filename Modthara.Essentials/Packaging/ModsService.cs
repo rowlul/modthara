@@ -55,14 +55,11 @@ public class ModsService : IModsService
     }
 
     /// <inheritdoc />
-    public async ValueTask<ModPackage> ImportModPackageAsync(string path)
+    public async Task ImportModPackageAsync(ModPackage modPackage)
     {
-        var package = await _modPackageManager.ReadModPackageAsync(path).ConfigureAwait(false);
+        var destPath = _fileSystem.Path.Combine(_path, modPackage.Path);
 
-        var filename = _fileSystem.Path.GetFileName(path);
-        var destPath = _fileSystem.Path.Combine(_path, filename);
-
-        await using var sourceStream = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read,
+        await using var sourceStream = _fileSystem.FileStream.New(modPackage.Path, FileMode.Open, FileAccess.Read,
             FileShare.Read, StreamBufferSize, useAsync: true);
 
         await using var destStream = _fileSystem.FileStream.New(destPath, FileMode.Create, FileAccess.Write,
@@ -70,19 +67,12 @@ public class ModsService : IModsService
 
         await sourceStream.CopyToAsync(destStream, StreamBufferSize).ConfigureAwait(false);
 
-        _modPackages.Add(package);
-        return package;
+        _modPackages.Add(modPackage);
     }
 
     /// <inheritdoc />
-    public async IAsyncEnumerable<ModPackage> ImportArchivedModPackagesAsync(string path)
+    public async Task ImportArchivedModPackagesAsync(ZipArchive zipArchive)
     {
-        var zipFileStream = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read,
-            FileShare.Read, 4096, useAsync: true);
-
-        using var zipArchive =
-            await Task.Run(() => new ZipArchive(zipFileStream, ZipArchiveMode.Read)).ConfigureAwait(false);
-
         foreach (var entry in zipArchive.Entries)
         {
             if (entry.FullName.EndsWith(".pak", StringComparison.OrdinalIgnoreCase))
@@ -99,25 +89,15 @@ public class ModsService : IModsService
                 await using var pakFileStream = _fileSystem.FileStream.New(modPackagePath, FileMode.Create, FileAccess.Write,
                     FileShare.None, 4096, useAsync: true);
                 await pakStream.CopyToAsync(pakFileStream).ConfigureAwait(false);
-
-                yield return modPackage;
             }
         }
-
-        await zipFileStream.DisposeAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public void DeleteModPackage(string path)
+    public void DeleteModPackage(ModPackage modPackage)
     {
-        var package = _modPackages.FirstOrDefault(x => x.Path == path);
-        if (package == null)
-        {
-            return;
-        }
-
-        _fileSystem.Directory.Delete(path);
-        _modPackages.Remove(package);
+        _fileSystem.Directory.Delete(modPackage.Path);
+        _modPackages.Remove(modPackage);
     }
 
     private const int StreamBufferSize = 0x1000;
