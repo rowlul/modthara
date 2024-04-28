@@ -47,9 +47,15 @@ public class ModSettingsManager : IModSettingsManager
             bufferSize: 4096, useAsync: true);
 
         var document = await JsonDocument.ParseAsync(file).ConfigureAwait(false);
+        var order = await Task.Run(() => LoadJsonOrder(document.RootElement, modPackages)).ConfigureAwait(false);
+        return order;
+    }
 
+    /// <inheritdoc />
+    public ModSettings LoadJsonOrder(JsonElement rootElement, IReadOnlyList<ModPackage> modPackages)
+    {
         List<ModMetadata> mods = [];
-        foreach (var uuid in document.RootElement.GetProperty("Order").EnumerateArray()
+        foreach (var uuid in rootElement.GetProperty("Order").EnumerateArray()
                      .Select(el => el.GetProperty("UUID").GetString()).OfType<string>())
         {
             ModPackage mod;
@@ -73,6 +79,22 @@ public class ModSettingsManager : IModSettingsManager
     /// <inheritdoc />
     public async Task SaveJsonOrderAsync(string path, ModSettings modSettings)
     {
+        var order = await Task.Run(() => CreateJsonOrderFromModSettings(modSettings)).ConfigureAwait(false);
+
+        await _fileSystem.File.WriteAllTextAsync(path,
+                order.ToJsonString(new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    PropertyNameCaseInsensitive = true,
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    AllowTrailingCommas = false
+                }))
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public JsonObject CreateJsonOrderFromModSettings(ModSettings modSettings)
+    {
         var order = new JsonArray();
 
         foreach (var modMeta in modSettings.Mods)
@@ -82,14 +104,6 @@ public class ModSettingsManager : IModSettingsManager
         }
 
         var root = new JsonObject { { "Order", order } };
-        await _fileSystem.File.WriteAllTextAsync(path,
-                root.ToJsonString(new JsonSerializerOptions
-                {
-                    WriteIndented = true,
-                    PropertyNameCaseInsensitive = true,
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    AllowTrailingCommas = false
-                }))
-            .ConfigureAwait(false);
+        return root;
     }
 }

@@ -1,4 +1,7 @@
-﻿using Modthara.Lari;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
+
+using Modthara.Lari;
 
 namespace Modthara.Essentials.Packaging;
 
@@ -47,7 +50,24 @@ public interface IModSettingsManager
     ValueTask<ModSettings> LoadJsonOrderAsync(string path, IReadOnlyList<ModPackage> modPackages);
 
     /// <summary>
-    /// Exports LSX mod settings to JSON mod order.
+    /// Loads json order to <see cref="ModSettings"/>.
+    /// </summary>
+    /// <param name="rootElement">
+    /// Root element that contains Order array.
+    /// </param>
+    /// <param name="modPackages">
+    /// List of available mod packages.
+    /// </param>
+    /// <exception cref="ModNotFoundException">
+    /// Thrown if parsed mod is not found in <see cref="modPackages"/>.
+    /// </exception>
+    /// <returns>
+    /// Instance of <see cref="ModSettings"/>.
+    /// </returns>
+    ModSettings LoadJsonOrder(JsonElement rootElement, IReadOnlyList<ModPackage> modPackages);
+
+    /// <summary>
+    /// Saves mod settings as a json order.
     /// </summary>
     /// <param name="path">
     /// Path to mod order file.
@@ -56,4 +76,15 @@ public interface IModSettingsManager
     /// Instance of <see cref="ModSettings"/>.
     /// </param>
     Task SaveJsonOrderAsync(string path, ModSettings modSettings);
+
+    /// <summary>
+    /// Creates json order from mod settings.
+    /// </summary>
+    /// <param name="modSettings">
+    /// Instance of <see cref="ModSettings"/>.
+    /// </param>
+    /// <returns>
+    /// Json object with Order array that has entries with UUID and Name.
+    /// </returns>
+    JsonObject CreateJsonOrderFromModSettings(ModSettings modSettings);
 }
