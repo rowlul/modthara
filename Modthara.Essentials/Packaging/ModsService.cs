@@ -71,24 +71,43 @@ public class ModsService : IModsService
     }
 
     /// <inheritdoc />
-    public async Task ImportArchivedModPackagesAsync(ZipArchive zipArchive)
+    public async Task ImportArchivedModPackagesAsync(ZipArchive zipArchive, Action<Exception>? onException = null,
+        PackageReadCallback? packageReadCallback = null)
     {
-        foreach (var entry in zipArchive.Entries)
+        int i;
+        for (i = 0; i < zipArchive.Entries.Count; i++)
         {
+            var entry = zipArchive.Entries[i];
             if (entry.FullName.EndsWith(".pak", StringComparison.OrdinalIgnoreCase))
             {
                 await using var pakStream = entry.Open();
 
                 var modPackagePath = _fileSystem.Path.Combine(_path, entry.FullName);
-                var modPackage = await _modPackageManager.ReadModPackageAsync(pakStream, modPackagePath, true)
-                    .ConfigureAwait(false);
-                _modPackages.Add(modPackage);
 
-                pakStream.Position = 0;
+                try
+                {
+                    var modPackage = await _modPackageManager.ReadModPackageAsync(pakStream, modPackagePath, true)
+                        .ConfigureAwait(false);
+                    packageReadCallback?.Invoke(i, modPackage);
 
-                await using var pakFileStream = _fileSystem.FileStream.New(modPackagePath, FileMode.Create, FileAccess.Write,
-                    FileShare.None, 4096, useAsync: true);
-                await pakStream.CopyToAsync(pakFileStream).ConfigureAwait(false);
+                    _modPackages.Add(modPackage);
+
+                    pakStream.Position = 0;
+
+                    await using var pakFileStream = _fileSystem.FileStream.New(modPackagePath, FileMode.Create,
+                        FileAccess.Write,
+                        FileShare.None, 4096, useAsync: true);
+                    await pakStream.CopyToAsync(pakFileStream).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    if (onException != null)
+                    {
+                        onException(e);
+                    }
+
+                    throw;
+                }
             }
         }
     }

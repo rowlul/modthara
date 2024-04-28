@@ -53,7 +53,15 @@ public interface IModsService
     /// <param name="zipArchive">
     /// Zip archive to extract.
     /// </param>
-    Task ImportArchivedModPackagesAsync(ZipArchive zipArchive);
+    /// <param name="onException">
+    /// Method that is executed whenever <see cref="IEnumerator{T}"/> throws an exception. If null, rethrows the
+    /// exception.
+    /// </param>
+    /// <param name="packageReadCallback">
+    /// Callback to current index and item of <see cref="IEnumerator{T}"/>.
+    /// </param>
+    Task ImportArchivedModPackagesAsync(ZipArchive zipArchive, Action<Exception>? onException = null,
+        PackageReadCallback? packageReadCallback = null);
 
     /// <summary>
     /// Deletes package from Mods directory.
