@@ -6,7 +6,7 @@ namespace Modthara.Lari;
 /// Represents an arbitrary version.
 /// </summary>
 [Serializable]
-public readonly struct LariVersion
+public readonly struct LariVersion : IComparable<LariVersion>, IComparable<ulong>, IComparable<uint>
 {
     [XmlAttribute("major")]
     public uint Major { get; init; }
@@ -65,6 +65,30 @@ public readonly struct LariVersion
         (version.Minor & 0x0f) << 24 |
         (version.Revision & 0xff) << 16 |
         (version.Build & 0xffff) << 0;
+
+    /// <inheritdoc />
+    public int CompareTo(LariVersion other)
+    {
+        if (Major != other.Major)
+            return Major.CompareTo(other.Major);
+        if (Minor != other.Minor)
+            return Minor.CompareTo(other.Minor);
+        if (Revision != other.Revision)
+            return Revision.CompareTo(other.Revision);
+        return Build.CompareTo(other.Build);
+    }
+
+    /// <inheritdoc />
+    public int CompareTo(ulong other)
+    {
+        return CompareTo(FromUInt64(other));
+    }
+
+    /// <inheritdoc />
+    public int CompareTo(uint other)
+    {
+        return CompareTo(FromUInt32(other));
+    }
 
     public override string ToString() => $"{Major}.{Minor}.{Revision}.{Build}";
 
