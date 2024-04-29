@@ -12,7 +12,4 @@ public class ModPackage : ModMetadata
     public required ModFlags Flags { get; init; }
     public DateTime LastModified { get; set; } = DateTime.Now;
     public PackagedFile? ScriptExtenderConfig { get; set; }
-
-    public string StringifiedVersion => Version.ToString();
-    public string HumanizedLastModified => LastModified.Humanize();
 }
