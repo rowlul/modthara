@@ -3,11 +3,10 @@
 [Flags]
 public enum ModFlags
 {
-    // @formatter:off
-    None                   = 0b0,
-    HasModFiles            = 0b_0001,
-    AltersGameFiles        = 0b_0010,
-    HasForceRecompile      = 0b_0100,
-    RequiresScriptExtender = 0b_1000,
-    // @formatter:on
+    None = 0,
+    HasModFiles = 1,
+    AltersGameFiles = 1 << 1,
+    HasForceRecompile = 1 << 2,
+    RequiresScriptExtender = 1 << 3,
+    Enabled = 1 << 4
 }
