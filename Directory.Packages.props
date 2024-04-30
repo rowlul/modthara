@@ -7,10 +7,10 @@
         <PackageVersion Include="Avalonia.Desktop" Version="11.0.10" />
         <PackageVersion Include="Avalonia.Diagnostics" Version="11.0.10" />
         <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.0.10" />
-        <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.0.10" />
+        <PackageVersion Include="Avalonia.Controls.TreeDataGrid" Version="11.0.2" />
         <PackageVersion Include="Avalonia.Xaml.Behaviors" Version="11.0.10.6" />
         <PackageVersion Include="Semi.Avalonia" Version="11.0.7.2" />
-        <PackageVersion Include="Semi.Avalonia.DataGrid" Version="11.0.7.2" />
+        <PackageVersion Include="Semi.Avalonia.TreeDataGrid" Version="11.0.1" />
         <PackageVersion Include="Projektanker.Icons.Avalonia" Version="9.3.0" />
         <PackageVersion Include="Projektanker.Icons.Avalonia.FontAwesome" Version="9.3.0" />
         <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.2.2" />

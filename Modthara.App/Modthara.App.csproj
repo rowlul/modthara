@@ -19,10 +19,10 @@
         <PackageReference Include="Avalonia" />
         <PackageReference Include="Avalonia.Desktop" />
         <PackageReference Include="Avalonia.Fonts.Inter" />
-        <PackageReference Include="Avalonia.Controls.DataGrid" />
+        <PackageReference Include="Avalonia.Controls.TreeDataGrid" />
         <PackageReference Include="Avalonia.Xaml.Behaviors" />
         <PackageReference Include="Semi.Avalonia" />
-        <PackageReference Include="Semi.Avalonia.DataGrid" />
+        <PackageReference Include="Semi.Avalonia.TreeDataGrid" />
         <PackageReference Include="Projektanker.Icons.Avalonia" />
         <PackageReference Include="Projektanker.Icons.Avalonia.FontAwesome" />
         <PackageReference Include="CommunityToolkit.Mvvm" />

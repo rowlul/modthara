@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.IO.Abstractions;
 
 using AsyncAwaitBestPractices;
@@ -7,7 +6,6 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
-using Avalonia.Threading;
 
 using CommunityToolkit.Mvvm.DependencyInjection;
 
@@ -43,9 +41,9 @@ public partial class App : Application
 
         mainVm.LoadPackages().ContinueWith(_ =>
         {
-            var modsDirectory = services.GetRequiredService<IModsService>();
             var packagesVm = services.GetRequiredService<PackagesViewModel>();
-            packagesVm.Mods = new ObservableCollection<ModPackage>(modsDirectory.ModPackages);
+            packagesVm.Mods = packagesVm.GetMods();
+            packagesVm.AlteredGameFileModsSource = packagesVm.CreateAlteredGameFileModsSource();
         }).SafeFireAndForget();
 
         base.OnFrameworkInitializationCompleted();
