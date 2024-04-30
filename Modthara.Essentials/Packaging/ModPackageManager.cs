@@ -102,29 +102,39 @@ public partial class ModPackageManager : IModPackageManager
     public async IAsyncEnumerable<ModPackage> ReadModPackagesAsync(string path, Action<Exception>? onException = null,
         PackageReadCallback? packageReadCallback = null)
     {
-        int i = 0;
-        foreach (var file in _fileSystem.Directory.EnumerateFiles(path, "*.pak", SearchOption.TopDirectoryOnly))
-        {
-            i++;
+        var patterns = new[] { "*.pak", "*.pak.off" };
 
-            ModPackage modPackage;
-            try
+        int i = 0;
+        foreach (var pattern in patterns)
+        {
+            foreach (var file in _fileSystem.Directory.EnumerateFiles(path, pattern, SearchOption.TopDirectoryOnly))
             {
-                modPackage = await ReadModPackageAsync(file).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                if (onException != null)
+                i++;
+
+                ModPackage modPackage;
+                try
                 {
-                    onException(ex);
-                    continue;
+                    modPackage = await ReadModPackageAsync(file).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    if (onException != null)
+                    {
+                        onException(ex);
+                        continue;
+                    }
+
+                    throw;
                 }
 
-                throw;
-            }
+                if (_fileSystem.Path.GetExtension(file) == ".pak")
+                {
+                    modPackage.Flags |= ModFlags.Enabled;
+                }
 
-            packageReadCallback?.Invoke(i, modPackage);
-            yield return modPackage;
+                packageReadCallback?.Invoke(i, modPackage);
+                yield return modPackage;
+            }
         }
     }
 
