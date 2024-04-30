@@ -44,17 +44,16 @@ public partial class PackagesViewModel : ViewModelBase
                 {
                     new CheckBoxColumn<ModPackage>(string.Empty,
                         getter: x => x.Flags.HasFlag(ModFlags.Enabled),
-                        setter: (x, val) =>
+                        setter: (x, newValue) =>
                         {
-                            // TODO: actually implement toggling mods in the service
-                            if (val)
+                            if (newValue)
                             {
-                                x.Flags |= ModFlags.Enabled;
+                                _modsService.EnableModPackage(x);
                                 Debug.Assert((x.Flags & ModFlags.Enabled) == ModFlags.Enabled);
                             }
                             else
                             {
-                                x.Flags &= ~ModFlags.Enabled;
+                                _modsService.DisableModPackage(x);
                                 Debug.Assert((x.Flags & ModFlags.Enabled) == ModFlags.None);
                             }
                         },

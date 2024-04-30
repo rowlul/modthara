@@ -64,6 +64,22 @@ public interface IModsService
         PackageReadCallback? packageReadCallback = null);
 
     /// <summary>
+    /// Removes '.off' from the file extension and marks <paramref name="modPackage"/> as enabled.
+    /// </summary>
+    /// <param name="modPackage">
+    /// Mod package to enable.
+    /// </param>
+    void EnableModPackage(ModPackage modPackage);
+
+    /// <summary>
+    /// Appends '.off' to the file extension and marks <paramref name="modPackage"/> as enabled.
+    /// </summary>
+    /// <param name="modPackage">
+    /// Mod package to enable.
+    /// </param>
+    void DisableModPackage(ModPackage modPackage);
+
+    /// <summary>
     /// Deletes package from Mods directory.
     /// </summary>
     /// <param name="modPackage">

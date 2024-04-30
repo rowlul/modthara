@@ -113,6 +113,26 @@ public class ModsService : IModsService
     }
 
     /// <inheritdoc />
+    public void EnableModPackage(ModPackage modPackage)
+    {
+        var newPath = _fileSystem.Path.ChangeExtension(modPackage.Path, null);
+        _fileSystem.FileInfo.New(modPackage.Path).MoveTo(newPath);
+
+        modPackage.Path = newPath;
+        modPackage.Flags |= ModFlags.Enabled;
+    }
+
+    /// <inheritdoc />
+    public void DisableModPackage(ModPackage modPackage)
+    {
+        var newPath = _fileSystem.Path.ChangeExtension(modPackage.Path, ".pak.off");
+        _fileSystem.FileInfo.New(modPackage.Path).MoveTo(newPath);
+
+        modPackage.Path = newPath;
+        modPackage.Flags &= ~ModFlags.Enabled;
+    }
+
+    /// <inheritdoc />
     public void DeleteModPackage(ModPackage modPackage)
     {
         _fileSystem.Directory.Delete(modPackage.Path);
