@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Modthara.App.App"
              xmlns:routing="clr-namespace:Modthara.App.Routing"
+             xmlns:semi="https://irihi.tech/semi"
              RequestedThemeVariant="Default">
 
     <Application.Resources>
@@ -14,7 +15,7 @@
     </Application.DataTemplates>
 
     <Application.Styles>
-        <StyleInclude Source="avares://Semi.Avalonia/Themes/Index.axaml" />
+        <semi:SemiTheme Locale="en-US" />
         <StyleInclude Source="avares://Semi.Avalonia.TreeDataGrid/Index.axaml" />
 
         <Style Selector="Window">
