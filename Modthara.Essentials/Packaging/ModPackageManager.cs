@@ -139,8 +139,21 @@ public partial class ModPackageManager : IModPackageManager
     }
 
     /// <inheritdoc />
-    public int CountModPackages(string path) =>
-        _fileSystem.Directory.GetFiles(path, "*.pak", SearchOption.TopDirectoryOnly).Length;
+    public int CountModPackages(string path)
+    {
+        var patterns = new[] { "*.pak", "*.pak.off" };
+
+        int i = 0;
+        foreach (var pattern in patterns)
+        {
+            foreach (var _ in _fileSystem.Directory.EnumerateFiles(path, pattern, SearchOption.TopDirectoryOnly))
+            {
+                i++;
+            }
+        }
+
+        return i;
+    }
 
     private PackagedFile? FindMeta(Package pak)
     {
