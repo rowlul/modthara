@@ -28,6 +28,7 @@
         <PackageReference Include="CommunityToolkit.Mvvm" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
         <PackageReference Include="AsyncAwaitBestPractices" />
+        <PackageReference Include="Humanizer.Core" />
 
         <PackageReference Include="Avalonia.Diagnostics"
                           Condition="'$(Configuration)' == 'Debug'" />
