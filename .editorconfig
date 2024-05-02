@@ -158,6 +158,8 @@ resharper_csharp_place_accessor_attribute_on_same_line = if_owner_is_single_line
 resharper_csharp_place_field_attribute_on_same_line = if_owner_is_single_line
 resharper_csharp_place_record_field_attribute_on_same_line = always
 
+csharp_style_prefer_primary_constructors = false
+
 # Naming rules
 
 dotnet_naming_rule.types_and_namespaces_should_be_pascalcase.severity = suggestion
