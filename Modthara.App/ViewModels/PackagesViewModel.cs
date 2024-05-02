@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 using Humanizer;
 
@@ -20,6 +21,8 @@ public partial class PackagesViewModel : ViewModelBase
     [ObservableProperty] private ObservableCollection<ModPackage>? _mods;
 
     [ObservableProperty] private FlatTreeDataGridSource<ModPackage>? _alteredGameFileModsSource;
+
+    [ObservableProperty] private bool _isToggleOverridesChecked;
 
     public PackagesViewModel(IModsService modsService)
     {
@@ -37,7 +40,7 @@ public partial class PackagesViewModel : ViewModelBase
 
         var source =
             new FlatTreeDataGridSource<ModPackage>(Mods.Where(x =>
-                (x.Flags & (ModFlags.AltersGameFiles | ModFlags.Enabled)) != ModFlags.None &&
+                (x.Flags & ModFlags.AltersGameFiles) != ModFlags.None &&
                 (x.Flags & ModFlags.HasModFiles) == ModFlags.None))
             {
                 Columns =
@@ -73,4 +76,27 @@ public partial class PackagesViewModel : ViewModelBase
 
         return source;
     }
+
+    [RelayCommand(CanExecute = nameof(CanToggleOverridesExecute))]
+    private void ToggleOverrides()
+    {
+        if (IsToggleOverridesChecked)
+        {
+            for (int i = 0; i < AlteredGameFileModsSource.Rows.Count; i++)
+            {
+                ((CheckBoxCell)AlteredGameFileModsSource.Rows.RealizeCell(AlteredGameFileModsSource.Columns[0], 0, i))
+                    .Value = true;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < AlteredGameFileModsSource.Rows.Count; i++)
+            {
+                ((CheckBoxCell)AlteredGameFileModsSource.Rows.RealizeCell(AlteredGameFileModsSource.Columns[0], 0, i))
+                    .Value = false;
+            }
+        }
+    }
+
+    private bool CanToggleOverridesExecute() => Mods != null && Mods.Any();
 }

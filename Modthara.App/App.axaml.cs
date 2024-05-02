@@ -44,6 +44,8 @@ public partial class App : Application
             var packagesVm = services.GetRequiredService<PackagesViewModel>();
             packagesVm.Mods = packagesVm.GetMods();
             packagesVm.AlteredGameFileModsSource = packagesVm.CreateAlteredGameFileModsSource();
+            packagesVm.IsToggleOverridesChecked =
+                packagesVm.AlteredGameFileModsSource.Items.Any(x => (x.Flags & ModFlags.Enabled) == ModFlags.Enabled);
         }).SafeFireAndForget();
 
         base.OnFrameworkInitializationCompleted();

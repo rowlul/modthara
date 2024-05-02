@@ -27,9 +27,34 @@
                         HorizontalAlignment="Stretch"
                         CornerRadius="10">
 
-                        <!-- Overrides -->
-                        <TreeDataGrid Source="{Binding AlteredGameFileModsSource}"
-                                      ShowColumnHeaders="True" />
+                        <Grid RowDefinitions="40, *">
+                            <Grid
+                                VerticalAlignment="Center"
+                                ColumnDefinitions="Auto 10 Auto * 200 10"
+                                RowDefinitions="Auto">
+                                <ToggleSwitch FontSize="12"
+                                              IsChecked="{Binding IsToggleOverridesChecked}"
+                                              Theme="{DynamicResource SimpleToggleSwitch}"
+                                              Command="{Binding ToggleOverridesCommand}">
+                                </ToggleSwitch>
+
+                                <TextBlock
+                                    Grid.Column="2"
+                                    Text="Overrides"
+                                    FontWeight="Medium"
+                                    VerticalAlignment="Center" />
+
+                                <TextBox Grid.Column="4"
+                                         Watermark="Search Overrides..."
+                                         Classes="Small clearButton" />
+                            </Grid>
+
+                            <!-- Overrides -->
+                            <TreeDataGrid Grid.Row="1"
+                                          Source="{Binding AlteredGameFileModsSource}"
+                                          ShowColumnHeaders="True" />
+                        </Grid>
+
                     </Border>
                 </Grid>
             </Border>
