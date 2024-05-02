@@ -35,8 +35,7 @@
                                 <ToggleSwitch FontSize="12"
                                               IsChecked="{Binding AreOverridesEnabled}"
                                               Theme="{DynamicResource SimpleToggleSwitch}"
-                                              Command="{Binding ToggleOverridesCommand}">
-                                </ToggleSwitch>
+                                              Command="{Binding ToggleOverridesCommand}" />
 
                                 <TextBlock
                                     Grid.Column="2"
@@ -46,11 +45,13 @@
 
                                 <TextBox Grid.Column="4"
                                          Watermark="Search Overrides..."
-                                         Classes="Small clearButton" />
+                                         Classes="Small clearButton"
+                                         Text="{Binding OverridesSearchText}" />
                             </Grid>
 
                             <!-- Overrides -->
                             <TreeDataGrid Grid.Row="1"
+                                          Name="Overrides"
                                           Source="{Binding OverridesSource}"
                                           ShowColumnHeaders="True" />
                         </Grid>

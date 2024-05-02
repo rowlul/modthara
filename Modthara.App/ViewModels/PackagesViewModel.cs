@@ -27,6 +27,9 @@ public partial class PackagesViewModel : ViewModelBase
     [ObservableProperty]
     private bool _areOverridesEnabled;
 
+    [ObservableProperty]
+    private string _overridesSearchText;
+
     public PackagesViewModel(IModsService modsService)
     {
         _modsService = modsService;
@@ -107,6 +110,25 @@ public partial class PackagesViewModel : ViewModelBase
     }
 
     private bool CanToggleOverridesExecute() => Mods != null && Mods.Any();
+
+    partial void OnOverridesSearchTextChanged(string? value)
+    {
+        Debug.Assert(OverridesSource != null, nameof(OverridesSource) + " != null");
+        Debug.Assert(Mods != null, nameof(Mods) + " != null");
+
+        var unfiltered = Mods
+            .Where(HasOverrides);
+
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            OverridesSource.Items = unfiltered;
+            return;
+        }
+
+        // TODO: introduce input debouncing
+        var filtered = unfiltered.Where(x => x.Name.Contains(value, StringComparison.OrdinalIgnoreCase));
+        OverridesSource.Items = filtered;
+    }
 
     private static bool HasOverrides(ModPackage modPackage) =>
         (modPackage.Flags & ModFlags.AltersGameFiles) != ModFlags.None &&

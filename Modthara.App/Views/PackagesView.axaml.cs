@@ -1,6 +1,4 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+﻿using Avalonia.Controls;
 
 namespace Modthara.App.Views;
 
@@ -11,4 +9,3 @@ public partial class PackagesView : UserControl
         InitializeComponent();
     }
 }
-
