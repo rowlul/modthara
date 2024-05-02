@@ -47,9 +47,7 @@ public partial class PackagesViewModel : ViewModelBase
         Debug.Assert(Mods != null, nameof(Mods) + " != null");
 
         var source =
-            new FlatTreeDataGridSource<ModPackage>(Mods.Where(x =>
-                (x.Flags & ModFlags.AltersGameFiles) != ModFlags.None &&
-                (x.Flags & ModFlags.HasModFiles) == ModFlags.None))
+            new FlatTreeDataGridSource<ModPackage>(Mods.Where(HasOverrides))
             {
                 Columns =
                 {
@@ -109,4 +107,8 @@ public partial class PackagesViewModel : ViewModelBase
     }
 
     private bool CanToggleOverridesExecute() => Mods != null && Mods.Any();
+
+    private static bool HasOverrides(ModPackage modPackage) =>
+        (modPackage.Flags & ModFlags.AltersGameFiles) != ModFlags.None &&
+        (modPackage.Flags & ModFlags.HasModFiles) == ModFlags.None;
 }
