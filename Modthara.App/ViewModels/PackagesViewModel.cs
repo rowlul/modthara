@@ -18,11 +18,14 @@ public partial class PackagesViewModel : ViewModelBase
 {
     private readonly IModsService _modsService;
 
-    [ObservableProperty] private ObservableCollection<ModPackage>? _mods;
+    [ObservableProperty]
+    private ObservableCollection<ModPackage>? _mods;
 
-    [ObservableProperty] private FlatTreeDataGridSource<ModPackage>? _overridesSource;
+    [ObservableProperty]
+    private FlatTreeDataGridSource<ModPackage>? _overridesSource;
 
-    [ObservableProperty] private bool _areOverridesEnabled;
+    [ObservableProperty]
+    private bool _areOverridesEnabled;
 
     public PackagesViewModel(IModsService modsService)
     {
