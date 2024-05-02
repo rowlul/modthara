@@ -29,14 +29,19 @@ public partial class PackagesViewModel : ViewModelBase
         _modsService = modsService;
     }
 
-    public ObservableCollection<ModPackage> GetMods() => new(_modsService.ModPackages);
-
-    public FlatTreeDataGridSource<ModPackage>? CreateAlteredGameFileModsSource()
+    public void InitializeViewModel()
     {
-        if (Mods == null)
-        {
-            return null;
-        }
+        Mods = GetMods();
+        AlteredGameFileModsSource = CreateAlteredGameFileModsSource();
+        IsToggleOverridesChecked =
+            AlteredGameFileModsSource.Items.Any(x => (x.Flags & ModFlags.Enabled) == ModFlags.Enabled);
+    }
+
+    private ObservableCollection<ModPackage> GetMods() => new(_modsService.ModPackages);
+
+    private FlatTreeDataGridSource<ModPackage> CreateAlteredGameFileModsSource()
+    {
+        Debug.Assert(Mods != null, nameof(Mods) + " != null");
 
         var source =
             new FlatTreeDataGridSource<ModPackage>(Mods.Where(x =>
@@ -80,6 +85,8 @@ public partial class PackagesViewModel : ViewModelBase
     [RelayCommand(CanExecute = nameof(CanToggleOverridesExecute))]
     private void ToggleOverrides()
     {
+        Debug.Assert(AlteredGameFileModsSource != null, nameof(AlteredGameFileModsSource) + " != null");
+
         if (IsToggleOverridesChecked)
         {
             for (int i = 0; i < AlteredGameFileModsSource.Rows.Count; i++)

@@ -39,14 +39,8 @@ public partial class App : Application
             desktop.MainWindow = new MainWindow { DataContext = mainVm };
         }
 
-        mainVm.LoadPackages().ContinueWith(_ =>
-        {
-            var packagesVm = services.GetRequiredService<PackagesViewModel>();
-            packagesVm.Mods = packagesVm.GetMods();
-            packagesVm.AlteredGameFileModsSource = packagesVm.CreateAlteredGameFileModsSource();
-            packagesVm.IsToggleOverridesChecked =
-                packagesVm.AlteredGameFileModsSource.Items.Any(x => (x.Flags & ModFlags.Enabled) == ModFlags.Enabled);
-        }).SafeFireAndForget();
+        mainVm.LoadPackages().ContinueWith(_ => services.GetRequiredService<PackagesViewModel>().InitializeViewModel())
+            .SafeFireAndForget();
 
         base.OnFrameworkInitializationCompleted();
     }
