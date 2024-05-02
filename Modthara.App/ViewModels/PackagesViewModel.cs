@@ -20,9 +20,9 @@ public partial class PackagesViewModel : ViewModelBase
 
     [ObservableProperty] private ObservableCollection<ModPackage>? _mods;
 
-    [ObservableProperty] private FlatTreeDataGridSource<ModPackage>? _alteredGameFileModsSource;
+    [ObservableProperty] private FlatTreeDataGridSource<ModPackage>? _overridesSource;
 
-    [ObservableProperty] private bool _isToggleOverridesChecked;
+    [ObservableProperty] private bool _areOverridesEnabled;
 
     public PackagesViewModel(IModsService modsService)
     {
@@ -32,14 +32,14 @@ public partial class PackagesViewModel : ViewModelBase
     public void InitializeViewModel()
     {
         Mods = GetMods();
-        AlteredGameFileModsSource = CreateAlteredGameFileModsSource();
-        IsToggleOverridesChecked =
-            AlteredGameFileModsSource.Items.Any(x => (x.Flags & ModFlags.Enabled) == ModFlags.Enabled);
+        OverridesSource = CreateOverridesSource();
+        AreOverridesEnabled =
+            OverridesSource.Items.Any(x => (x.Flags & ModFlags.Enabled) == ModFlags.Enabled);
     }
 
     private ObservableCollection<ModPackage> GetMods() => new(_modsService.ModPackages);
 
-    private FlatTreeDataGridSource<ModPackage> CreateAlteredGameFileModsSource()
+    private FlatTreeDataGridSource<ModPackage> CreateOverridesSource()
     {
         Debug.Assert(Mods != null, nameof(Mods) + " != null");
 
@@ -85,21 +85,21 @@ public partial class PackagesViewModel : ViewModelBase
     [RelayCommand(CanExecute = nameof(CanToggleOverridesExecute))]
     private void ToggleOverrides()
     {
-        Debug.Assert(AlteredGameFileModsSource != null, nameof(AlteredGameFileModsSource) + " != null");
+        Debug.Assert(OverridesSource != null, nameof(OverridesSource) + " != null");
 
-        if (IsToggleOverridesChecked)
+        if (AreOverridesEnabled)
         {
-            for (int i = 0; i < AlteredGameFileModsSource.Rows.Count; i++)
+            for (int i = 0; i < OverridesSource.Rows.Count; i++)
             {
-                ((CheckBoxCell)AlteredGameFileModsSource.Rows.RealizeCell(AlteredGameFileModsSource.Columns[0], 0, i))
+                ((CheckBoxCell)OverridesSource.Rows.RealizeCell(OverridesSource.Columns[0], 0, i))
                     .Value = true;
             }
         }
         else
         {
-            for (int i = 0; i < AlteredGameFileModsSource.Rows.Count; i++)
+            for (int i = 0; i < OverridesSource.Rows.Count; i++)
             {
-                ((CheckBoxCell)AlteredGameFileModsSource.Rows.RealizeCell(AlteredGameFileModsSource.Columns[0], 0, i))
+                ((CheckBoxCell)OverridesSource.Rows.RealizeCell(OverridesSource.Columns[0], 0, i))
                     .Value = false;
             }
         }

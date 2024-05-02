@@ -33,7 +33,7 @@
                                 ColumnDefinitions="Auto 10 Auto * 200 10"
                                 RowDefinitions="Auto">
                                 <ToggleSwitch FontSize="12"
-                                              IsChecked="{Binding IsToggleOverridesChecked}"
+                                              IsChecked="{Binding AreOverridesEnabled}"
                                               Theme="{DynamicResource SimpleToggleSwitch}"
                                               Command="{Binding ToggleOverridesCommand}">
                                 </ToggleSwitch>
@@ -51,7 +51,7 @@
 
                             <!-- Overrides -->
                             <TreeDataGrid Grid.Row="1"
-                                          Source="{Binding AlteredGameFileModsSource}"
+                                          Source="{Binding OverridesSource}"
                                           ShowColumnHeaders="True" />
                         </Grid>
 
