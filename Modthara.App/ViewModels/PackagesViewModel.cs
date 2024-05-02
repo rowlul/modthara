@@ -58,15 +58,24 @@ public partial class PackagesViewModel : ViewModelBase
                         getter: x => x.Flags.HasFlag(ModFlags.Enabled),
                         setter: (x, newValue) =>
                         {
-                            if (newValue)
+                            // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
+                            // ReSharper disable once RedundantBoolCompare
+                            switch (x.Flags & ModFlags.Enabled)
                             {
-                                _modsService.EnableModPackage(x);
-                                Debug.Assert((x.Flags & ModFlags.Enabled) == ModFlags.Enabled);
-                            }
-                            else
-                            {
-                                _modsService.DisableModPackage(x);
-                                Debug.Assert((x.Flags & ModFlags.Enabled) == ModFlags.None);
+                                case ModFlags.None when newValue == true:
+                                    {
+                                        _modsService.EnableModPackage(x);
+                                        Debug.Assert((x.Flags & ModFlags.Enabled) == ModFlags.Enabled);
+                                        Debug.Assert(x.Path[^4..] == ".pak");
+                                        break;
+                                    }
+                                case ModFlags.Enabled when newValue == false:
+                                    {
+                                        _modsService.DisableModPackage(x);
+                                        Debug.Assert((x.Flags & ModFlags.Enabled) == ModFlags.None);
+                                        Debug.Assert(x.Path[^8..] == ".pak.off");
+                                        break;
+                                    }
                             }
                         },
                         options: new CheckBoxColumnOptions<ModPackage> { CanUserResizeColumn = false }),
