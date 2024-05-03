@@ -30,13 +30,6 @@
                                     <i:Icon Value="fa-solid fa-bars" />
                                 </ToggleSwitch.OffContent>
                             </ToggleSwitch>
-                            <ComboBox Grid.Column="3"
-                                      Classes="Small"
-                                      SelectedIndex="0"
-                                      VerticalAlignment="Center"
-                                      MaxWidth="200"
-                                      PlaceholderText="Mod order">
-                            </ComboBox>
                         </Grid>
                         <ListBox ItemsSource="{Binding SidebarItems}"
                                  SelectedItem="{Binding SelectedItem}">
