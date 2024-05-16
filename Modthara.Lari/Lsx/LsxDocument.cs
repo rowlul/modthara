@@ -54,7 +54,7 @@ public class LsxDocument
     /// <param name="nodeId">Node id to look for.</param>
     /// <returns>Found instance of <see cref="LsxNode"/>.</returns>
     /// <exception cref="LsxMissingElementException">Throws if region or node were not found.</exception>
-    public LsxNode FindNodeInRoot(string regionId, string nodeId)
+    public LsxNode GetNode(string regionId, string nodeId)
     {
         var configRegion = this.Regions.FirstOrDefault(r => r.Id == regionId) ??
                            throw new LsxMissingElementException(regionId);
@@ -66,5 +66,14 @@ public class LsxDocument
         }
 
         throw new LsxMissingElementException(regionId);
+    }
+
+    public LsxNode? GetNodeOrDefault(string regionId, string nodeId)
+    {
+        var configRegion = this.Regions.FirstOrDefault(r => r.Id == regionId);
+
+        return configRegion?.RootNode is { Id: "root", Children: not null }
+            ? configRegion.RootNode.Children.FirstOrDefault(n => n.Id == nodeId)
+            : null;
     }
 }

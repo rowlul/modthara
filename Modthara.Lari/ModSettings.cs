@@ -26,10 +26,10 @@ public class ModSettings
     {
         _document = document;
 
-        _modOrderNode = document.FindNodeInRoot("ModuleSettings", "ModOrder");
+        _modOrderNode = document.GetNode("ModuleSettings", "ModOrder");
         _modOrderNode.Children ??= [];
 
-        _modsNode = document.FindNodeInRoot("ModuleSettings", "Mods");
+        _modsNode = document.GetNode("ModuleSettings", "Mods");
         _modOrderNode.Children ??= [];
 
         _mods = _modsNode.GetModules();

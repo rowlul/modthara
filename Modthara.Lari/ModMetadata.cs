@@ -23,8 +23,8 @@ public class ModMetadata
     /// <returns>Instance of <see cref="ModMetadata"/>.</returns>
     public static ModMetadata FromLsx(LsxDocument document)
     {
-        var mod = document.FindNodeInRoot("Config", "ModuleInfo").ToModMetadata();
-        mod.Dependencies = document.FindNodeInRoot("Config", "Dependencies").GetModules();
+        var mod = document.GetNode("Config", "ModuleInfo").ToModMetadata();
+        mod.Dependencies = document.GetNode("Config", "Dependencies").GetModules();
 
         return mod;
     }
