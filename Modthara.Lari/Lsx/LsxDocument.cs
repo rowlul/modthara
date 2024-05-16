@@ -1,5 +1,4 @@
-﻿using System.Text;
-using System.Xml;
+﻿using System.Xml;
 using System.Xml.Serialization;
 
 namespace Modthara.Lari.Lsx;
@@ -57,11 +56,13 @@ public class LsxDocument
     /// <exception cref="LsxMissingElementException">Throws if region or node were not found.</exception>
     public LsxNode FindNodeInRoot(string regionId, string nodeId)
     {
-        var configRegion = this.Regions.FirstOrDefault(r => r.Id == regionId);
-        if (configRegion?.RootNode is { Id: "root", Children: not null })
+        var configRegion = this.Regions.FirstOrDefault(r => r.Id == regionId) ??
+                           throw new LsxMissingElementException(regionId);
+
+        if (configRegion.RootNode is { Id: "root", Children: not null })
         {
             return configRegion.RootNode.Children.FirstOrDefault(n => n.Id == nodeId)
-                   ?? throw new LsxMissingElementException(regionId);
+                   ?? throw new LsxMissingElementException(nodeId);
         }
 
         throw new LsxMissingElementException(regionId);
