@@ -14,7 +14,7 @@ public class ModMetadata
     public string Md5 { get; set; } = string.Empty;
     public LariUuid Uuid { get; set; } = LariUuid.NewGuid();
     public LariVersion Version { get; set; } = DefaultLariVersion;
-    public IList<ModMetadata> Dependencies { get; set; } = [];
+    public IList<ModMetadata>? Dependencies { get; set; }
 
     /// <summary>
     /// Creates a new instance from <see cref="LsxDocument"/>.
@@ -24,7 +24,12 @@ public class ModMetadata
     public static ModMetadata FromLsx(LsxDocument document)
     {
         var mod = document.GetNode("Config", "ModuleInfo").ToModMetadata();
-        mod.Dependencies = document.GetNode("Config", "Dependencies").GetModules();
+
+        var dependencies = document.GetNodeOrDefault("Config", "Dependencies");
+        if (dependencies != null)
+        {
+            mod.Dependencies = dependencies.GetModules();
+        }
 
         return mod;
     }
