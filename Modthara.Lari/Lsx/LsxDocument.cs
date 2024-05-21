@@ -68,6 +68,18 @@ public class LsxDocument
         throw new LsxMissingElementException(regionId);
     }
 
+    /// <summary>
+    /// <inheritdoc cref="GetNode" />
+    /// </summary>
+    /// <param name="regionId">
+    /// <inheritdoc cref="GetNode" />
+    /// </param>
+    /// <param name="nodeId">
+    /// <inheritdoc cref="GetNode" />
+    /// </param>
+    /// <returns>
+    /// Found instance of <see cref="LsxNode"/> if node is found, or null if node was not found.
+    /// </returns>
     public LsxNode? GetNodeOrDefault(string regionId, string nodeId)
     {
         var configRegion = this.Regions.FirstOrDefault(r => r.Id == regionId);
