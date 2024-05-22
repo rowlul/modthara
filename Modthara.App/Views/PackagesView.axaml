@@ -3,7 +3,7 @@
              xmlns:vm="using:Modthara.App.ViewModels"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
              x:DataType="vm:PackagesViewModel"
              x:Class="Modthara.App.Views.PackagesView">
 
@@ -18,8 +18,32 @@
                         HorizontalAlignment="Stretch"
                         CornerRadius="10">
 
-                        <!-- Order -->
-                        <TreeDataGrid />
+                        <Grid RowDefinitions="40, *">
+                            <Grid
+                                VerticalAlignment="Center"
+                                ColumnDefinitions="Auto 10 Auto * 200 10"
+                                RowDefinitions="Auto">
+                                <ToggleSwitch Theme="{DynamicResource SimpleToggleSwitch}" />
+
+                                <ComboBox Grid.Column="2"
+                                          Classes="Small"
+                                          SelectedIndex="0"
+                                          VerticalAlignment="Center">
+
+                                    <ComboBox.Items>
+                                        <ComboBoxItem Content="Active Mod Order" />
+                                    </ComboBox.Items>
+                                </ComboBox>
+
+                                <TextBox Grid.Column="4"
+                                         Watermark="Search Active Mods..."
+                                         Classes="Small clearButton" />
+                            </Grid>
+
+                            <!-- Order Mods -->
+                            <TreeDataGrid Grid.Row="1"
+                                          ShowColumnHeaders="True" />
+                        </Grid>
                     </Border>
                     <GridSplitter Grid.Row="1" />
                     <Border
@@ -32,10 +56,10 @@
                                 VerticalAlignment="Center"
                                 ColumnDefinitions="Auto 10 Auto * 200 10"
                                 RowDefinitions="Auto">
-                                <ToggleSwitch FontSize="12"
-                                              IsChecked="{Binding AreOverridesEnabled}"
+
+                                <ToggleSwitch IsChecked="{Binding AreReplacerModsEnabled}"
                                               Theme="{DynamicResource SimpleToggleSwitch}"
-                                              Command="{Binding ToggleOverridesCommand}" />
+                                              Command="{Binding ToggleReplacerModsCommand}" />
 
                                 <TextBlock
                                     Grid.Column="2"
@@ -44,15 +68,14 @@
                                     VerticalAlignment="Center" />
 
                                 <TextBox Grid.Column="4"
-                                         Watermark="Search Overrides..."
                                          Classes="Small clearButton"
-                                         Text="{Binding OverridesSearchText}" />
+                                         Text="{Binding ReplacerModsSearchText}"
+                                         Watermark="Search Overrides..." />
                             </Grid>
 
-                            <!-- Overrides -->
+                            <!-- Replacer Mods -->
                             <TreeDataGrid Grid.Row="1"
-                                          Name="Overrides"
-                                          Source="{Binding OverridesSource}"
+                                          Source="{Binding ReplacerModsSource}"
                                           ShowColumnHeaders="True" />
                         </Grid>
 
@@ -65,8 +88,35 @@
                 HorizontalAlignment="Stretch"
                 CornerRadius="10">
 
-                <!-- Mods with own files not in order -->
-                <TreeDataGrid />
+                <Grid RowDefinitions="40, *" Margin="10 0 0 0">
+                    <Grid
+                        VerticalAlignment="Center"
+                        ColumnDefinitions="Auto 10 Auto * 200"
+                        RowDefinitions="Auto">
+
+                        <ToggleSwitch
+                            IsChecked="{Binding AreStandaloneModsEnabled}"
+                            Theme="{DynamicResource SimpleToggleSwitch}"
+                            Command="{Binding ToggleStandaloneModsCommand}" />
+
+                        <TextBlock
+                            Grid.Column="2"
+                            Text="Inactive Mods"
+                            FontWeight="Medium"
+                            VerticalAlignment="Center" />
+
+                        <TextBox Grid.Column="4"
+                                 Classes="Small clearButton"
+                                 Text="{Binding StandaloneModsSearchText}"
+                                 Watermark="Search Mods..." />
+                    </Grid>
+
+                    <!-- Standalone Mods not in Order -->
+                    <TreeDataGrid Grid.Row="1"
+                                  Source="{Binding StandaloneModsSource}"
+                                  ShowColumnHeaders="True" />
+                </Grid>
+
             </Border>
         </Grid>
     </Grid>

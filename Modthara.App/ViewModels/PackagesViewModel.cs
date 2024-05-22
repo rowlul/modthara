@@ -22,13 +22,22 @@ public partial class PackagesViewModel : ViewModelBase
     private ObservableCollection<ModPackage>? _mods;
 
     [ObservableProperty]
-    private FlatTreeDataGridSource<ModPackage>? _overridesSource;
+    private FlatTreeDataGridSource<ModPackage>? _replacerModsSource;
 
     [ObservableProperty]
-    private bool _areOverridesEnabled;
+    private bool _areReplacerModsEnabled;
 
     [ObservableProperty]
-    private string _overridesSearchText;
+    private string _replacerModsSearchText;
+
+    [ObservableProperty]
+    private FlatTreeDataGridSource<ModPackage>? _standaloneModsSource;
+
+    [ObservableProperty]
+    private bool _areStandaloneModsEnabled;
+
+    [ObservableProperty]
+    private string _standaloneModsSearchText;
 
     public PackagesViewModel(IModsService modsService)
     {
@@ -38,46 +47,30 @@ public partial class PackagesViewModel : ViewModelBase
     public void InitializeViewModel()
     {
         Mods = GetMods();
-        OverridesSource = CreateOverridesSource();
-        AreOverridesEnabled =
-            OverridesSource.Items.Any(x => (x.Flags & ModFlags.Enabled) == ModFlags.Enabled);
+
+        ReplacerModsSource = CreateReplacerModsSource();
+        AreReplacerModsEnabled =
+            ReplacerModsSource.Items.Any(x => x.Flags.HasFlag(ModFlags.Enabled));
+
+        StandaloneModsSource = CreateStandaloneModsSource();
+        AreStandaloneModsEnabled =
+            StandaloneModsSource.Items.Any(x => x.Flags.HasFlag(ModFlags.Enabled));
     }
 
     private ObservableCollection<ModPackage> GetMods() => new(_modsService.ModPackages);
 
-    private FlatTreeDataGridSource<ModPackage> CreateOverridesSource()
+    private FlatTreeDataGridSource<ModPackage> CreateReplacerModsSource()
     {
         Debug.Assert(Mods != null, nameof(Mods) + " != null");
 
         var source =
-            new FlatTreeDataGridSource<ModPackage>(Mods.Where(HasOverrides))
+            new FlatTreeDataGridSource<ModPackage>(Mods.Where(HasReplacerMods))
             {
                 Columns =
                 {
                     new CheckBoxColumn<ModPackage>(string.Empty,
                         getter: x => x.Flags.HasFlag(ModFlags.Enabled),
-                        setter: (x, newValue) =>
-                        {
-                            // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
-                            // ReSharper disable once RedundantBoolCompare
-                            switch (x.Flags & ModFlags.Enabled)
-                            {
-                                case ModFlags.None when newValue == true:
-                                    {
-                                        _modsService.EnableModPackage(x);
-                                        Debug.Assert((x.Flags & ModFlags.Enabled) == ModFlags.Enabled);
-                                        Debug.Assert(x.Path[^4..] == ".pak");
-                                        break;
-                                    }
-                                case ModFlags.Enabled when newValue == false:
-                                    {
-                                        _modsService.DisableModPackage(x);
-                                        Debug.Assert((x.Flags & ModFlags.Enabled) == ModFlags.None);
-                                        Debug.Assert(x.Path[^8..] == ".pak.off");
-                                        break;
-                                    }
-                            }
-                        },
+                        setter: ToggleMod,
                         options: new CheckBoxColumnOptions<ModPackage> { CanUserResizeColumn = false }),
                     new TextColumn<ModPackage, string>("Name",
                         getter: x => x.Name,
@@ -95,51 +88,151 @@ public partial class PackagesViewModel : ViewModelBase
         return source;
     }
 
-    [RelayCommand(CanExecute = nameof(CanToggleOverridesExecute))]
-    private void ToggleOverrides()
+    private FlatTreeDataGridSource<ModPackage> CreateStandaloneModsSource()
     {
-        Debug.Assert(OverridesSource != null, nameof(OverridesSource) + " != null");
+        Debug.Assert(Mods != null, nameof(Mods) + " != null");
 
-        if (AreOverridesEnabled)
-        {
-            for (int i = 0; i < OverridesSource.Rows.Count; i++)
+        var source =
+            new FlatTreeDataGridSource<ModPackage>(Mods.Where(HasStandaloneMods))
             {
-                ((CheckBoxCell)OverridesSource.Rows.RealizeCell(OverridesSource.Columns[0], 0, i))
+                Columns =
+                {
+                    new CheckBoxColumn<ModPackage>(string.Empty,
+                        getter: x => x.Flags.HasFlag(ModFlags.Enabled),
+                        setter: ToggleMod,
+                        options: new CheckBoxColumnOptions<ModPackage> { CanUserResizeColumn = false }),
+                    new TextColumn<ModPackage, string>("Name",
+                        getter: x => x.Name,
+                        options: new TextColumnOptions<ModPackage> { IsTextSearchEnabled = true }),
+                    new TextColumn<ModPackage, LariVersion>("Version", getter: x => x.Version),
+                    new TextColumn<ModPackage, string>("Author",
+                        getter: x => x.Author),
+                    new TextColumn<ModPackage, string>("Last Modified",
+                        getter: x => x.LastModified.Humanize(null, null, null)),
+                }
+            };
+
+        source.RowSelection!.SingleSelect = false;
+
+        return source;
+    }
+
+    private void ToggleMod(ModPackage modPackage, bool newValue)
+    {
+        // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
+        // ReSharper disable once RedundantBoolCompare
+        switch (modPackage.Flags & ModFlags.Enabled)
+        {
+            case ModFlags.None when newValue == true:
+                {
+                    _modsService.EnableModPackage(modPackage);
+                    Debug.Assert((modPackage.Flags & ModFlags.Enabled) == ModFlags.Enabled);
+                    Debug.Assert(modPackage.Path.Length > 4 && modPackage.Path[^4..] == ".pak");
+                    break;
+                }
+            case ModFlags.Enabled when newValue == false:
+                {
+                    _modsService.DisableModPackage(modPackage);
+                    Debug.Assert((modPackage.Flags & ModFlags.Enabled) == ModFlags.None);
+                    Debug.Assert(modPackage.Path.Length > 8 && modPackage.Path[^8..] == ".pak.off");
+                    break;
+                }
+        }
+    }
+
+    private void ToggleMods(FlatTreeDataGridSource<ModPackage>? source, bool toggleValue)
+    {
+        Debug.Assert(source != null, nameof(source) + " != null");
+
+        if (toggleValue)
+        {
+            for (int i = 0; i < source.Rows.Count; i++)
+            {
+                ((CheckBoxCell)source.Rows.RealizeCell(source.Columns[0], 0, i))
                     .Value = true;
             }
         }
         else
         {
-            for (int i = 0; i < OverridesSource.Rows.Count; i++)
+            for (int i = 0; i < source.Rows.Count; i++)
             {
-                ((CheckBoxCell)OverridesSource.Rows.RealizeCell(OverridesSource.Columns[0], 0, i))
+                ((CheckBoxCell)source.Rows.RealizeCell(source.Columns[0], 0, i))
                     .Value = false;
             }
         }
     }
 
-    private bool CanToggleOverridesExecute() => Mods != null && Mods.Any();
+    [RelayCommand(CanExecute = nameof(CanToggleReplacerMods))]
+    private void ToggleReplacerMods() => ToggleMods(ReplacerModsSource, AreReplacerModsEnabled);
 
-    partial void OnOverridesSearchTextChanged(string? value)
+    private bool CanToggleReplacerMods() => ReplacerModsSource != null && ReplacerModsSource.Items.Any();
+
+    [RelayCommand(CanExecute = nameof(CanToggleStandaloneMods))]
+    private void ToggleStandaloneMods() => ToggleMods(StandaloneModsSource, AreStandaloneModsEnabled);
+
+    private bool CanToggleStandaloneMods() => ReplacerModsSource != null && ReplacerModsSource.Items.Any();
+
+    private void OnSearchTextChanged(FlatTreeDataGridSource<ModPackage>? source,
+        Func<ModPackage, bool> unfilteredPredicate, string? value)
     {
-        Debug.Assert(OverridesSource != null, nameof(OverridesSource) + " != null");
+        Debug.Assert(source != null, nameof(source) + " != null");
+
+        var filtered = FilterModsByKeyword(unfilteredPredicate, value);
+        if (filtered != null)
+        {
+            source.Items = filtered;
+        }
+    }
+
+    partial void OnReplacerModsSearchTextChanged(string? value) =>
+        OnSearchTextChanged(ReplacerModsSource, HasReplacerMods, value);
+
+    partial void OnStandaloneModsSearchTextChanged(string? value) =>
+        OnSearchTextChanged(StandaloneModsSource, HasStandaloneMods, value);
+
+    private IEnumerable<ModPackage>? FilterModsByKeyword(Func<ModPackage, bool> unfilteredPredicate, string? query)
+    {
         Debug.Assert(Mods != null, nameof(Mods) + " != null");
 
-        var unfiltered = Mods
-            .Where(HasOverrides);
-
-        if (string.IsNullOrWhiteSpace(value))
+        if (query == null)
         {
-            OverridesSource.Items = unfiltered;
-            return;
+            return null;
+        }
+
+        if (query == string.Empty)
+        {
+            return Mods.Where(unfilteredPredicate);
+        }
+
+        if (IsWhiteSpace(query))
+        {
+            return null;
         }
 
         // TODO: introduce input debouncing
-        var filtered = unfiltered.Where(x => x.Name.Contains(value, StringComparison.OrdinalIgnoreCase));
-        OverridesSource.Items = filtered;
+        var filtered = Mods
+            .Where(unfilteredPredicate)
+            .Where(x => x.Name.Contains(query, StringComparison.OrdinalIgnoreCase));
+        return filtered;
+
+        bool IsWhiteSpace(string s)
+        {
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (!char.IsWhiteSpace(s[i]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 
-    private static bool HasOverrides(ModPackage modPackage) =>
-        (modPackage.Flags & ModFlags.AltersGameFiles) != ModFlags.None &&
-        (modPackage.Flags & ModFlags.HasModFiles) == ModFlags.None;
+    private static bool HasReplacerMods(ModPackage modPackage) =>
+        modPackage.Flags.HasFlag(ModFlags.AltersGameFiles) &&
+        !modPackage.Flags.HasFlag(ModFlags.HasModFiles);
+
+    private static bool HasStandaloneMods(ModPackage modPackage) =>
+        modPackage.Flags.HasFlag(ModFlags.HasModFiles);
 }
