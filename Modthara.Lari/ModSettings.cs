@@ -105,7 +105,7 @@ public class ModSettings
             var modOrderUuid = _modOrderNode.Children[i].GetUuid();
             var modUuid = _modsNode.Children[i].GetUuid();
 
-            if (modOrderUuid == uuid && modUuid == uuid && _mods[i].Uuid == uuid)
+            if (modOrderUuid.Value == uuid.Value && modUuid.Value == uuid.Value && _mods[i].Uuid.Value == uuid.Value)
             {
                 return (i, _modsNode.Children[i].ToModMetadata());
             }
