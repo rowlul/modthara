@@ -50,6 +50,7 @@ public class ModSettingsService : IModSettingsService
         await stream.CopyToAsync(file).ConfigureAwait(false);
     }
 
+    /// <inheritdoc />
     public IEnumerable<ModPackage> GetMods(IReadOnlyList<ModPackage> modPackages,
         Action<int, Exception>? onException = null, Action<int, ModPackage>? onPackageRead = null)
     {
