@@ -49,4 +49,51 @@ public class ModSettingsService : IModSettingsService
             bufferSize: 4096, useAsync: true);
         await stream.CopyToAsync(file).ConfigureAwait(false);
     }
+
+    public IEnumerable<ModPackage> GetMods(IReadOnlyList<ModPackage> modPackages,
+        Action<int, Exception>? onException = null, Action<int, ModPackage>? onPackageRead = null)
+    {
+        if (ModSettings == null)
+        {
+            throw new InvalidOperationException($"Instance of {nameof(ModSettings)} was null.");
+        }
+
+        for (var i = 0; i < ModSettings.Mods.Count; i++)
+        {
+            var modMeta = ModSettings.Mods[i];
+
+            ModPackage? modPackage = null;
+
+            try
+            {
+                foreach (var m in modPackages)
+                {
+                    if (modMeta.Uuid.Value == m.Uuid.Value)
+                    {
+                        modPackage = m;
+                    }
+                    else
+                    {
+                        throw new ModNotFoundException($"Mod not found in mod settings: {m.Uuid.Value}", m.Uuid);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                if (onException != null)
+                {
+                    onException(i, e);
+                    continue;
+                }
+
+                throw;
+            }
+
+            if (modPackage != null)
+            {
+                onPackageRead?.Invoke(i, modPackage);
+                yield return modPackage;
+            }
+        }
+    }
 }
