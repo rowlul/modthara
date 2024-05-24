@@ -6,33 +6,8 @@ using Modthara.Lari;
 
 namespace Modthara.Essentials.Packaging;
 
-/// <summary>
-/// Manages mod settings.
-/// </summary>
-public interface IModSettingsManager
+public interface IOrderManager
 {
-    /// <summary>
-    /// Loads mod settings from file.
-    /// </summary>
-    /// <param name="path">
-    /// Path to mod settings file.
-    /// </param>
-    /// <returns>
-    /// An instance of <see cref="ModSettings"/>.
-    /// </returns>
-    ValueTask<ModSettings> LoadModSettingsAsync(string path);
-
-    /// <summary>
-    /// Saves mod settings to LSX file.
-    /// </summary>
-    /// <param name="path">
-    /// Path to mod settings file.
-    /// </param>
-    /// <param name="modSettings">
-    /// Instance of <see cref="ModSettings"/>.
-    /// </param>
-    Task SaveModSettingsAsync(string path, ModSettings modSettings);
-
     /// <summary>
     /// Parses JSON mod order to LSX mod settings.
     /// </summary>
