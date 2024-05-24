@@ -25,10 +25,10 @@ public class ModsService : IModsService
     }
 
     /// <inheritdoc />
-    public async Task LoadModPackagesAsync(Action<Exception>? onException = null,
-        PackageReadCallback? packageReadCallback = null)
+    public async Task LoadModPackagesAsync(Action<int, Exception>? onException = null,
+        Action<int, ModPackage>? onPackageRead = null)
     {
-        await foreach (var package in _modPackageManager.ReadModPackagesAsync(_path, onException, packageReadCallback)
+        await foreach (var package in _modPackageManager.ReadModPackagesAsync(_path, onException, onPackageRead)
                            .ConfigureAwait(false))
         {
             _modPackages.Add(package);

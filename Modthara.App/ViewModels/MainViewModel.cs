@@ -12,15 +12,26 @@ public partial class MainViewModel : ViewModelBase
     private readonly Router<ViewModelBase> _router;
     private readonly IModsService _modsService;
 
-    [ObservableProperty] private string _progressStatus = string.Empty;
-    [ObservableProperty] private double _progressMax = 100;
-    [ObservableProperty] private double _progressValue;
-    [ObservableProperty] private bool _isProgressIndeterminate;
+    [ObservableProperty]
+    private string _progressStatus = string.Empty;
 
-    [ObservableProperty] private bool _isBusy;
+    [ObservableProperty]
+    private double _progressMax = 100;
 
-    [ObservableProperty] private SidebarItem? _selectedItem;
-    [ObservableProperty] private ViewModelBase? _content;
+    [ObservableProperty]
+    private double _progressValue;
+
+    [ObservableProperty]
+    private bool _isProgressIndeterminate;
+
+    [ObservableProperty]
+    private bool _isBusy;
+
+    [ObservableProperty]
+    private SidebarItem? _selectedItem;
+
+    [ObservableProperty]
+    private ViewModelBase? _content;
 
     public static IReadOnlyList<SidebarItem> SidebarItems =>
     [
@@ -85,7 +96,7 @@ public partial class MainViewModel : ViewModelBase
         IsBusy = true;
         IsProgressIndeterminate = true;
 
-        await _modsService.LoadModPackagesAsync(Console.WriteLine, (idx, pak) =>
+        await _modsService.LoadModPackagesAsync((_, e) => Console.WriteLine(e), (idx, pak) =>
         {
             ProgressStatus = $"({idx}/{modCount}) Processing package: {pak.Name}";
         });

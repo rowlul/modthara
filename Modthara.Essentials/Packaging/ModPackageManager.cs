@@ -5,8 +5,6 @@ using Modthara.Lari;
 using Modthara.Lari.Lsx;
 using Modthara.Lari.Pak;
 
-using Index = int;
-
 namespace Modthara.Essentials.Packaging;
 
 public delegate void PackageReadCallback(Index idx, ModPackage package);
@@ -99,8 +97,9 @@ public partial class ModPackageManager : IModPackageManager
     }
 
     /// <inheritdoc />
-    public async IAsyncEnumerable<ModPackage> ReadModPackagesAsync(string path, Action<Exception>? onException = null,
-        PackageReadCallback? packageReadCallback = null)
+    public async IAsyncEnumerable<ModPackage> ReadModPackagesAsync(string path,
+        Action<int, Exception>? onException = null,
+        Action<int, ModPackage>? onPackageRead = null)
     {
         var patterns = new[] { "*.pak", "*.pak.off" };
 
@@ -116,11 +115,11 @@ public partial class ModPackageManager : IModPackageManager
                 {
                     modPackage = await ReadModPackageAsync(file).ConfigureAwait(false);
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
                     if (onException != null)
                     {
-                        onException(ex);
+                        onException(i, e);
                         continue;
                     }
 
@@ -132,7 +131,7 @@ public partial class ModPackageManager : IModPackageManager
                     modPackage.Flags |= ModFlags.Enabled;
                 }
 
-                packageReadCallback?.Invoke(i, modPackage);
+                onPackageRead?.Invoke(i, modPackage);
                 yield return modPackage;
             }
         }

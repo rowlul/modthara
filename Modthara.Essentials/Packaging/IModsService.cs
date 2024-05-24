@@ -15,13 +15,14 @@ public interface IModsService
     /// <summary>
     /// Loads packages to <see cref="ModPackages"/> for cached access.
     /// </summary>
-    /// <param name="asyncPackageCallback">
-    /// Callback for each enumerated package.
-    /// </param>
     /// <param name="onException">
     /// Method to be executed whenever enumerator throws an exception. If null, rethrows the exception.
     /// </param>
-    Task LoadModPackagesAsync(Action<Exception>? onException = null, PackageReadCallback? asyncPackageCallback = null);
+    /// <param name="onPackageRead">
+    /// Callback for each enumerated package.
+    /// </param>
+    Task LoadModPackagesAsync(Action<int, Exception>? onException = null,
+        Action<int, ModPackage>? onPackageRead = null);
 
     /// <summary>
     /// Counts packages in Mods directory.
