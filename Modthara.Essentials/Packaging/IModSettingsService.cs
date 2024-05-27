@@ -29,18 +29,15 @@ public interface IModSettingsService
     /// <param name="modPackages">
     /// List of loaded mod packages.
     /// </param>
-    /// <param name="onException">
-    /// Method that is executed whenever enumerator throws an exception. If null, rethrows the exception.
+    /// <param name="missingMods">
+    /// List of mods found in <see cref="ModSettings.Mods"/> but not <paramref name="modPackages"/>.
     /// </param>
     /// <param name="onPackageRead">
     /// Callback to current index and mod package.
     /// </param>
-    /// <exception cref="ModNotFoundException">
-    /// Thrown when no entry in <paramref name="modPackages"/> matches one in <see cref="ModSettings.Mods"/>.
-    /// </exception>
     /// <returns>
     /// List of found <see cref="ModPackage"/>.
     /// </returns>
     IEnumerable<ModPackage> GetMods(IReadOnlyList<ModPackage> modPackages,
-        Action<int, Exception>? onException = null, Action<int, ModPackage>? onPackageRead = null);
+        out IEnumerable<ModMetadata> missingMods, Action<int, ModPackage>? onPackageRead = null);
 }

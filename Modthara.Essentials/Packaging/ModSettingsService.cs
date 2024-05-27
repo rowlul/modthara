@@ -52,12 +52,15 @@ public class ModSettingsService : IModSettingsService
 
     /// <inheritdoc />
     public IEnumerable<ModPackage> GetMods(IReadOnlyList<ModPackage> modPackages,
-        Action<int, Exception>? onException = null, Action<int, ModPackage>? onPackageRead = null)
+        out IEnumerable<ModMetadata> missingMods, Action<int, ModPackage>? onPackageRead = null)
     {
         if (ModSettings == null)
         {
             throw new InvalidOperationException($"Instance of {nameof(ModSettings)} was null.");
         }
+
+        List<ModPackage> mods = [];
+        List<ModMetadata> missingModsList = [];
 
         for (var i = 0; i < ModSettings.Mods.Count; i++)
         {
@@ -65,36 +68,26 @@ public class ModSettingsService : IModSettingsService
 
             ModPackage? modPackage = null;
 
-            try
+            foreach (var m in modPackages)
             {
-                foreach (var m in modPackages)
+                if (modMeta.Uuid.Value == m.Uuid.Value)
                 {
-                    if (modMeta.Uuid.Value == m.Uuid.Value)
-                    {
-                        modPackage = m;
-                    }
-                    else
-                    {
-                        throw new ModNotFoundException($"Mod not found in mod settings: {m.Uuid.Value}", m.Uuid);
-                    }
+                    modPackage = m;
                 }
-            }
-            catch (Exception e)
-            {
-                if (onException != null)
+                else
                 {
-                    onException(i, e);
-                    continue;
+                    missingModsList.Add(modMeta);
                 }
-
-                throw;
             }
 
             if (modPackage != null)
             {
                 onPackageRead?.Invoke(i, modPackage);
-                yield return modPackage;
+                mods.Add(modPackage);
             }
         }
+
+        missingMods = missingModsList;
+        return mods;
     }
 }
