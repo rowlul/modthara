@@ -4,26 +4,16 @@ using System.Text.Json.Nodes;
 
 using Modthara.Lari;
 
+using MissingModsList = System.Collections.Generic.IReadOnlyList<Modthara.Lari.ModMetadata>;
+
 namespace Modthara.Essentials.Packaging;
 
 public interface IOrderManager
 {
-    /// <summary>
-    /// Parses JSON mod order to LSX mod settings.
-    /// </summary>
-    /// <param name="path">
-    /// Path to mod order file.
-    /// </param>
-    /// <param name="modPackages">
-    /// List of available mod packages.
-    /// </param>
-    /// <exception cref="ModNotFoundException">
-    /// Thrown if parsed mod is not found in <see cref="modPackages"/>.
-    /// </exception>
-    /// <returns>
-    /// Instance of <see cref="ModSettings"/>.
-    /// </returns>
-    ValueTask<ModSettings> LoadJsonOrderAsync(string path, IReadOnlyList<ModPackage> modPackages);
+    /// <inheritdoc cref="LoadJsonOrder"/>
+    ValueTask<(ModSettings, MissingModsList)> LoadJsonOrderAsync(string path,
+        IReadOnlyList<ModPackage> modPackages,
+        Action<int, ModMetadata>? onMetadataParsed = null);
 
     /// <summary>
     /// Loads json order into mod settings.
@@ -34,13 +24,14 @@ public interface IOrderManager
     /// <param name="modPackages">
     /// List of available mod packages.
     /// </param>
-    /// <exception cref="ModNotFoundException">
-    /// Thrown if parsed mod is not found in <see cref="modPackages"/>.
-    /// </exception>
+    /// <param name="onMetadataParsed">
+    /// Callback to current index and mod metadata.
+    /// </param>
     /// <returns>
-    /// Instance of <see cref="ModSettings"/>.
+    /// Instance of <see cref="ModSettings"/> and list of mods that are present in the deserialized order but not in <paramref name="modPackages"/>.
     /// </returns>
-    ModSettings LoadJsonOrder(JsonElement rootElement, IReadOnlyList<ModPackage> modPackages);
+    (ModSettings, MissingModsList) LoadJsonOrder(JsonElement rootElement, IReadOnlyList<ModPackage> modPackages,
+        Action<int, ModMetadata>? onMetadataParsed = null);
 
     /// <summary>
     /// Saves mod settings as a json order.
@@ -79,6 +70,7 @@ public interface IOrderManager
     /// <returns>
     /// Instance of <see cref="ModSettings"/> if order was found, false if order was not found.
     /// </returns>
-    ValueTask<ModSettings?> ExtractJsonOrderAsync(ZipArchive zipArchive, IReadOnlyList<ModPackage> modPackages,
+    ValueTask<(ModSettings, MissingModsList)?> ExtractJsonOrderAsync(ZipArchive zipArchive,
+        IReadOnlyList<ModPackage> modPackages,
         string? orderName = null);
 }

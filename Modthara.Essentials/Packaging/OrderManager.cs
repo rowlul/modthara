@@ -17,39 +17,70 @@ public class OrderManager : IOrderManager
     }
 
     /// <inheritdoc />
-    public async ValueTask<ModSettings> LoadJsonOrderAsync(string path, IReadOnlyList<ModPackage> modPackages)
+    public async ValueTask<(ModSettings, IReadOnlyList<ModMetadata>)> LoadJsonOrderAsync(string path,
+        IReadOnlyList<ModPackage> modPackages,
+        Action<int, ModMetadata>? onMetadataParsed = null)
     {
         await using var file = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read, FileShare.Read,
             bufferSize: 4096, useAsync: true);
 
         var document = await JsonDocument.ParseAsync(file).ConfigureAwait(false);
-        var order = await Task.Run(() => LoadJsonOrder(document.RootElement, modPackages)).ConfigureAwait(false);
+
+
+        var order = await Task
+            .Run(() => LoadJsonOrder(document.RootElement, modPackages, onMetadataParsed))
+            .ConfigureAwait(false);
+
         return order;
     }
 
     /// <inheritdoc />
-    public ModSettings LoadJsonOrder(JsonElement rootElement, IReadOnlyList<ModPackage> modPackages)
+    public (ModSettings, IReadOnlyList<ModMetadata>) LoadJsonOrder(JsonElement rootElement,
+        IReadOnlyList<ModPackage> modPackages,
+        Action<int, ModMetadata>? onMetadataParsed = null)
     {
         List<ModMetadata> mods = [];
-        foreach (var uuid in rootElement.GetProperty("Order").EnumerateArray()
-                     .Select(el => el.GetProperty("UUID").GetString()).OfType<string>())
+        List<ModMetadata> missingMods = [];
+
+        int i = 0;
+        foreach (var el in rootElement.GetProperty("Order").EnumerateArray())
         {
-            ModPackage mod;
+            i++;
 
-            try
+            var uuid = el.GetProperty("UUID").GetString();
+            if (string.IsNullOrEmpty(uuid))
             {
-                mod = modPackages.First(x => x.Uuid.Value == uuid);
-            }
-            catch (InvalidOperationException e)
-            {
-                throw new ModNotFoundException($"Parsed mod not found: {uuid}.", new LariUuid(uuid), e);
+                continue;
             }
 
-            mods.Add(mod);
+            var name = el.GetProperty("Name").GetString();
+            if (string.IsNullOrEmpty(name))
+            {
+                continue;
+            }
+
+            ModMetadata? modMetadata = null;
+
+            foreach (var m in modPackages)
+            {
+                if (m.Uuid.Value == uuid && m.Name == name)
+                {
+                    mods.Add(m);
+                }
+                else
+                {
+                    missingMods.Add(m);
+                }
+            }
+
+            if (modMetadata != null)
+            {
+                onMetadataParsed?.Invoke(i, modMetadata);
+            }
         }
 
         var modSettings = new ModSettings(mods: mods);
-        return modSettings;
+        return (modSettings, missingMods);
     }
 
     /// <inheritdoc />
@@ -84,7 +115,7 @@ public class OrderManager : IOrderManager
     }
 
     /// <inheritdoc />
-    public async ValueTask<ModSettings?> ExtractJsonOrderAsync(ZipArchive zipArchive,
+    public async ValueTask<(ModSettings, IReadOnlyList<ModMetadata>)?> ExtractJsonOrderAsync(ZipArchive zipArchive,
         IReadOnlyList<ModPackage> modPackages, string? orderName = null)
     {
         ZipArchiveEntry? orderEntry = null;
