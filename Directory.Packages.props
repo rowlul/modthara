@@ -3,13 +3,13 @@
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
     <ItemGroup>
-        <PackageVersion Include="Avalonia" Version="11.0.10" />
-        <PackageVersion Include="Avalonia.Desktop" Version="11.0.10" />
-        <PackageVersion Include="Avalonia.Diagnostics" Version="11.0.10" />
-        <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.0.10" />
-        <PackageVersion Include="Avalonia.Controls.TreeDataGrid" Version="11.0.2" />
-        <PackageVersion Include="Avalonia.Xaml.Behaviors" Version="11.0.10.6" />
-        <PackageVersion Include="Semi.Avalonia" Version="11.0.7.2" />
+        <PackageVersion Include="Avalonia" Version="11.0.11" />
+        <PackageVersion Include="Avalonia.Desktop" Version="11.0.11" />
+        <PackageVersion Include="Avalonia.Diagnostics" Version="11.0.11" />
+        <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.0.11" />
+        <PackageVersion Include="Avalonia.Controls.TreeDataGrid" Version="11.0.10" />
+        <PackageVersion Include="Avalonia.Xaml.Behaviors" Version="11.0.10.9" />
+        <PackageVersion Include="Semi.Avalonia" Version="11.0.7.3" />
         <PackageVersion Include="Semi.Avalonia.TreeDataGrid" Version="11.0.1" />
         <PackageVersion Include="Projektanker.Icons.Avalonia" Version="9.3.0" />
         <PackageVersion Include="Projektanker.Icons.Avalonia.FontAwesome" Version="9.3.0" />
@@ -23,9 +23,9 @@
 
         <PackageVersion Include="coverlet.collector" Version="6.0.2" />
         <PackageVersion Include="FluentAssertions" Version="6.12.0" />
-        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
         <PackageVersion Include="System.IO.Abstractions.TestingHelpers" Version="21.0.2" />
-        <PackageVersion Include="xunit" Version="2.7.0" />
-        <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.7" />
+        <PackageVersion Include="xunit" Version="2.8.1" />
+        <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.1" />
     </ItemGroup>
 </Project>
