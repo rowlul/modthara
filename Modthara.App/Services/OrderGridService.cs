@@ -115,4 +115,9 @@ public class OrderGridService : IOrderGridService
     {
         throw new NotImplementedException();
     }
+
+    public void ToggleMods(FlatTreeDataGridSource<ModPackageViewModel> source, bool newValue)
+    {
+        throw new NotImplementedException();
+    }
 }
