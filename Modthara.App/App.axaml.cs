@@ -69,6 +69,7 @@ public partial class App : Application
             s.GetRequiredService<IFileSystem>()));
 
         services.AddSingleton<IModGridService, ModGridService>();
+        services.AddSingleton<IOrderGridService, OrderGridService>();
 
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<PackagesViewModel>();

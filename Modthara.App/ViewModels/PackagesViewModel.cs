@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 
 using Modthara.App.Services;
 using Modthara.Essentials.Packaging;
+using Modthara.Lari;
 
 namespace Modthara.App.ViewModels;
 
@@ -17,6 +18,12 @@ public partial class PackagesViewModel : ViewModelBase
     private readonly IModsService _modsService;
     private readonly IModSettingsService _modSettingsService;
     private readonly IModGridService _modGridService;
+    private readonly IOrderGridService _orderGridService;
+
+    [ObservableProperty]
+    private bool _isViewReady;
+
+    #region Replacer Mods
 
     [ObservableProperty]
     private Source? _replacerModsSource;
@@ -31,6 +38,17 @@ public partial class PackagesViewModel : ViewModelBase
     [ObservableProperty]
     private string? _replacerModsSearchText;
 
+    [RelayCommand(CanExecute = nameof(CanToggleReplacerMods))]
+    private void ToggleReplacerMods()
+    {
+        Debug.Assert(ReplacerModsSource != null, nameof(ReplacerModsSource) + " != null");
+        _modGridService.ToggleMods(ReplacerModsSource, AreReplacerModsEnabled);
+    }
+
+    #endregion
+
+    #region Standalone Mods
+
     [ObservableProperty]
     private Source? _standaloneModsSource;
 
@@ -44,28 +62,74 @@ public partial class PackagesViewModel : ViewModelBase
     [ObservableProperty]
     private string? _standaloneModsSearchText;
 
+    [RelayCommand(CanExecute = nameof(CanToggleStandaloneMods))]
+    private void ToggleStandaloneMods()
+    {
+        Debug.Assert(StandaloneModsSource != null, nameof(StandaloneModsSource) + " != null");
+        _modGridService.ToggleMods(StandaloneModsSource, AreStandaloneModsEnabled);
+    }
+
+    #endregion
+
+    #region Order Mods
+
+    [ObservableProperty]
+    private Source? _orderModsSource;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ToggleOrderModsCommand))]
+    private bool _canToggleOrderMods;
+
+    [ObservableProperty]
+    private bool _areOrderModsEnabled;
+
+    [ObservableProperty]
+    private string? _orderModsSearchText;
+
+    [RelayCommand(CanExecute = nameof(CanToggleOrderMods))]
+    private void ToggleOrderMods()
+    {
+        Debug.Assert(OrderModsSource != null, nameof(OrderModsSource) + " != null");
+        _orderGridService.ToggleMods(OrderModsSource, AreOrderModsEnabled);
+    }
+
+    #endregion
+
     public PackagesViewModel(
         IModsService modsService,
         IModSettingsService modSettingsService,
-        IModGridService modGridService)
+        IModGridService modGridService,
+        IOrderGridService orderGridService)
     {
         _modsService = modsService;
         _modSettingsService = modSettingsService;
         _modGridService = modGridService;
+        _orderGridService = orderGridService;
     }
 
     public async Task InitializeViewModel()
     {
-        await _modsService.LoadModPackagesAsync();
-        await Task.Run(() => _modGridService.CreateViewModels());
+        await Task.WhenAll(_modsService.LoadModPackagesAsync(), _modSettingsService.LoadModSettingsAsync());
 
-        List<Task> tasks = [InitializeReplacerModsSource(), InitializeStandaloneModsSource()];
-        await Task.WhenAll(tasks);
+        await Task.Run(() => _modGridService.CreateViewModels());
+        await Task.Run(() =>
+        {
+            IEnumerable<ModMetadata> missingMods;
+            _orderGridService.CreateViewModels(out missingMods);
+        });
+
+        await Task.WhenAll(
+                InitializeReplacerModsSource(),
+                InitializeStandaloneModsSource(),
+                InitializeOrderModsSource())
+            .ContinueWith(_ =>
+            {
+                IsViewReady = true;
+            });
 
         CanToggleReplacerMods = IsSourceNotEmpty(ReplacerModsSource);
         CanToggleStandaloneMods = IsSourceNotEmpty(StandaloneModsSource);
-
-        await _modSettingsService.LoadModSettingsAsync();
+        CanToggleOrderMods = IsSourceNotEmpty(OrderModsSource);
     }
 
     private Task InitializeReplacerModsSource() => Task.Run(() =>
@@ -80,21 +144,13 @@ public partial class PackagesViewModel : ViewModelBase
         AreStandaloneModsEnabled = _modGridService.AnyEnabledMods(StandaloneModsSource.Items);
     });
 
-    [RelayCommand(CanExecute = nameof(CanToggleReplacerMods))]
-    private void ToggleReplacerMods()
+    private Task InitializeOrderModsSource() => Task.Run(() =>
     {
-        Debug.Assert(ReplacerModsSource != null, nameof(ReplacerModsSource) + " != null");
-        _modGridService.ToggleMods(ReplacerModsSource, AreReplacerModsEnabled);
-    }
+        OrderModsSource = _orderGridService.CreateSource();
+        AreOrderModsEnabled = OrderModsSource.Items.Any();
+    });
 
-    [RelayCommand(CanExecute = nameof(CanToggleStandaloneMods))]
-    private void ToggleStandaloneMods()
-    {
-        Debug.Assert(StandaloneModsSource != null, nameof(StandaloneModsSource) + " != null");
-        _modGridService.ToggleMods(StandaloneModsSource, AreStandaloneModsEnabled);
-    }
-
-    private void OnSearchTextChanged(Source? source,
+    private void OnModsSearchTextChanged(Source? source,
         Func<ModPackageViewModel, bool> fallbackPredicate, string? query)
     {
         Debug.Assert(source != null, nameof(source) + " != null");
@@ -106,11 +162,25 @@ public partial class PackagesViewModel : ViewModelBase
         }
     }
 
+    private void OnOrderSearchTextChanged(Source? source, string? query)
+    {
+        Debug.Assert(source != null, nameof(source) + " != null");
+
+        var filtered = _orderGridService.FilterMods(query);
+        if (filtered != null)
+        {
+            source.Items = filtered;
+        }
+    }
+
     private bool IsSourceNotEmpty(Source? source) => source != null && source.Items.Any();
 
     partial void OnReplacerModsSearchTextChanged(string? value) =>
-        OnSearchTextChanged(ReplacerModsSource, m => m.HasOverridesExclusively, value);
+        OnModsSearchTextChanged(ReplacerModsSource, m => m.HasOverridesExclusively, value);
 
     partial void OnStandaloneModsSearchTextChanged(string? value) =>
-        OnSearchTextChanged(StandaloneModsSource, m => m.HasAnyStandaloneFiles, value);
+        OnModsSearchTextChanged(StandaloneModsSource, m => m.HasAnyStandaloneFiles, value);
+
+    partial void OnOrderModsSearchTextChanged(string? value) =>
+        OnOrderSearchTextChanged(OrderModsSource, value);
 }

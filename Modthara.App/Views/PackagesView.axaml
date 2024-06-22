@@ -5,7 +5,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
              x:DataType="vm:PackagesViewModel"
-             x:Class="Modthara.App.Views.PackagesView">
+             x:Class="Modthara.App.Views.PackagesView"
+             IsEnabled="{Binding IsViewReady}">
 
     <Grid RowDefinitions="*" ColumnDefinitions="*">
         <Grid ColumnDefinitions="*, Auto, *">
@@ -23,7 +24,10 @@
                                 VerticalAlignment="Center"
                                 ColumnDefinitions="Auto 10 Auto * 200 10"
                                 RowDefinitions="Auto">
-                                <ToggleSwitch Theme="{DynamicResource SimpleToggleSwitch}" />
+                                <ToggleSwitch
+                                    IsChecked="{Binding AreOrderModsEnabled}"
+                                    Theme="{DynamicResource SimpleToggleSwitch}"
+                                    Command="{Binding ToggleOrderModsCommand}" />
 
                                 <ComboBox Grid.Column="2"
                                           Classes="Small"
@@ -37,11 +41,13 @@
 
                                 <TextBox Grid.Column="4"
                                          Watermark="Search Active Mods..."
-                                         Classes="Small clearButton" />
+                                         Classes="Small clearButton"
+                                         Text="{Binding OrderModsSearchText}" />
                             </Grid>
 
                             <!-- Order Mods -->
                             <TreeDataGrid Grid.Row="1"
+                                          Source="{Binding OrderModsSource}"
                                           ShowColumnHeaders="True" />
                         </Grid>
                     </Border>
