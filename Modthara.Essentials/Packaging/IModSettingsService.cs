@@ -10,7 +10,7 @@ public interface IModSettingsService
     /// <summary>
     /// Current mod settings.
     /// </summary>
-    ModSettings? ModSettings { get; }
+    ModSettings ModSettings { get; }
 
     /// <summary>
     /// Loads mod settings from file to <see cref="ModSettings"/>.

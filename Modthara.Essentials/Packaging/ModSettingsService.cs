@@ -12,7 +12,7 @@ public class ModSettingsService : IModSettingsService
 
     private readonly IFileSystem _fileSystem;
 
-    public ModSettings? ModSettings { get; private set; }
+    public ModSettings ModSettings { get; private set; } = new();
 
     public ModSettingsService(string path, IFileSystem fileSystem)
     {
