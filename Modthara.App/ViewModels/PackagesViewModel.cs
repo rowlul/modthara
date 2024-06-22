@@ -10,6 +10,8 @@ using Modthara.Essentials.Packaging;
 
 namespace Modthara.App.ViewModels;
 
+using Source = FlatTreeDataGridSource<ModPackageViewModel>;
+
 public partial class PackagesViewModel : ViewModelBase
 {
     private readonly IModsService _modsService;
@@ -17,7 +19,7 @@ public partial class PackagesViewModel : ViewModelBase
     private readonly IModGridService _modGridService;
 
     [ObservableProperty]
-    private FlatTreeDataGridSource<ModPackageViewModel>? _replacerModsSource;
+    private Source? _replacerModsSource;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ToggleReplacerModsCommand))]
@@ -30,7 +32,7 @@ public partial class PackagesViewModel : ViewModelBase
     private string? _replacerModsSearchText;
 
     [ObservableProperty]
-    private FlatTreeDataGridSource<ModPackageViewModel>? _standaloneModsSource;
+    private Source? _standaloneModsSource;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ToggleStandaloneModsCommand))]
@@ -60,9 +62,8 @@ public partial class PackagesViewModel : ViewModelBase
         List<Task> tasks = [InitializeReplacerModsSource(), InitializeStandaloneModsSource()];
         await Task.WhenAll(tasks);
 
-        bool IsNotEmpty(FlatTreeDataGridSource<ModPackageViewModel>? source) => source != null && source.Items.Any();
-        CanToggleReplacerMods = IsNotEmpty(ReplacerModsSource);
-        CanToggleStandaloneMods = IsNotEmpty(StandaloneModsSource);
+        CanToggleReplacerMods = IsSourceNotEmpty(ReplacerModsSource);
+        CanToggleStandaloneMods = IsSourceNotEmpty(StandaloneModsSource);
 
         await _modSettingsService.LoadModSettingsAsync();
     }
@@ -93,7 +94,7 @@ public partial class PackagesViewModel : ViewModelBase
         _modGridService.ToggleMods(StandaloneModsSource, AreStandaloneModsEnabled);
     }
 
-    private void OnSearchTextChanged(FlatTreeDataGridSource<ModPackageViewModel>? source,
+    private void OnSearchTextChanged(Source? source,
         Func<ModPackageViewModel, bool> fallbackPredicate, string? query)
     {
         Debug.Assert(source != null, nameof(source) + " != null");
@@ -104,6 +105,8 @@ public partial class PackagesViewModel : ViewModelBase
             source.Items = filtered;
         }
     }
+
+    private bool IsSourceNotEmpty(Source? source) => source != null && source.Items.Any();
 
     partial void OnReplacerModsSearchTextChanged(string? value) =>
         OnSearchTextChanged(ReplacerModsSource, m => m.HasOverridesExclusively, value);
