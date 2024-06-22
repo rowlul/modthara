@@ -12,6 +12,7 @@ using CommunityToolkit.Mvvm.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
 using Modthara.App.Routing;
+using Modthara.App.Services;
 using Modthara.App.ViewModels;
 using Modthara.App.Views;
 using Modthara.Essentials.Packaging;
@@ -33,13 +34,14 @@ public partial class App : Application
         ServiceProvider services = ConfigureServices();
         Ioc.Default.ConfigureServices(services);
 
-        var mainVm = services.GetRequiredService<MainViewModel>();
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow { DataContext = mainVm };
+            desktop.MainWindow = new MainWindow { DataContext = services.GetRequiredService<MainViewModel>() };
         }
 
-        mainVm.LoadPackages().ContinueWith(_ => services.GetRequiredService<PackagesViewModel>().InitializeViewModel())
+        services
+            .GetRequiredService<PackagesViewModel>()
+            .InitializeViewModel()
             .SafeFireAndForget();
 
         base.OnFrameworkInitializationCompleted();
@@ -61,15 +63,15 @@ public partial class App : Application
                 s.GetRequiredService<IModPackageManager>(),
                 s.GetRequiredService<IFileSystem>()));
 
+        services.AddSingleton<IModSettingsService>(s => new ModSettingsService(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) +
+            @"\Larian Studios\Baldur's Gate 3\PlayerProfiles\Public\modsettings.lsx",
+            s.GetRequiredService<IFileSystem>()));
+
+        services.AddSingleton<IModGridService, ModGridService>();
+
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<PackagesViewModel>();
-
-        services.AddTransient<BlankViewModel>();
-        services.AddTransient<HomeViewModel>();
-        services.AddTransient<OverridesViewModel>();
-        services.AddTransient<NativeModsViewModel>();
-        services.AddTransient<SettingsViewModel>();
-        services.AddTransient<AboutViewModel>();
 
         return services.BuildServiceProvider();
     }
