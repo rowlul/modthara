@@ -27,7 +27,7 @@ public partial class PackagesViewModel : ViewModelBase
     private bool _areReplacerModsEnabled;
 
     [ObservableProperty]
-    private string _replacerModsSearchText;
+    private string? _replacerModsSearchText;
 
     [ObservableProperty]
     private FlatTreeDataGridSource<ModPackageViewModel>? _standaloneModsSource;
@@ -40,7 +40,7 @@ public partial class PackagesViewModel : ViewModelBase
     private bool _areStandaloneModsEnabled;
 
     [ObservableProperty]
-    private string _standaloneModsSearchText;
+    private string? _standaloneModsSearchText;
 
     public PackagesViewModel(
         IModsService modsService,
@@ -55,13 +55,14 @@ public partial class PackagesViewModel : ViewModelBase
     public async Task InitializeViewModel()
     {
         await _modsService.LoadModPackagesAsync();
+        await Task.Run(() => _modGridService.CreateViewModels());
 
         List<Task> tasks = [InitializeReplacerModsSource(), InitializeStandaloneModsSource()];
         await Task.WhenAll(tasks);
 
-        CanToggleReplacerMods = ReplacerModsSource != null && ReplacerModsSource.Items.Any();
-
-        CanToggleStandaloneMods = StandaloneModsSource != null && StandaloneModsSource.Items.Any();
+        bool IsNotEmpty(FlatTreeDataGridSource<ModPackageViewModel>? source) => source != null && source.Items.Any();
+        CanToggleReplacerMods = IsNotEmpty(ReplacerModsSource);
+        CanToggleStandaloneMods = IsNotEmpty(StandaloneModsSource);
 
         await _modSettingsService.LoadModSettingsAsync();
     }

@@ -16,23 +16,20 @@ public class ModGridService : IModGridService
 {
     private readonly IModsService _modsService;
 
-    private IEnumerable<ModPackageViewModel>? _viewModels;
-    public IEnumerable<ModPackageViewModel> ViewModels => _viewModels ??= CreateViewModels();
+    private readonly List<ModPackageViewModel> _viewModels = [];
+    public IEnumerable<ModPackageViewModel> ViewModels => _viewModels;
 
     public ModGridService(IModsService modsService)
     {
         _modsService = modsService;
     }
 
-    public IEnumerable<ModPackageViewModel> CreateViewModels()
+    public void CreateViewModels()
     {
-        var list = new List<ModPackageViewModel>();
         foreach (var modPackage in _modsService.ModPackages)
         {
-            list.Add(new ModPackageViewModel(modPackage, _modsService));
+            _viewModels.Add(new ModPackageViewModel(modPackage, _modsService));
         }
-
-        return list;
     }
 
     public FlatTreeDataGridSource<ModPackageViewModel> CreateSource(

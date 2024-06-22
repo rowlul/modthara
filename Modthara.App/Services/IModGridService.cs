@@ -17,12 +17,9 @@ public interface IModGridService
     IEnumerable<ModPackageViewModel> ViewModels { get; }
 
     /// <summary>
-    /// Create view models from loaded mod packages.
+    /// Creates view models from loaded mod packages and sets the <see cref="ViewModels"/> property.
     /// </summary>
-    /// <returns>
-    /// View models that represent loaded mod packages.
-    /// </returns>
-    IEnumerable<ModPackageViewModel> CreateViewModels();
+    void CreateViewModels();
 
     /// <summary>
     /// Creates a source with optional filtering.
