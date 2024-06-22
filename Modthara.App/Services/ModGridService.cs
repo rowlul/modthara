@@ -5,6 +5,7 @@ using Avalonia.Controls.Models.TreeDataGrid;
 
 using Humanizer;
 
+using Modthara.App.Extensions;
 using Modthara.App.ViewModels;
 using Modthara.Essentials.Packaging;
 using Modthara.Lari;
@@ -75,7 +76,7 @@ public class ModGridService : IModGridService
             return ViewModels.Where(fallbackPredicate);
         }
 
-        if (IsWhiteSpace(query))
+        if (query.IsWhiteSpace())
         {
             return null;
         }
@@ -85,19 +86,6 @@ public class ModGridService : IModGridService
             .Where(fallbackPredicate)
             .Where(x => x.Name.Contains(query, StringComparison.OrdinalIgnoreCase));
         return filtered;
-
-        bool IsWhiteSpace(string s)
-        {
-            foreach (var c in s)
-            {
-                if (!char.IsWhiteSpace(c))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
     }
 
     public bool AnyEnabledMods(IEnumerable<ModPackageViewModel> sourceItems) =>
