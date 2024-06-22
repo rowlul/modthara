@@ -60,8 +60,7 @@ public class OrderGridService : IOrderGridService
         missingMods = missingModsList;
     }
 
-    public FlatTreeDataGridSource<ModPackageViewModel> CreateSource(
-        Func<ModPackageViewModel, bool>? filterPredicate = null)
+    public FlatTreeDataGridSource<ModPackageViewModel> CreateSource()
     {
         var source =
             new FlatTreeDataGridSource<ModPackageViewModel>(ViewModels)

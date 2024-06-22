@@ -11,8 +11,7 @@ public interface IOrderGridService
 
     void CreateViewModels(out IEnumerable<ModMetadata> missingMods);
 
-    FlatTreeDataGridSource<ModPackageViewModel> CreateSource(
-        Func<ModPackageViewModel, bool>? filterPredicate = null);
+    FlatTreeDataGridSource<ModPackageViewModel> CreateSource();
 
     IEnumerable<ModPackageViewModel>? FilterMods(string? query);
 
