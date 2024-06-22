@@ -13,7 +13,6 @@ public class ModsService : IModsService
 
     private readonly List<ModPackage> _modPackages = [];
 
-    /// <inheritdoc />
     public IReadOnlyList<ModPackage> ModPackages => _modPackages;
 
     public ModsService(string path, IModPackageManager modPackageManager, IFileSystem fileSystem)
@@ -24,7 +23,6 @@ public class ModsService : IModsService
         _fileSystem = fileSystem;
     }
 
-    /// <inheritdoc />
     public async Task LoadModPackagesAsync(Action<int, Exception>? onException = null,
         Action<int, ModPackage>? onPackageRead = null)
     {
@@ -35,10 +33,8 @@ public class ModsService : IModsService
         }
     }
 
-    /// <inheritdoc />
     public int CountModPackages() => _modPackageManager.CountModPackages(_path);
 
-    /// <inheritdoc />
     public IReadOnlySet<(ModPackage, ModPackage)> FindDuplicateModPackages()
     {
         HashSet<(ModPackage, ModPackage)> duplicates = [];
@@ -54,7 +50,6 @@ public class ModsService : IModsService
         return duplicates;
     }
 
-    /// <inheritdoc />
     public async Task ImportModPackageAsync(ModPackage modPackage)
     {
         var destPath = _fileSystem.Path.Combine(_path, modPackage.Path);
@@ -70,7 +65,6 @@ public class ModsService : IModsService
         _modPackages.Add(modPackage);
     }
 
-    /// <inheritdoc />
     public async Task ImportArchivedModPackagesAsync(ZipArchive zipArchive, Action<Exception>? onException = null,
         PackageReadCallback? packageReadCallback = null)
     {
@@ -112,7 +106,6 @@ public class ModsService : IModsService
         }
     }
 
-    /// <inheritdoc />
     public void EnableModPackage(ModPackage modPackage)
     {
         var newPath = _fileSystem.Path.ChangeExtension(modPackage.Path, null);
@@ -122,7 +115,6 @@ public class ModsService : IModsService
         modPackage.Flags |= ModFlags.Enabled;
     }
 
-    /// <inheritdoc />
     public void DisableModPackage(ModPackage modPackage)
     {
         var newPath = _fileSystem.Path.ChangeExtension(modPackage.Path, ".pak.off");
@@ -132,7 +124,6 @@ public class ModsService : IModsService
         modPackage.Flags &= ~ModFlags.Enabled;
     }
 
-    /// <inheritdoc />
     public void DeleteModPackage(ModPackage modPackage)
     {
         _fileSystem.Directory.Delete(modPackage.Path);

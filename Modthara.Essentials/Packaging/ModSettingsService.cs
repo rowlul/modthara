@@ -12,7 +12,6 @@ public class ModSettingsService : IModSettingsService
 
     private readonly IFileSystem _fileSystem;
 
-    /// <inheritdoc />
     public ModSettings? ModSettings { get; private set; }
 
     public ModSettingsService(string path, IFileSystem fileSystem)
@@ -22,7 +21,6 @@ public class ModSettingsService : IModSettingsService
         _fileSystem = fileSystem;
     }
 
-    /// <inheritdoc />
     public async Task LoadModSettingsAsync()
     {
         var file = _fileSystem.FileStream.New(_path, FileMode.Open, FileAccess.Read, FileShare.Read,
@@ -36,7 +34,6 @@ public class ModSettingsService : IModSettingsService
         ModSettings = modSettings;
     }
 
-    /// <inheritdoc />
     public async Task SaveModSettingsAsync()
     {
         if (ModSettings == null)
@@ -50,7 +47,6 @@ public class ModSettingsService : IModSettingsService
         await stream.CopyToAsync(file).ConfigureAwait(false);
     }
 
-    /// <inheritdoc />
     public IEnumerable<ModPackage> GetMods(IReadOnlyList<ModPackage> modPackages,
         out IEnumerable<ModMetadata> missingMods, Action<int, ModPackage>? onPackageRead = null)
     {

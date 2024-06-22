@@ -19,7 +19,6 @@ public partial class ModPackageManager : IModPackageManager
         _fileSystem = fileSystem;
     }
 
-    /// <inheritdoc />
     public ValueTask<ModPackage> ReadModPackageAsync(string path, bool leaveOpen = false)
     {
         var fileStream = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read, FileShare.Read,
@@ -28,7 +27,6 @@ public partial class ModPackageManager : IModPackageManager
         return ReadModPackageAsync(fileStream, path, leaveOpen);
     }
 
-    /// <inheritdoc />
     public async ValueTask<ModPackage> ReadModPackageAsync(Stream stream, string path, bool leaveOpen = false)
     {
         try
@@ -96,7 +94,6 @@ public partial class ModPackageManager : IModPackageManager
         }
     }
 
-    /// <inheritdoc />
     public async IAsyncEnumerable<ModPackage> ReadModPackagesAsync(string path,
         Action<int, Exception>? onException = null,
         Action<int, ModPackage>? onPackageRead = null)
@@ -137,7 +134,6 @@ public partial class ModPackageManager : IModPackageManager
         }
     }
 
-    /// <inheritdoc />
     public int CountModPackages(string path)
     {
         var patterns = new[] { "*.pak", "*.pak.off" };
