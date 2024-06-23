@@ -42,7 +42,8 @@ public partial class PackagesViewModel : ViewModelBase
     private void ToggleReplacerMods()
     {
         Debug.Assert(ReplacerModsSource != null, nameof(ReplacerModsSource) + " != null");
-        _modGridService.ToggleMods(ReplacerModsSource, AreReplacerModsEnabled);
+        _modGridService.ToggleMods(ReplacerModsSource, AreReplacerModsEnabled, m => m.HasOverridesExclusively);
+        ReplacerModsSearchText = null;
     }
 
     #endregion
@@ -66,7 +67,8 @@ public partial class PackagesViewModel : ViewModelBase
     private void ToggleStandaloneMods()
     {
         Debug.Assert(StandaloneModsSource != null, nameof(StandaloneModsSource) + " != null");
-        _modGridService.ToggleMods(StandaloneModsSource, AreStandaloneModsEnabled);
+        _modGridService.ToggleMods(StandaloneModsSource, AreStandaloneModsEnabled, m => m.HasAnyStandaloneFiles);
+        StandaloneModsSearchText = null;
     }
 
     #endregion

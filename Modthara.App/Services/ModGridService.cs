@@ -114,23 +114,16 @@ public class ModGridService : IModGridService
         }
     }
 
-    public void ToggleMods(FlatTreeDataGridSource<ModPackageViewModel> source, bool newValue)
+    public void ToggleMods(FlatTreeDataGridSource<ModPackageViewModel> source, bool newValue,
+        Func<ModPackageViewModel, bool>? filterPredicate = null)
     {
-        if (newValue)
+        var mods = filterPredicate != null ? ViewModels.Where(filterPredicate).ToList() : ViewModels.ToList();
+
+        foreach (var mod in mods)
         {
-            for (int i = 0; i < source.Rows.Count; i++)
-            {
-                ((CheckBoxCell)source.Rows.RealizeCell(source.Columns[0], 0, i))
-                    .Value = true;
-            }
+            ToggleMod(mod, newValue);
         }
-        else
-        {
-            for (int i = 0; i < source.Rows.Count; i++)
-            {
-                ((CheckBoxCell)source.Rows.RealizeCell(source.Columns[0], 0, i))
-                    .Value = false;
-            }
-        }
+
+        source.Items = mods;
     }
 }

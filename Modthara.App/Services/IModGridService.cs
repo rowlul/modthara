@@ -71,13 +71,17 @@ public interface IModGridService
     void ToggleMod(ModPackageViewModel mod, bool newValue);
 
     /// <summary>
-    /// Toggles all mods in <paramref name="source"/> Items according to <paramref name="newValue"/>.
+    /// Toggles all mods with optional <paramref name="filterPredicate"/> according to <paramref name="newValue"/>.
     /// </summary>
     /// <param name="source">
-    /// Source with items.
+    /// Source with items to be set.
     /// </param>
     /// <param name="newValue">
     /// New value to set.
     /// </param>
-    void ToggleMods(FlatTreeDataGridSource<ModPackageViewModel> source, bool newValue);
+    /// <param name="filterPredicate">
+    /// Predicate to filter <see cref="ViewModels"/> by.
+    /// </param>
+    public void ToggleMods(FlatTreeDataGridSource<ModPackageViewModel> source, bool newValue,
+        Func<ModPackageViewModel, bool>? filterPredicate = null);
 }
