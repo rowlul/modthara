@@ -7,7 +7,7 @@
         mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="450"
         x:Class="Modthara.App.Views.MainWindow"
         x:DataType="vm:MainViewModel"
-        Title="Modthara.App">
+        Title="Modthara">
 
     <Grid>
         <SplitView
