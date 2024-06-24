@@ -16,20 +16,35 @@ namespace Modthara.App.Services;
 public class ModGridService : IModGridService
 {
     private readonly IModsService _modsService;
+    private readonly IModSettingsService _modSettingsService;
 
     private readonly List<ModPackageViewModel> _viewModels = [];
     public IEnumerable<ModPackageViewModel> ViewModels => _viewModels;
 
-    public ModGridService(IModsService modsService)
+    public ModGridService(IModsService modsService, IModSettingsService modSettingsService)
     {
         _modsService = modsService;
+        _modSettingsService = modSettingsService;
     }
 
     public void CreateViewModels()
     {
-        foreach (var modPackage in _modsService.ModPackages)
+        foreach (var pkg in _modsService.ModPackages)
         {
-            _viewModels.Add(new ModPackageViewModel(modPackage, _modsService));
+            bool isInOrder = false;
+
+            foreach (var meta in _modSettingsService.ModSettings.Mods)
+            {
+                if (pkg.Uuid.Value == meta.Uuid.Value)
+                {
+                    isInOrder = true;
+                }
+            }
+
+            if (!isInOrder)
+            {
+                _viewModels.Add(new ModPackageViewModel(pkg, _modsService));
+            }
         }
     }
 
