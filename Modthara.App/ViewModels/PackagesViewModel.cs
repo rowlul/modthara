@@ -121,9 +121,21 @@ public partial class PackagesViewModel : ViewModelBase
         });
 
         await Task.WhenAll(
-                InitializeReplacerModsSource(),
-                InitializeStandaloneModsSource(),
-                InitializeOrderModsSource())
+                Task.Run(() =>
+                {
+                    ReplacerModsSource = _modGridService.CreateSource(m => m.HasOverridesExclusively);
+                    AreReplacerModsEnabled = _modGridService.AnyEnabledMods(ReplacerModsSource.Items);
+                }),
+                Task.Run(() =>
+                {
+                    StandaloneModsSource = _modGridService.CreateSource(m => m.HasAnyStandaloneFiles);
+                    AreStandaloneModsEnabled = _modGridService.AnyEnabledMods(StandaloneModsSource.Items);
+                }),
+                Task.Run(() =>
+                {
+                    OrderModsSource = _orderGridService.CreateSource();
+                    AreOrderModsEnabled = OrderModsSource.Items.Any();
+                }))
             .ContinueWith(_ =>
             {
                 IsViewReady = true;
@@ -133,24 +145,6 @@ public partial class PackagesViewModel : ViewModelBase
         CanToggleStandaloneMods = IsSourceNotEmpty(StandaloneModsSource);
         CanToggleOrderMods = IsSourceNotEmpty(OrderModsSource);
     }
-
-    private Task InitializeReplacerModsSource() => Task.Run(() =>
-    {
-        ReplacerModsSource = _modGridService.CreateSource(m => m.HasOverridesExclusively);
-        AreReplacerModsEnabled = _modGridService.AnyEnabledMods(ReplacerModsSource.Items);
-    });
-
-    private Task InitializeStandaloneModsSource() => Task.Run(() =>
-    {
-        StandaloneModsSource = _modGridService.CreateSource(m => m.HasAnyStandaloneFiles);
-        AreStandaloneModsEnabled = _modGridService.AnyEnabledMods(StandaloneModsSource.Items);
-    });
-
-    private Task InitializeOrderModsSource() => Task.Run(() =>
-    {
-        OrderModsSource = _orderGridService.CreateSource();
-        AreOrderModsEnabled = OrderModsSource.Items.Any();
-    });
 
     private void OnModsSearchTextChanged(Source? source,
         Func<ModPackageViewModel, bool> fallbackPredicate, string? query)
