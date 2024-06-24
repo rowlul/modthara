@@ -12,15 +12,15 @@ namespace Modthara.App.Services;
 
 public class OrderGridService : IOrderGridService
 {
-    private readonly IModGridService _modGridService;
+    private readonly IModsService _modsService;
     private readonly IModSettingsService _modSettingsService;
 
     private readonly List<ModPackageViewModel> _viewModels = [];
     public IEnumerable<ModPackageViewModel> ViewModels => _viewModels;
 
-    public OrderGridService(IModGridService modGridService, IModSettingsService modSettingsService)
+    public OrderGridService(IModsService modsService, IModSettingsService modSettingsService)
     {
-        _modGridService = modGridService;
+        _modsService = modsService;
         _modSettingsService = modSettingsService;
     }
 
@@ -41,11 +41,11 @@ public class OrderGridService : IOrderGridService
 
             bool isInModsFolder = false;
 
-            foreach (var pkg in _modGridService.ViewModels)
+            foreach (var pkg in _modsService.ModPackages)
             {
                 if (meta.Uuid.Value == pkg.Uuid.Value)
                 {
-                    _viewModels.Add(pkg);
+                    _viewModels.Add(new ModPackageViewModel(pkg, _modsService));
                     isInModsFolder = true;
                     break;
                 }
