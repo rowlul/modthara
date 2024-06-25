@@ -59,7 +59,7 @@ public class ModGridService : IModGridService
                 Columns =
                 {
                     new CheckBoxColumn<ModPackageViewModel>(string.Empty,
-                        getter: x => x.Flags.HasFlag(ModFlags.Enabled),
+                        getter: x => x.IsEnabled,
                         setter: ToggleMod,
                         options: new CheckBoxColumnOptions<ModPackageViewModel> { CanUserResizeColumn = false }),
                     new TextColumn<ModPackageViewModel, string>("Name",
