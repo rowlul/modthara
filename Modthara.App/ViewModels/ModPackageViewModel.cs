@@ -129,6 +129,8 @@ public partial class ModPackageViewModel : ViewModelBase
 
     public bool HasAnyStandaloneFiles => Flags.HasFlag(ModFlags.HasModFiles);
 
+    public bool IsEnabled => Flags.HasFlag(ModFlags.Enabled);
+
     public ModPackage AsModPackage() => _modPackage;
 
     public void Enable()
