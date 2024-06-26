@@ -79,7 +79,7 @@ public class ModGridService : IModGridService
     }
 
     public IEnumerable<ModPackageViewModel>? FilterMods(string? query,
-        Func<ModPackageViewModel, bool> fallbackPredicate)
+        Func<ModPackageViewModel, bool>? fallbackPredicate = null)
     {
         if (query == null)
         {
@@ -88,7 +88,7 @@ public class ModGridService : IModGridService
 
         if (query == string.Empty)
         {
-            return ViewModels.Where(fallbackPredicate);
+            return fallbackPredicate != null ? ViewModels.Where(fallbackPredicate) : ViewModels;
         }
 
         if (query.IsWhiteSpace())
@@ -97,8 +97,7 @@ public class ModGridService : IModGridService
         }
 
         // TODO: introduce input debouncing
-        var filtered = ViewModels
-            .Where(fallbackPredicate)
+        var filtered = (fallbackPredicate != null ? ViewModels.Where(fallbackPredicate) : ViewModels)
             .Where(x => x.Name.Contains(query, StringComparison.OrdinalIgnoreCase));
         return filtered;
     }
