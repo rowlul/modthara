@@ -25,14 +25,6 @@ public partial class ModPackageViewModel : ViewModelBase
         }
     }
 
-    public ModPackageViewModel(ModPackage modPackage, IModsService modsService)
-    {
-        _modPackage = modPackage;
-        _modsService = modsService;
-
-        _isEnabled = (_modPackage.Flags & ModFlags.Enabled) != ModFlags.None;
-    }
-
     #region ModPackage properties
 
     public string Path
@@ -150,6 +142,14 @@ public partial class ModPackageViewModel : ViewModelBase
     public bool HasOverrides => (_modPackage.Flags & ModFlags.AltersGameFiles) != ModFlags.None;
 
     public bool HasModFiles => (_modPackage.Flags & ModFlags.HasModFiles) != ModFlags.None;
+
+    public ModPackageViewModel(ModPackage modPackage, IModsService modsService)
+    {
+        _modPackage = modPackage;
+        _modsService = modsService;
+
+        _isEnabled = (_modPackage.Flags & ModFlags.Enabled) != ModFlags.None;
+    }
 
     public void Enable()
     {
