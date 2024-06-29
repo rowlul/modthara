@@ -3,6 +3,7 @@
              xmlns:vm="using:Modthara.App.ViewModels"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:i="https://github.com/projektanker/icons.avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
              x:DataType="vm:PackagesViewModel"
              x:Class="Modthara.App.Views.PackagesView"
@@ -14,79 +15,48 @@
                 HorizontalAlignment="Stretch"
                 CornerRadius="10">
 
-                <Grid RowDefinitions="*, Auto, 250">
-                    <Border
-                        HorizontalAlignment="Stretch"
-                        CornerRadius="10">
+                <Border
+                    HorizontalAlignment="Stretch"
+                    CornerRadius="10">
 
-                        <Grid RowDefinitions="40, *">
-                            <Grid
-                                VerticalAlignment="Center"
-                                ColumnDefinitions="Auto 10 Auto * 200 10"
-                                RowDefinitions="Auto">
-                                <ToggleSwitch
-                                    IsChecked="{Binding AreOrderModsEnabled}"
-                                    Theme="{DynamicResource SimpleToggleSwitch}"
-                                    Command="{Binding ToggleOrderModsCommand}" />
+                    <Grid RowDefinitions="40, *" Margin="0 0 10 0">
+                        <Grid
+                            VerticalAlignment="Center"
+                            ColumnDefinitions="Auto 5 * 5 Auto">
 
-                                <ComboBox Grid.Column="2"
-                                          Classes="Small"
-                                          SelectedIndex="0"
-                                          VerticalAlignment="Center">
+                            <ComboBox Grid.Column="0"
+                                      Classes="Small"
+                                      SelectedIndex="0"
+                                      VerticalAlignment="Center"
+                                      FontWeight="Medium"
+                                      FontSize="14"
+                                      Width="200"
+                                      Foreground="{DynamicResource SemiColorPrimary}">
 
-                                    <ComboBox.Items>
-                                        <ComboBoxItem Content="Active Mod Order" />
-                                    </ComboBox.Items>
-                                </ComboBox>
+                                <ComboBox.Items>
+                                    <ComboBoxItem Content="Current Mod Order" />
+                                    <ComboBoxItem Content="Blank Mod Order" />
+                                </ComboBox.Items>
+                            </ComboBox>
 
-                                <TextBox Grid.Column="4"
-                                         Watermark="Search Active Mods..."
-                                         Classes="Small clearButton"
-                                         Text="{Binding OrderModsSearchText}" />
-                            </Grid>
+                            <TextBox Grid.Column="2"
+                                     Watermark="Search..."
+                                     Classes="Small clearButton"
+                                     Text="{Binding OrderSearchText}"
+                                     IsVisible="{Binding OrderSearchVisibility}" />
 
-                            <!-- Order Mods -->
-                            <TreeDataGrid Grid.Row="1"
-                                          Source="{Binding OrderModsSource}"
-                                          ShowColumnHeaders="True" />
-                        </Grid>
-                    </Border>
-                    <GridSplitter Grid.Row="1" />
-                    <Border
-                        Grid.Row="2"
-                        HorizontalAlignment="Stretch"
-                        CornerRadius="10">
-
-                        <Grid RowDefinitions="40, *">
-                            <Grid
-                                VerticalAlignment="Center"
-                                ColumnDefinitions="Auto 10 Auto * 200 10"
-                                RowDefinitions="Auto">
-
-                                <ToggleSwitch IsChecked="{Binding AreReplacerModsEnabled}"
-                                              Theme="{DynamicResource SimpleToggleSwitch}"
-                                              Command="{Binding ToggleReplacerModsCommand}" />
-
-                                <TextBlock
-                                    Grid.Column="2"
-                                    Text="Overrides"
-                                    FontWeight="Medium"
-                                    VerticalAlignment="Center" />
-
-                                <TextBox Grid.Column="4"
-                                         Classes="Small clearButton"
-                                         Text="{Binding ReplacerModsSearchText}"
-                                         Watermark="Search Overrides..." />
-                            </Grid>
-
-                            <!-- Replacer Mods -->
-                            <TreeDataGrid Grid.Row="1"
-                                          Source="{Binding ReplacerModsSource}"
-                                          ShowColumnHeaders="True" />
+                            <ToggleButton Grid.Column="4"
+                                          i:Attached.Icon="fa-solid fa-magnifying-glass"
+                                          IsChecked="{Binding OrderSearchVisibility}"
+                                          Classes="Small Primary" />
                         </Grid>
 
-                    </Border>
-                </Grid>
+                        <TreeDataGrid Grid.Row="1"
+                                      Name="OrderGrid"
+                                      Source="{Binding OrderSource}"
+                                      ShowColumnHeaders="True" />
+                    </Grid>
+                </Border>
             </Border>
             <GridSplitter Grid.Column="1" />
             <Border
@@ -97,30 +67,105 @@
                 <Grid RowDefinitions="40, *" Margin="10 0 0 0">
                     <Grid
                         VerticalAlignment="Center"
-                        ColumnDefinitions="Auto 10 Auto * 200"
-                        RowDefinitions="Auto">
+                        ColumnDefinitions="Auto 5 Auto 5 * 5 Auto">
 
-                        <ToggleSwitch
-                            IsChecked="{Binding AreStandaloneModsEnabled}"
-                            Theme="{DynamicResource SimpleToggleSwitch}"
-                            Command="{Binding ToggleStandaloneModsCommand}" />
-
-                        <TextBlock
-                            Grid.Column="2"
-                            Text="Inactive Mods"
+                        <SplitButton
+                            Command="{Binding OpenModsFolderCommand}"
                             FontWeight="Medium"
-                            VerticalAlignment="Center" />
+                            VerticalAlignment="Center"
+                            Classes="Small Secondary"
+                            FontSize="14">
+
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <i:Icon Value="fa-solid fa-folder" />
+                                <TextBlock Text="Library" />
+                            </StackPanel>
+
+                            <SplitButton.Styles>
+                                <Style Selector="SplitButton">
+                                    <Setter Property="Flyout">
+                                        <MenuFlyout Placement="BottomEdgeAlignedRight">
+                                            <MenuItem Header="Open Mods folder"
+                                                      Command="{Binding OpenModsFolderCommand}" />
+
+                                            <Separator />
+
+                                            <MenuItem Header="Enable">
+                                                <MenuItem Header="All mods"
+                                                          Command="{Binding EnableAllModsCommand}" />
+                                                <MenuItem Header="All overrides"
+                                                          Command="{Binding EnableAllOverridesCommand}" />
+                                            </MenuItem>
+
+                                            <MenuItem Header="Disable">
+                                                <MenuItem Header="All mods"
+                                                          Command="{Binding DisableAllModsCommand}" />
+                                                <MenuItem Header="All overrides"
+                                                          Command="{Binding DisableAllOverridesCommand}" />
+                                            </MenuItem>
+                                            <Separator />
+                                        </MenuFlyout>
+                                    </Setter>
+                                </Style>
+                            </SplitButton.Styles>
+
+                        </SplitButton>
+
+                        <Border Grid.Column="2"
+                                HorizontalAlignment="Left"
+                                Theme="{StaticResource RadioButtonGroupBorder}">
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton
+                                    GroupName="PackageCategoryGroup"
+                                    Classes="Small"
+                                    Theme="{DynamicResource ButtonRadioButton}"
+                                    IsChecked="True"
+                                    Command="{Binding SetPackageCategoryCommand}"
+                                    CommandParameter="{x:Static vm:PackageCategory.Standalone}">
+                                    Standalone
+                                </RadioButton>
+                                <RadioButton
+                                    GroupName="PackageCategoryGroup"
+                                    Classes="Small"
+                                    Theme="{DynamicResource ButtonRadioButton}"
+                                    Command="{Binding SetPackageCategoryCommand}"
+                                    CommandParameter="{x:Static vm:PackageCategory.Overrides}">
+                                    Overrides
+                                </RadioButton>
+                                <RadioButton
+                                    GroupName="PackageCategoryGroup"
+                                    Classes="Small"
+                                    Theme="{DynamicResource ButtonRadioButton}"
+                                    Command="{Binding SetPackageCategoryCommand}"
+                                    CommandParameter="{x:Static vm:PackageCategory.All}">
+                                    All
+                                </RadioButton>
+                            </StackPanel>
+                        </Border>
 
                         <TextBox Grid.Column="4"
                                  Classes="Small clearButton"
-                                 Text="{Binding StandaloneModsSearchText}"
-                                 Watermark="Search Mods..." />
+                                 Text="{Binding ModsSearchText}"
+                                 Watermark="Search..."
+                                 IsVisible="{Binding ModSearchVisibility}" />
+
+                        <ToggleButton Grid.Column="6"
+                                      i:Attached.Icon="fa-solid fa-magnifying-glass"
+                                      IsChecked="{Binding ModSearchVisibility}"
+                                      Classes="Small Secondary" />
                     </Grid>
 
-                    <!-- Standalone Mods not in Order -->
                     <TreeDataGrid Grid.Row="1"
-                                  Source="{Binding StandaloneModsSource}"
-                                  ShowColumnHeaders="True" />
+                                  Name="ModGrid"
+                                  Source="{Binding ModsSource}"
+                                  ShowColumnHeaders="True">
+                        <TreeDataGrid.Resources>
+                            <DataTemplate x:Key="ToggleModCell" DataType="vm:ModPackageViewModel">
+                                <CheckBox IsChecked="{Binding IsEnabled, Mode=TwoWay}"
+                                          VerticalAlignment="Center" HorizontalAlignment="Center" />
+                            </DataTemplate>
+                        </TreeDataGrid.Resources>
+                    </TreeDataGrid>
                 </Grid>
 
             </Border>

@@ -1,4 +1,6 @@
-﻿using Modthara.Essentials.Packaging;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
+using Modthara.Essentials.Packaging;
 using Modthara.Lari;
 
 namespace Modthara.App.ViewModels;
@@ -8,11 +10,30 @@ public partial class ModPackageViewModel : ViewModelBase
     private readonly ModPackage _modPackage;
     private readonly IModsService _modsService;
 
+    [ObservableProperty]
+    private bool _isEnabled;
+
+    partial void OnIsEnabledChanged(bool value)
+    {
+        if (value)
+        {
+            Enable();
+        }
+        else
+        {
+            Disable();
+        }
+    }
+
     public ModPackageViewModel(ModPackage modPackage, IModsService modsService)
     {
         _modPackage = modPackage;
         _modsService = modsService;
+
+        _isEnabled = (_modPackage.Flags & ModFlags.Enabled) != ModFlags.None;
     }
+
+    #region ModPackage properties
 
     public string Path
     {
@@ -124,25 +145,22 @@ public partial class ModPackageViewModel : ViewModelBase
         }
     }
 
-    public bool HasOverridesExclusively =>
-        Flags.HasFlag(ModFlags.AltersGameFiles) && !Flags.HasFlag(ModFlags.HasModFiles);
+    #endregion
 
-    public bool HasAnyStandaloneFiles => Flags.HasFlag(ModFlags.HasModFiles);
+    public bool HasOverrides => (_modPackage.Flags & ModFlags.AltersGameFiles) != ModFlags.None;
 
-    public bool IsEnabled => Flags.HasFlag(ModFlags.Enabled);
-
-    public ModPackage AsModPackage() => _modPackage;
+    public bool HasModFiles => (_modPackage.Flags & ModFlags.HasModFiles) != ModFlags.None;
 
     public void Enable()
     {
         _modsService.EnableModPackage(_modPackage);
-        OnPropertyChanged(nameof(Flags));
+        IsEnabled = true;
     }
 
     public void Disable()
     {
         _modsService.DisableModPackage(_modPackage);
-        OnPropertyChanged(nameof(Flags));
+        IsEnabled = false;
     }
 
     public void Delete()

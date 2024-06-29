@@ -67,10 +67,6 @@ public class OrderGridService : IOrderGridService
             {
                 Columns =
                 {
-                    new CheckBoxColumn<ModPackageViewModel>(string.Empty,
-                        getter: x => x.IsEnabled,
-                        setter: ToggleMod,
-                        options: new CheckBoxColumnOptions<ModPackageViewModel> { CanUserResizeColumn = false }),
                     new TextColumn<ModPackageViewModel, string>("Name",
                         getter: x => x.Name,
                         options: new TextColumnOptions<ModPackageViewModel> { IsTextSearchEnabled = true }),
@@ -108,15 +104,5 @@ public class OrderGridService : IOrderGridService
         var filtered = ViewModels
             .Where(x => x.Name.Contains(query, StringComparison.OrdinalIgnoreCase));
         return filtered;
-    }
-
-    public void ToggleMod(ModPackageViewModel source, bool newValue)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void ToggleMods(FlatTreeDataGridSource<ModPackageViewModel> source, bool newValue)
-    {
-        throw new NotImplementedException();
     }
 }

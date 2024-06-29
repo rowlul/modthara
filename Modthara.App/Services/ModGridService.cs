@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 
 using Humanizer;
@@ -51,17 +49,15 @@ public class ModGridService : IModGridService
     public FlatTreeDataGridSource<ModPackageViewModel> CreateSource(
         Func<ModPackageViewModel, bool>? filterPredicate = null)
     {
-        var items = filterPredicate != null ? ViewModels.Where(filterPredicate) : ViewModels;
-
         var source =
-            new FlatTreeDataGridSource<ModPackageViewModel>(items)
+            new FlatTreeDataGridSource<ModPackageViewModel>(filterPredicate != null
+                ? ViewModels.Where(filterPredicate)
+                : ViewModels)
             {
                 Columns =
                 {
-                    new CheckBoxColumn<ModPackageViewModel>(string.Empty,
-                        getter: x => x.IsEnabled,
-                        setter: ToggleMod,
-                        options: new CheckBoxColumnOptions<ModPackageViewModel> { CanUserResizeColumn = false }),
+                    new TemplateColumn<ModPackageViewModel>(string.Empty, "ToggleModCell",
+                        options: new TemplateColumnOptions<ModPackageViewModel> { CanUserResizeColumn = false }),
                     new TextColumn<ModPackageViewModel, string>("Name",
                         getter: x => x.Name,
                         options: new TextColumnOptions<ModPackageViewModel> { IsTextSearchEnabled = true }),
@@ -79,7 +75,7 @@ public class ModGridService : IModGridService
     }
 
     public IEnumerable<ModPackageViewModel>? FilterMods(string? query,
-        Func<ModPackageViewModel, bool>? fallbackPredicate = null)
+        Func<ModPackageViewModel, bool>? filterPredicate = null)
     {
         if (query == null)
         {
@@ -88,7 +84,7 @@ public class ModGridService : IModGridService
 
         if (query == string.Empty)
         {
-            return fallbackPredicate != null ? ViewModels.Where(fallbackPredicate) : ViewModels;
+            return filterPredicate != null ? ViewModels.Where(filterPredicate) : ViewModels;
         }
 
         if (query.IsWhiteSpace())
@@ -97,47 +93,30 @@ public class ModGridService : IModGridService
         }
 
         // TODO: introduce input debouncing
-        var filtered = (fallbackPredicate != null ? ViewModels.Where(fallbackPredicate) : ViewModels)
+        var filtered = (filterPredicate != null ? ViewModels.Where(filterPredicate) : ViewModels)
             .Where(x => x.Name.Contains(query, StringComparison.OrdinalIgnoreCase));
         return filtered;
     }
 
-    public bool AnyEnabledMods(IEnumerable<ModPackageViewModel> sourceItems) =>
-        sourceItems.Any(x => x.Flags.HasFlag(ModFlags.Enabled));
-
-    public void ToggleMod(ModPackageViewModel mod, bool newValue)
+    public void EnableMods(Func<ModPackageViewModel, bool>? filterPredicate = null)
     {
-        // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
-        // ReSharper disable once RedundantBoolCompare
-        switch (mod.Flags & ModFlags.Enabled)
+        foreach (var mod in filterPredicate != null ? ViewModels.Where(filterPredicate) : ViewModels)
         {
-            case ModFlags.None when newValue == true:
-                {
-                    mod.Enable();
-                    Debug.Assert((mod.Flags & ModFlags.Enabled) == ModFlags.Enabled);
-                    Debug.Assert(mod.Path.Length > 4 && mod.Path[^4..] == ".pak");
-                    break;
-                }
-            case ModFlags.Enabled when newValue == false:
-                {
-                    mod.Disable();
-                    Debug.Assert((mod.Flags & ModFlags.Enabled) == ModFlags.None);
-                    Debug.Assert(mod.Path.Length > 8 && mod.Path[^8..] == ".pak.off");
-                    break;
-                }
+            if (!mod.IsEnabled)
+            {
+                mod.Enable();
+            }
         }
     }
 
-    public void ToggleMods(FlatTreeDataGridSource<ModPackageViewModel> source, bool newValue,
-        Func<ModPackageViewModel, bool>? filterPredicate = null)
+    public void DisableMods(Func<ModPackageViewModel, bool>? filterPredicate = null)
     {
-        var mods = filterPredicate != null ? ViewModels.Where(filterPredicate).ToList() : ViewModels.ToList();
-
-        foreach (var mod in mods)
+        foreach (var mod in filterPredicate != null ? ViewModels.Where(filterPredicate) : ViewModels)
         {
-            ToggleMod(mod, newValue);
+            if (mod.IsEnabled)
+            {
+                mod.Disable();
+            }
         }
-
-        source.Items = mods;
     }
 }

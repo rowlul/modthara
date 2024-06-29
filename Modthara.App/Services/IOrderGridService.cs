@@ -14,8 +14,4 @@ public interface IOrderGridService
     FlatTreeDataGridSource<ModPackageViewModel> CreateSource();
 
     IEnumerable<ModPackageViewModel>? FilterMods(string? query);
-
-    void ToggleMod(ModPackageViewModel source, bool newValue);
-
-    void ToggleMods(FlatTreeDataGridSource<ModPackageViewModel> source, bool newValue);
 }
