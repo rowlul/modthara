@@ -14,7 +14,7 @@ public class ModMetadata
     public string Md5 { get; set; } = string.Empty;
     public LariUuid Uuid { get; set; } = LariUuid.NewGuid();
     public LariVersion Version { get; set; } = DefaultLariVersion;
-    public IList<ModMetadata>? Dependencies { get; set; }
+    public ICollection<ModMetadata>? Dependencies { get; set; }
 
     /// <summary>
     /// Creates a new instance from <see cref="LsxDocument"/>.
