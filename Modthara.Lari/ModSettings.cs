@@ -1,20 +1,32 @@
-﻿using Modthara.Lari.Lsx;
+﻿using Modthara.Lari.Extensions;
+using Modthara.Lari.Lsx;
+using Modthara.Lari.Lsx.Factories;
 
 namespace Modthara.Lari;
 
 using Index = int;
 
 /// <summary>
-/// Represents the means to handling <c>modsettings.lsx</c>.
+/// Represents <c>ModuleSettings</c> region.
 /// </summary>
 public class ModSettings
 {
     private readonly LsxDocument _document;
-    private readonly LsxNode _modOrderNode;
-    private readonly LsxNode _modsNode;
 
-    private List<ModMetadata> _mods;
-    public IReadOnlyList<ModMetadata> Mods => _mods;
+    private List<LsxNode> ModOrderChildren
+    {
+        get => _document.GetRegion("ModuleSettings").GetNode("ModOrder").Children ??= [];
+        set => _document.GetRegion("ModuleSettings").GetNode("ModOrder").Children = value;
+    }
+
+    private List<LsxNode> ModsChildren
+    {
+        get => _document.GetRegion("ModuleSettings").GetNode("Mods").Children ??= [];
+        set => _document.GetRegion("ModuleSettings").GetNode("Mods").Children = value;
+    }
+
+    private List<Module> _mods;
+    public IReadOnlyList<Module> Mods => _mods;
 
     /// <summary>
     /// Creates a new instance of <see cref="ModSettings"/> by parsing <paramref name="document"/>.
@@ -25,57 +37,21 @@ public class ModSettings
     public ModSettings(LsxDocument document)
     {
         _document = document;
-
-        _modOrderNode = document.GetNode("ModuleSettings", "ModOrder");
-        _modOrderNode.Children ??= [];
-
-        _modsNode = document.GetNode("ModuleSettings", "Mods");
-        _modOrderNode.Children ??= [];
-
-        _mods = _modsNode.GetModules();
+        _mods = ModsChildren.ToShortDescModules();
     }
 
     /// <summary>
     /// Creates a new instance of <see cref="ModSettings"/> with empty mod order.
     /// </summary>
-    /// <param name="version">
-    /// Version of the underlying <see cref="LsxDocument"/>.
-    /// </param>
     /// <param name="mods">
     /// Mods to be included.
     /// </param>
-    public ModSettings(LariVersion? version = null, IList<ModMetadata>? mods = null) : this(new LsxDocument
+    public ModSettings(IEnumerable<Module>? mods = null) : this(
+        LsxDocumentFactory.CreateModSettings(new LsxModuleAttributes(Modules: mods ?? [])))
     {
-        Version = DefaultLariVersion,
-        Regions =
-        [
-            new LsxRegion
-            {
-                Id = "ModuleSettings",
-                RootNode = new LsxNode
-                {
-                    Id = "root",
-                    Children =
-                    [
-                        new LsxNode { Id = "ModOrder", Children = [] },
-                        new LsxNode { Id = "Mods", Children = [] },
-                    ]
-                }
-            }
-        ]
-    })
-    {
-        if (mods != null)
-        {
-            foreach (var mod in mods)
-            {
-                this.Append(mod);
-            }
-        }
     }
 
-    /// <inheritdoc cref="LsxDocument.ToStream"/>
-    public Stream ToStream() => _document.ToStream();
+    public LsxDocument ToDocument() => _document;
 
     /// <summary>
     /// Sanitizes the mod list in the correct order according to <c>ModOrder</c> node.
@@ -83,13 +59,15 @@ public class ModSettings
     /// </summary>
     public void Sanitize()
     {
-        _modOrderNode.Children = _modOrderNode.Children!.DistinctBy(n => n.GetUuid()).ToList();
-        _modsNode.Children = _modsNode.Children!.DistinctBy(n => n.GetUuid())
+        ModOrderChildren = ModOrderChildren.DistinctBy(n => n.GetUuid()).ToList();
+
+        ModsChildren = ModsChildren.DistinctBy(n => n.GetUuid())
             .OrderBy(m =>
-                _modOrderNode.Children.FindIndex(o => o.GetUuid() == m.GetUuid()))
+                ModOrderChildren.FindIndex(o => o.GetUuid() == m.GetUuid()))
             .ToList();
+
         _mods = _mods.DistinctBy(x => x.Uuid)
-            .OrderBy(m => _modOrderNode.Children.FindIndex(o => o.GetUuid() == m.Uuid))
+            .OrderBy(m => ModOrderChildren.FindIndex(o => o.GetUuid() == m.Uuid))
             .ToList();
     }
 
@@ -98,16 +76,16 @@ public class ModSettings
     /// </summary>
     /// <param name="uuid">UUID to search for.</param>
     /// <returns>Matched mod by UUID and its index in the order.</returns>
-    public (Index?, ModMetadata?) Find(LariUuid uuid)
+    public (Index?, Module?) Find(LariUuid uuid)
     {
-        for (var i = 0; i < new[] { _modOrderNode.Children!.Count, _modsNode.Children!.Count, _mods.Count }.Min(); i++)
+        for (var i = 0; i < new[] { ModOrderChildren.Count, ModsChildren.Count, _mods.Count }.Min(); i++)
         {
-            var modOrderUuid = _modOrderNode.Children[i].GetUuid();
-            var modUuid = _modsNode.Children[i].GetUuid();
+            var modOrderUuid = ModOrderChildren[i].GetUuid();
+            var modUuid = ModsChildren[i].GetUuid();
 
             if (modOrderUuid.Value == uuid.Value && modUuid.Value == uuid.Value && _mods[i].Uuid.Value == uuid.Value)
             {
-                return (i, _modsNode.Children[i].ToModMetadata());
+                return (i, new Module(ModsChildren[i]));
             }
         }
 
@@ -118,35 +96,33 @@ public class ModSettings
     /// Inserts mod at specified index.
     /// </summary>
     /// <param name="index">Index of the mod.</param>
-    /// <param name="modMetadata">Mod to be inserted.</param>
-    public void Insert(int index, ModMetadata modMetadata)
+    /// <param name="mod">Mod to be inserted.</param>
+    public void Insert(int index, Module mod)
     {
-        _modOrderNode.Children!.Insert(index, modMetadata.ToModule());
-        _modsNode.Children!.Insert(index, modMetadata.ToModuleShortDesc());
-        _mods.Insert(index, modMetadata);
+        ModOrderChildren.Insert(index, ((ModuleBase)mod).ToNode());
+        ModsChildren.Insert(index, mod.ToNode());
+        _mods.Insert(index, mod);
     }
 
     /// <summary>
     /// Appends mod at the end of the list.
     /// </summary>
-    /// <param name="modMetadata">Mod to be appended.</param>
-    public void Append(ModMetadata modMetadata)
+    /// <param name="mod">Mod to be appended.</param>
+    public void Append(Module mod)
     {
-        _modOrderNode.Children!.Add(modMetadata.ToModule());
-        _modsNode.Children!.Add(modMetadata.ToModuleShortDesc());
-        _mods.Add(modMetadata);
+        ModOrderChildren.Add(((ModuleBase)mod).ToNode());
+        ModsChildren.Add(mod.ToNode());
+        _mods.Add(mod);
     }
 
     /// <summary>
     /// Removes mod from the list.
     /// </summary>
-    /// <param name="modMetadata">Mod to be removed.</param>
-    public void Remove(ModMetadata modMetadata)
+    /// <param name="mod">Mod to be removed.</param>
+    public void Remove(Module mod)
     {
-        _modOrderNode.Children!.Remove(modMetadata.ToModule());
-        _modsNode.Children!.Remove(modMetadata.ToModuleShortDesc());
-        _mods.Remove(modMetadata);
+        ModOrderChildren.Remove(((ModuleBase)mod).ToNode());
+        ModsChildren.Remove(mod.ToNode());
+        _mods.Remove(mod);
     }
-
-    private static readonly LariVersion DefaultLariVersion = 144959613005988740;
 }

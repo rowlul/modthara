@@ -3,13 +3,18 @@
 /// <summary>
 /// Wrapper for <see cref="System.Guid"/> that accepts non-valid values.
 /// </summary>
-public readonly struct LariUuid(string guid)
+public readonly struct LariUuid
 {
-    public string Value { get; init; } = guid;
+    public string Value { get; init; }
 
-    public static LariUuid NewGuid() => new(new Guid().ToString());
+    public LariUuid(string guid)
+    {
+        Value = guid;
+    }
 
     public bool TryParse(out Guid guid) => Guid.TryParse(Value, out guid);
+
+    public static LariUuid NewGuid() => new(new Guid().ToString());
 
     public static bool operator ==(LariUuid a, LariUuid b) => a.Value == b.Value;
 

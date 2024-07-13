@@ -29,81 +29,40 @@ public class LsxNode
     }
 
     /// <summary>
-    /// Traverses through the node to find specified attribute.
+    /// Gets the attribute with the specified ID.
     /// </summary>
-    /// <param name="attributeId">Attribute id to look for.</param>
-    /// <param name="defaultValue">Fallback value if attribute was null.</param>
-    /// <returns>String value of the attribute.</returns>
+    /// <param name="id">The ID of the attribute to retrieve.</param>
+    /// <returns>The attribute with the specified ID.</returns>
     /// <exception cref="LsxMissingElementException">
-    /// Throws if attribute was null unless <paramref name="defaultValue"/> is provided.
+    /// Thrown when an attribute with the specified ID is not found.
     /// </exception>
-    public string GetAttributeValue(string attributeId, string? defaultValue = null)
-    {
-        var value = this.Attributes?.FirstOrDefault(n => n.Id == attributeId)?.Value;
-        if (!string.IsNullOrEmpty(value))
-        {
-            return value;
-        }
-        else if (defaultValue != null)
-        {
-            return defaultValue;
-        }
-
-        throw new LsxMissingElementException(attributeId);
-    }
+    public LsxAttribute GetAttribute(string id) =>
+        this.Attributes?.FirstOrDefault(x => x.Id == id) ?? throw new LsxMissingElementException(id);
 
     /// <summary>
-    /// Gets UUID value of the respective attribute.
+    /// Gets the attribute with the specified ID, or null if no such attribute exists.
     /// </summary>
-    /// <returns>UUID of the node.</returns>
-    public LariUuid GetUuid() => new(this.GetAttributeValue("UUID"));
-
-    public LariVersion GetVersion()
-    {
-        var value = this.Attributes?.FirstOrDefault(n => n.Id is "Version64" or "Version32" or "Version")?.Value;
-        if (value == null)
-        {
-            throw new LsxMissingElementException("Version");
-        }
-
-        return Convert.ToUInt64(value);
-    }
+    /// <param name="id">The ID of the attribute to retrieve.</param>
+    /// <returns>The attribute with the specified ID, or null if no such attribute exists.</returns>
+    public LsxAttribute? GetAttributeOrDefault(string id) =>
+        this.Attributes?.FirstOrDefault(x => x.Id == id);
 
     /// <summary>
-    /// Gets a list of <c>ModuleShortDesc</c> nodes.
+    /// Gets the child node with the specified ID.
     /// </summary>
-    /// <returns>List of mods.</returns>
-    public List<ModMetadata> GetModules()
-    {
-        if (this.Children == null)
-        {
-            return [];
-        }
-
-        List<ModMetadata> modules = [];
-        modules.AddRange(this.Children.Where(d => d.Id == "ModuleShortDesc")
-            .Select(module => module.ToModMetadata()));
-
-        return modules;
-    }
+    /// <param name="id">The ID of the child node to retrieve.</param>
+    /// <returns>The child node with the specified ID.</returns>
+    /// <exception cref="LsxMissingElementException">
+    /// Thrown when a child node with the specified ID is not found.
+    /// </exception>
+    public LsxNode GetChild(string id) =>
+        this.Children?.FirstOrDefault(x => x.Id == id) ?? throw new LsxMissingElementException(id);
 
     /// <summary>
-    /// Converts node to <see cref="ModMetadata"/>.
+    /// Gets the child node with the specified ID, or null if no such child node exists.
     /// </summary>
-    /// <returns>Instance of <see cref="ModMetadata"/>.</returns>
-    public ModMetadata ToModMetadata()
-    {
-        var mod = new ModMetadata
-        {
-            Name = this.GetAttributeValue("Name"),
-            Author = this.GetAttributeValue("Author", string.Empty),
-            Description = this.GetAttributeValue("Description", string.Empty),
-            FolderName = this.GetAttributeValue("Folder"),
-            Md5 = this.GetAttributeValue("MD5", string.Empty),
-            Uuid = this.GetUuid(),
-            Version = this.GetVersion(),
-        };
-
-        return mod;
-    }
+    /// <param name="id">The ID of the child node to retrieve.</param>
+    /// <returns>The child node with the specified ID, or null if no such child node exists.</returns>
+    public LsxNode? GetChildOrDefault(string id) =>
+        this.Children?.FirstOrDefault(x => x.Id == id);
 }

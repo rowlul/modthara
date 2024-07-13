@@ -1,4 +1,9 @@
 ﻿namespace Modthara.Lari.Lsx;
 
-public class LsxMissingElementException(string elementName)
-    : Exception($"Element '{elementName}' is missing, null, or empty.");
+public class LsxMissingElementException : Exception
+{
+    public LsxMissingElementException(string elementName) :
+        base($"Element '{elementName}' is missing, null, or empty.")
+    {
+    }
+}

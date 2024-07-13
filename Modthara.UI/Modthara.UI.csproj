@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Folder Include="Assets\" />
+        <AvaloniaResource Include="Assets\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" />
+        <PackageReference Include="Avalonia.Controls.DataGrid"/>
+        <PackageReference Include="Avalonia.Desktop" />
+        <PackageReference Include="Avalonia.Fonts.Inter" />
+        <PackageReference Include="Avalonia.Xaml.Behaviors" />
+        <PackageReference Include="Semi.Avalonia" />
+        <PackageReference Include="Semi.Avalonia.DataGrid"/>
+        <PackageReference Include="Projektanker.Icons.Avalonia" />
+        <PackageReference Include="Projektanker.Icons.Avalonia.FontAwesome" />
+        <PackageReference Include="CommunityToolkit.Mvvm" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+        <PackageReference Include="AsyncAwaitBestPractices" />
+        <PackageReference Include="Humanizer.Core" />
+
+        <PackageReference Include="Avalonia.Diagnostics"
+                          Condition="'$(Configuration)' == 'Debug'" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Modthara.Manager\Modthara.Manager.csproj"/>
+    </ItemGroup>
+
+</Project>

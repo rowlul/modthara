@@ -17,12 +17,10 @@ public class LsxDocument
     public required List<LsxRegion> Regions { get; set; }
 
     /// <summary>
-    /// Creates a new instance of <see cref="LsxDocument"/> by deserializing <paramref name="stream"/>.
+    /// Deserializes an <see cref="LsxDocument"/> from the specified stream.
     /// </summary>
-    /// <param name="stream">Stream to read from.</param>
-    /// <returns>
-    /// Instance of <see cref="LsxDocument"/>. Returns null if serialized document was null.
-    /// </returns>
+    /// <param name="stream">The stream containing the serialized <see cref="LsxDocument"/>.</param>
+    /// <returns>The deserialized <see cref="LsxDocument"/>.</returns>
     public static LsxDocument FromStream(Stream stream)
     {
         var serializer = new XmlSerializer(typeof(LsxDocument));
@@ -31,9 +29,9 @@ public class LsxDocument
     }
 
     /// <summary>
-    /// Serializes instance to <see cref="Stream"/>.
+    /// Serializes the current <see cref="LsxDocument"/> to a stream.
     /// </summary>
-    /// <returns>Returns stream containing the serialized document.</returns>
+    /// <returns>A stream containing the serialized <see cref="LsxDocument"/>.</returns>
     public Stream ToStream()
     {
         var serializer = new XmlSerializer(typeof(LsxDocument));
@@ -48,44 +46,13 @@ public class LsxDocument
     }
 
     /// <summary>
-    /// Traverses through the region and its root node to find the specified node.
+    /// Gets the region with the specified ID.
     /// </summary>
-    /// <param name="regionId">Region id to look for.</param>
-    /// <param name="nodeId">Node id to look for.</param>
-    /// <returns>Found instance of <see cref="LsxNode"/>.</returns>
-    /// <exception cref="LsxMissingElementException">Throws if region or node were not found.</exception>
-    public LsxNode GetNode(string regionId, string nodeId)
-    {
-        var configRegion = this.Regions.FirstOrDefault(r => r.Id == regionId) ??
-                           throw new LsxMissingElementException(regionId);
-
-        if (configRegion.RootNode is { Id: "root", Children: not null })
-        {
-            return configRegion.RootNode.Children.FirstOrDefault(n => n.Id == nodeId)
-                   ?? throw new LsxMissingElementException(nodeId);
-        }
-
-        throw new LsxMissingElementException(regionId);
-    }
-
-    /// <summary>
-    /// <inheritdoc cref="GetNode" />
-    /// </summary>
-    /// <param name="regionId">
-    /// <inheritdoc cref="GetNode" />
-    /// </param>
-    /// <param name="nodeId">
-    /// <inheritdoc cref="GetNode" />
-    /// </param>
-    /// <returns>
-    /// Found instance of <see cref="LsxNode"/> if node is found, or null if node was not found.
-    /// </returns>
-    public LsxNode? GetNodeOrDefault(string regionId, string nodeId)
-    {
-        var configRegion = this.Regions.FirstOrDefault(r => r.Id == regionId);
-
-        return configRegion?.RootNode is { Id: "root", Children: not null }
-            ? configRegion.RootNode.Children.FirstOrDefault(n => n.Id == nodeId)
-            : null;
-    }
+    /// <param name="id">The ID of the region to retrieve.</param>
+    /// <returns>The region with the specified ID.</returns>
+    /// <exception cref="LsxMissingElementException">
+    /// Thrown when a region with the specified ID is not found.
+    /// </exception>
+    public LsxRegion GetRegion(string id) =>
+        this.Regions.FirstOrDefault(r => r.Id == id) ?? throw new LsxMissingElementException(id);
 }

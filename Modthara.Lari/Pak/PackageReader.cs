@@ -37,7 +37,7 @@ public static class PackageReader
         stream.Seek(4, SeekOrigin.Begin);
         if (version != Version)
         {
-            throw new LspkException($"Unsupported package version: expected {Version}, got {version}.");
+            throw new LspkException($"Unsupported package version: expected {Version}, got {version}.", version);
         }
 
         var header = ReadHeader(reader);
@@ -103,5 +103,5 @@ public static class PackageReader
     /// <summary>
     /// Represents package version for Baldur's Gate 3 Release.
     /// </summary>
-    private const uint Version = 0x12;
+    private const int Version = 0x12;
 }

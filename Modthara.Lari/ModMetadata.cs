@@ -1,138 +1,44 @@
-﻿using Modthara.Lari.Lsx;
+﻿using Modthara.Lari.Extensions;
+using Modthara.Lari.Lsx;
+using Modthara.Lari.Lsx.Factories;
 
 namespace Modthara.Lari;
 
 /// <summary>
-/// Represents <c>meta.lsx</c> of a mod.
+/// Represents <c>Config</c> region.
 /// </summary>
-public class ModMetadata
+public sealed class ModMetadata : Module
 {
-    public required string Name { get; set; }
-    public string? Author { get; set; } = string.Empty;
-    public string? Description { get; set; } = string.Empty;
-    public required string FolderName { get; set; }
-    public string Md5 { get; set; } = string.Empty;
-    public LariUuid Uuid { get; set; } = LariUuid.NewGuid();
-    public LariVersion Version { get; set; } = DefaultLariVersion;
-    public ICollection<ModMetadata>? Dependencies { get; set; }
+    private readonly LsxDocument _document;
 
-    /// <summary>
-    /// Creates a new instance from <see cref="LsxDocument"/>.
-    /// </summary>
-    /// <param name="document">Document containing the <c>ModuleInfo</c> node under <c>Config</c> region.</param>
-    /// <returns>Instance of <see cref="ModMetadata"/>.</returns>
-    public static ModMetadata FromLsx(LsxDocument document)
+    private LsxNode ModuleInfoNode => _document.GetRegion("Config").GetNode("ModuleInfo");
+    private LsxNode? DependenciesNode => _document.GetRegion("Config").GetNodeOrDefault("Dependencies");
+
+    public string Author { get; set; }
+    public string Description { get; set; }
+    public ICollection<Module>? Dependencies { get; set; }
+
+    public ModMetadata(LsxDocument document) : base(document.GetRegion("Config").GetNode("ModuleInfo"))
     {
-        var mod = document.GetNode("Config", "ModuleInfo").ToModMetadata();
+        _document = document;
 
-        var dependencies = document.GetNodeOrDefault("Config", "Dependencies");
-        if (dependencies != null)
+        Author = ModuleInfoNode.GetAttribute("Author").Value;
+        Description = ModuleInfoNode.GetAttribute("Description").Value;
+
+        if (DependenciesNode is { Children: not null })
         {
-            mod.Dependencies = dependencies.GetModules();
+            Dependencies = DependenciesNode.Children.ToShortDescModules();
         }
-
-        return mod;
     }
 
-    /// <summary>
-    /// Maps instance to <c>Module</c> node.
-    /// </summary>
-    /// <returns>Instance of <c>Module</c> node.</returns>
-    public LsxNode ToModule() =>
-        new()
-        {
-            Id = "Module",
-            Attributes =
-            [
-                new LsxAttribute { Id = "UUID", Type = "FixedString", Value = this.Uuid.Value },
-            ]
-        };
+    public ModMetadata(LariUuid uuid, string folderName, LariVersion version, string md5, string name, string author,
+        string description, ICollection<Module>? dependencies = null) : this(
+        LsxDocumentFactory.CreateMeta(new LsxModuleAttributes(uuid, folderName, md5, name, version, author, description,
+            dependencies)))
+    {
+    }
 
-    /// <summary>
-    /// Maps instance to <c>ModuleShortDesc</c> node.
-    /// </summary>
-    /// <returns>Instance of <c>ModuleShortDesc</c> node.</returns>
-    public LsxNode ToModuleShortDesc() =>
-        new()
-        {
-            Id = "ModuleShortDesc",
-            Attributes =
-            [
-                new LsxAttribute { Id = "Folder", Type = "LSString", Value = this.FolderName },
-                new LsxAttribute { Id = "MD5", Type = "LSString", Value = this.Md5 },
-                new LsxAttribute { Id = "Name", Type = "LSString", Value = this.Name },
-                new LsxAttribute { Id = "UUID", Type = "FixedString", Value = this.Uuid.Value },
-                new LsxAttribute
-                {
-                    Id = "Version64", Type = "int64", Value = LariVersion.ToVersion64(this.Version).ToString()
-                }
-            ]
-        };
+    public new LsxNode ToNode() => ModuleInfoNode;
 
-    /// <summary>
-    /// Maps instance to <c>ModuleInfo</c> node.
-    /// </summary>
-    /// <returns>Instance of <c>ModuleInfo</c> node.</returns>
-    public LsxNode ToModuleInfo() =>
-        new()
-        {
-            Id = "ModuleInfo",
-            Attributes =
-            [
-                new LsxAttribute { Id = "Author", Type = "LSWString", Value = this.Author ?? string.Empty },
-                new LsxAttribute { Id = "CharacterCreationLevelName", Type = "FixedString", Value = string.Empty },
-                new LsxAttribute { Id = "Description", Type = "LSWString", Value = this.Description ?? string.Empty },
-                new LsxAttribute { Id = "Folder", Type = "LSWString", Value = this.FolderName },
-                new LsxAttribute { Id = "GMTemplate", Type = "FixedString", Value = string.Empty },
-                new LsxAttribute { Id = "LobbyLevelName", Type = "FixedString", Value = string.Empty },
-                new LsxAttribute { Id = "MD5", Type = "LSString", Value = this.Md5 },
-                new LsxAttribute { Id = "MainMenuBackgroundVideo", Type = "FixedString", Value = string.Empty },
-                new LsxAttribute { Id = "MenuLevelName", Type = "FixedString", Value = string.Empty },
-                new LsxAttribute { Id = "Name", Type = "FixedString", Value = this.Name },
-                new LsxAttribute { Id = "NumPlayers", Type = "uint8", Value = "4" },
-                new LsxAttribute { Id = "PhotoBooth", Type = "FixedString", Value = string.Empty },
-                new LsxAttribute { Id = "StartupLevelName", Type = "FixedString", Value = string.Empty },
-                new LsxAttribute { Id = "Tags", Type = "LSWString", Value = string.Empty },
-                new LsxAttribute { Id = "Type", Type = "FixedString", Value = "Add-on" },
-                new LsxAttribute { Id = "UUID", Type = "FixedString", Value = this.Uuid.Value },
-                new LsxAttribute
-                {
-                    Id = "Version64", Type = "int64", Value = LariVersion.ToVersion64(this.Version).ToString()
-                }
-            ],
-            Children =
-            [
-                new LsxNode
-                {
-                    Id = "PublishVersion",
-                    Attributes =
-                    [
-                        new LsxAttribute
-                        {
-                            Id = "Version64",
-                            Type = "int64",
-                            Value = LariVersion.ToVersion64(this.Version).ToString()
-                        }
-                    ]
-                },
-                new LsxNode { Id = "Scripts" },
-                new LsxNode
-                {
-                    Id = "TargetModes",
-                    Children =
-                    [
-                        new LsxNode
-                        {
-                            Id = "Target",
-                            Attributes =
-                            [
-                                new LsxAttribute { Id = "Object", Type = "FixedString", Value = "Story" }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        };
-
-    private static readonly LariVersion DefaultLariVersion = 36028797018963968UL;
+    public LsxDocument ToDocument() => _document;
 }

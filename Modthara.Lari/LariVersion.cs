@@ -8,6 +8,8 @@ namespace Modthara.Lari;
 [Serializable]
 public readonly struct LariVersion : IComparable<LariVersion>, IComparable<ulong>, IComparable<uint>
 {
+    public static LariVersion Default = new(1, 0, 0, 0);
+
     [XmlAttribute("major")]
     public uint Major { get; init; }
 
@@ -54,17 +56,21 @@ public readonly struct LariVersion : IComparable<LariVersion>, IComparable<ulong
         Build = version & 0xffff,
     };
 
-    public static ulong ToVersion64(LariVersion version) =>
+    public static ulong ToUInt64(LariVersion version) =>
         (ulong)(((long)version.Major & 0x7f) << 55 |
                 ((long)version.Minor & 0xff) << 47 |
                 ((long)version.Revision & 0xffff) << 31 |
                 ((long)version.Build & 0x7fffffff) << 0);
 
-    public static uint ToVersion32(LariVersion version) =>
+    public ulong ToUInt64() => ToUInt64(this);
+
+    public static uint ToUInt32(LariVersion version) =>
         (version.Major & 0x0f) << 28 |
         (version.Minor & 0x0f) << 24 |
         (version.Revision & 0xff) << 16 |
         (version.Build & 0xffff) << 0;
+
+    public uint ToUInt32() => ToUInt32(this);
 
     /// <inheritdoc />
     public int CompareTo(LariVersion other)
@@ -94,6 +100,6 @@ public readonly struct LariVersion : IComparable<LariVersion>, IComparable<ulong
 
     public static implicit operator LariVersion(ulong version) => FromUInt64(version);
     public static implicit operator LariVersion(uint version) => FromUInt32(version);
-    public static implicit operator ulong(LariVersion version) => ToVersion64(version);
-    public static implicit operator uint(LariVersion version) => ToVersion32(version);
+    public static implicit operator ulong(LariVersion version) => ToUInt64(version);
+    public static implicit operator uint(LariVersion version) => ToUInt32(version);
 }
