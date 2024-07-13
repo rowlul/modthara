@@ -1,5 +1,8 @@
 ﻿namespace Modthara.Manager;
 
+/// <summary>
+/// Manages mod orders.
+/// </summary>
 public interface IModOrderManager
 {
     /// <summary>

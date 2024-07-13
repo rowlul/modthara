@@ -5,6 +5,7 @@ using static Modthara.Manager.Constants;
 
 namespace Modthara.Manager;
 
+/// <inheritdoc />
 public class ModOrderManager : IModOrderManager
 {
     private readonly IFileSystem _fileSystem;
@@ -14,7 +15,6 @@ public class ModOrderManager : IModOrderManager
         _fileSystem = fileSystem;
     }
 
-    /// <inheritdoc />
     public async IAsyncEnumerable<ModOrderEntry> LoadOrderAsync(string path)
     {
         await using var file = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read, FileShare.Read,
@@ -32,7 +32,6 @@ public class ModOrderManager : IModOrderManager
         }
     }
 
-    /// <inheritdoc />
     public async Task SaveOrderAsync(string path, IEnumerable<ModOrderEntry> orderEntries)
     {
         await using var file = _fileSystem.FileStream.New(path, FileMode.Create, FileAccess.Write, FileShare.Read,

@@ -1,56 +1,42 @@
 ﻿namespace Modthara.Manager;
 
 /// <summary>
-/// Manages PAK files.
+/// Manages mod packages.
 /// </summary>
 public interface IModPackageManager
 {
     /// <summary>
-    /// Reads package from PAK file.
+    /// Reads a mod package from the specified file path.
     /// </summary>
     /// <param name="path">
-    /// Path to package.
+    /// The path to the PAK file.
     /// </param>
     /// <param name="leaveOpen">
-    /// Determines whether to leave underlying <see cref="FileStream"/> open or not.
+    /// If <c>true</c>, leaves the file stream open after reading; otherwise, closes the file stream.
     /// </param>
     /// <returns>
-    /// Instance of <see cref="ModPackage"/>.
+    /// A <see cref="ModPackage"/> with the loaded data.
     /// </returns>
     ValueTask<ModPackage> ReadModPackageAsync(string path, bool leaveOpen = false);
 
-    /// <summary>
-    /// Reads package from stream.
-    /// </summary>
     /// <param name="stream">
-    /// Stream of the package.
+    /// The stream to read the mod package from.
     /// </param>
-    /// <param name="path">
-    /// Path to package.
-    /// </param>
-    /// <param name="leaveOpen">
-    /// Determines whether to leave underlying <see cref="FileStream"/> open or not.
-    /// </param>
-    /// <returns>
-    /// Instance of <see cref="ModPackage"/>.
-    /// </returns>
+    /// <inheritdoc cref="ReadModPackageAsync(string,bool)"/>
     ValueTask<ModPackage> ReadModPackageAsync(Stream stream, string path, bool leaveOpen = false);
 
     /// <summary>
-    /// Reads packages from a directory of PAK files.
+    /// Reads mod packages from the specified directory.
     /// </summary>
-    /// <param name="path">
-    /// Path to directory.
-    /// </param>
+    /// <param name="path">The path to the directory containing the mod packages.</param>
     /// <param name="onException">
-    /// Method that is executed whenever <see cref="IAsyncEnumerator{T}"/> throws an exception. If null, rethrows the
-    /// exception.
+    /// An optional callback invoked when an exception occurs during the reading of a mod package.
     /// </param>
     /// <param name="onPackageRead">
-    /// Callback to current index and item of <see cref="IAsyncEnumerator{T}"/>.
+    /// An optional callback invoked when a mod package is successfully read.
     /// </param>
     /// <returns>
-    /// List of packages.
+    /// An <see cref="IAsyncEnumerable{ModPackage}"/> with the loaded mod packages.
     /// </returns>
     IAsyncEnumerable<ModPackage> ReadModPackagesAsync(string path, Action<int, Exception>? onException = null,
         Action<int, ModPackage>? onPackageRead = null);

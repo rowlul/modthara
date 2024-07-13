@@ -4,6 +4,9 @@ using Modthara.Lari;
 
 namespace Modthara.Manager;
 
+/// <summary>
+/// Represents a mod order entry.
+/// </summary>
 [JsonSerializable(typeof(ModOrderEntry))]
 public class ModOrderEntry : ModuleBase
 {
