@@ -1,7 +1,4 @@
-﻿using Modthara.Lari.Lsx;
-using Modthara.Lari.Pak;
-
-namespace Modthara.Lari.Tests;
+﻿namespace Modthara.Lari.Tests;
 
 public class PackageReaderTests
 {

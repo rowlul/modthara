@@ -1,6 +1,4 @@
-﻿using Modthara.Lari.Lsx;
-
-namespace Modthara.Lari.Tests;
+﻿namespace Modthara.Lari.Tests;
 
 public class LsxDocumentTests
 {
