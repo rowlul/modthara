@@ -15,28 +15,21 @@ public class ModOrderManager : IModOrderManager
         _fileSystem = fileSystem;
     }
 
-    public async IAsyncEnumerable<ModOrderEntry> LoadOrderAsync(string path)
+    public async ValueTask<ModOrder?> LoadOrderAsync(string path)
     {
         await using var file = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read, FileShare.Read,
             bufferSize: StreamBufferSize, useAsync: true);
 
-        var entries = JsonSerializer.DeserializeAsyncEnumerable<ModOrderEntry>(file, Constants.JsonSerializerOptions);
-        await foreach (var entry in entries.ConfigureAwait(false))
-        {
-            if (entry == null)
-            {
-                continue;
-            }
-
-            yield return entry;
-        }
+        var order = JsonSerializer.DeserializeAsync<ModOrder>(file, Constants.JsonSerializerOptions)
+            .ConfigureAwait(false);
+        return await order;
     }
 
-    public async Task SaveOrderAsync(string path, IEnumerable<ModOrderEntry> orderEntries)
+    public async Task SaveOrderAsync(string path, ModOrder order)
     {
         await using var file = _fileSystem.FileStream.New(path, FileMode.Create, FileAccess.Write, FileShare.Read,
             bufferSize: StreamBufferSize, useAsync: true);
 
-        await JsonSerializer.SerializeAsync(file, orderEntries, Constants.JsonSerializerOptions).ConfigureAwait(false);
+        await JsonSerializer.SerializeAsync(file, order, Constants.JsonSerializerOptions).ConfigureAwait(false);
     }
 }
