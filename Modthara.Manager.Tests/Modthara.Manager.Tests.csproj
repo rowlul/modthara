@@ -24,6 +24,13 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None
+            Include="TestFiles\**"
+            CopyToOutputDirectory="PreserveNewest"
+            LinkBase="TestFiles\"/>
+    </ItemGroup>
+
+    <ItemGroup>
         <ProjectReference Include="..\Modthara.Manager\Modthara.Manager.csproj"/>
     </ItemGroup>
 
