@@ -23,4 +23,8 @@
         <Using Include="Modthara.Manager"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\Modthara.Manager\Modthara.Manager.csproj"/>
+    </ItemGroup>
+
 </Project>
