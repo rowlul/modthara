@@ -20,6 +20,7 @@ public class ModOrderEntry : ModuleBase
     [JsonPropertyOrder(1)]
     public string Name { get; init; }
 
+    [JsonConstructor]
     public ModOrderEntry(string uuid, string name) : base(new LariUuid(uuid))
     {
         Uuid = uuid;
