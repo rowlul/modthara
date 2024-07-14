@@ -20,6 +20,7 @@
     <ItemGroup>
         <Using Include="Xunit"/>
         <Using Include="FluentAssertions"/>
+        <Using Include="Modthara.Manager"/>
     </ItemGroup>
 
 </Project>
