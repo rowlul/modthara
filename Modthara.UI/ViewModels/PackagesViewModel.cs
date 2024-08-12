@@ -149,7 +149,8 @@ public partial class PackagesViewModel : ViewModelBase
         }
         else
         {
-            OrderModsView.Filter = x => ((ModPackageViewModel)x).Name.Contains(newValue);
+            OrderModsView.Filter = x =>
+                ((ModPackageViewModel)x).Name.Contains(newValue, StringComparison.OrdinalIgnoreCase);
         }
     }
 
