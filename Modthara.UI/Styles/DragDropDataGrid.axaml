@@ -1,0 +1,48 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:b="clr-namespace:Modthara.UI.Behaviors">
+
+    <Styles.Resources>
+        <b:DataGridDragHandler x:Key="DataGridDragHandler" />
+    </Styles.Resources>
+
+    <Style Selector="DataGrid.dragging-up DataGridRow.dragging">
+        <Setter Property="AdornerLayer.Adorner">
+            <Template>
+                <Border BorderThickness="0 2 0 0" BorderBrush="White" />
+            </Template>
+        </Setter>
+    </Style>
+
+    <Style Selector="DataGrid.dragging-down DataGridRow.dragging">
+        <Setter Property="AdornerLayer.Adorner">
+            <Template>
+                <Border BorderThickness="0 0 0 2" BorderBrush="White" />
+            </Template>
+        </Setter>
+    </Style>
+
+    <Style Selector="DataGrid.draggable DataGridRow">
+        <Setter Property="DragDrop.AllowDrop" Value="True" />
+        <Setter Property="(Interaction.Behaviors)">
+            <BehaviorCollectionTemplate>
+                <BehaviorCollection>
+                    <ContextDragBehavior Handler="{StaticResource DataGridDragHandler}" />
+                    <RoutedEventTriggerBehavior RoutedEvent="{x:Static DragDrop.DragEnterEvent}"
+                                                RoutingStrategies="Bubble">
+                        <AddClassAction ClassName="dragging" RemoveIfExists="True" />
+                    </RoutedEventTriggerBehavior>
+                    <RoutedEventTriggerBehavior RoutedEvent="{x:Static DragDrop.DragLeaveEvent}"
+                                                RoutingStrategies="Bubble">
+                        <RemoveClassAction ClassName="dragging" />
+                    </RoutedEventTriggerBehavior>
+                    <RoutedEventTriggerBehavior RoutedEvent="{x:Static DragDrop.DropEvent}"
+                                                RoutingStrategies="Bubble">
+                        <RemoveClassAction ClassName="dragging" />
+                    </RoutedEventTriggerBehavior>
+                </BehaviorCollection>
+            </BehaviorCollectionTemplate>
+        </Setter>
+    </Style>
+
+</Styles>
