@@ -166,6 +166,4 @@ public class DataGridDropHandler<T> : DropHandlerBase where T : class
 
     private const string DraggingUpClassName = "dragging-up";
     private const string DraggingDownClassName = "dragging-down";
-
-    private const string DraggableNoSameGridClassName = "draggable-nosamegrid";
 }
