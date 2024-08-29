@@ -131,10 +131,22 @@ public class ModSettings
     /// <param name="mod">
     /// Mod to be removed.
     /// </param>
-    public void Remove(Module mod)
+    /// <returns>
+    /// <c>true</c> if the mod was successfully removed; otherwise, <c>false</c> if the mod was not found.
+    /// </returns>
+    public bool Remove(Module mod)
     {
-        ModOrderChildren.Remove(((ModuleBase)mod).ToNode());
-        ModsChildren.Remove(mod.ToNode());
-        _mods.Remove(mod);
+        try
+        {
+            ModOrderChildren.RemoveAt(ModOrderChildren.FindIndex(m => m.GetUuid() == mod.Uuid));
+            ModsChildren.RemoveAt(ModsChildren.FindIndex(m => m.GetUuid() == mod.Uuid));
+            _mods.RemoveAt(_mods.FindIndex(m => m.Uuid == mod.Uuid));
+
+            return true;
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            return false;
+        }
     }
 }

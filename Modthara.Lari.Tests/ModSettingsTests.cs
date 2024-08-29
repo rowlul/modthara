@@ -52,4 +52,32 @@ public class ModSettingsTests
         var actual = order.Find(Mods[1].Uuid);
         actual.Should().BeEquivalentTo(expected);
     }
+
+    [Fact]
+    public void Remove_AllMods_ReturnsTrue()
+    {
+        var expected = new ModSettings();
+
+        var actual = new ModSettings(Mods);
+        var ret1 = actual.Remove(Mods[0]);
+        var ret2 = actual.Remove(Mods[1]);
+
+        actual.Should().BeEquivalentTo(expected);
+        ret1.Should().BeTrue();
+        ret2.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Remove_MissingMod_ReturnsFalse()
+    {
+        var mods = Mods.Take(1).ToList();
+
+        var expected = new ModSettings(mods);
+
+        var actual = new ModSettings(mods); // must not change
+        var ret = actual.Remove(Mods[1]);
+
+        actual.Should().BeEquivalentTo(expected);
+        ret.Should().BeFalse();
+    }
 }
