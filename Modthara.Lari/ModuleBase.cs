@@ -8,7 +8,7 @@ namespace Modthara.Lari;
 /// </summary>
 public abstract class ModuleBase
 {
-    public LariUuid Uuid { get; set; }
+    public LariUuid Uuid { get; protected init; }
 
     protected ModuleBase(LariUuid uuid)
     {
