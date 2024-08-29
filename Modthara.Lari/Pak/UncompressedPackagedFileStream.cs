@@ -3,10 +3,17 @@
 /// <summary>
 /// Represents stream of an uncompressed packaged file.
 /// </summary>
-/// <param name="ownerStream">Owner package stream of the packaged file.</param>
-/// <param name="ownerFile">Packaged file to read.</param>
-public class UncompressedPackagedFileStream(Stream ownerStream, PackagedFile ownerFile) : Stream
+public class UncompressedPackagedFileStream : Stream
 {
+    private readonly Stream _ownerStream;
+    private readonly PackagedFile _ownerFile;
+
+    public UncompressedPackagedFileStream(Stream ownerStream, PackagedFile ownerFile)
+    {
+        _ownerStream = ownerStream;
+        _ownerFile = ownerFile;
+    }
+
     public override void Flush()
     {
         throw new NotSupportedException();
@@ -14,15 +21,15 @@ public class UncompressedPackagedFileStream(Stream ownerStream, PackagedFile own
 
     public override int Read(byte[] buffer, int offset, int count)
     {
-        if (ownerStream.Position < (long)ownerFile.OffsetInFile
-            || ownerStream.Position > (long)ownerFile.OffsetInFile + (long)ownerFile.SizeOnDisk)
+        if (_ownerStream.Position < (long)_ownerFile.OffsetInFile
+            || _ownerStream.Position > (long)_ownerFile.OffsetInFile + (long)_ownerFile.SizeOnDisk)
         {
             throw new InvalidDataException("Stream at unexpected position while reading packaged file.");
         }
 
-        var readable = (long)ownerFile.SizeOnDisk - Position;
+        var readable = (long)_ownerFile.SizeOnDisk - Position;
         var bytesToRead = readable < count ? (int)readable : count;
-        return ownerStream.Read(buffer, offset, bytesToRead);
+        return _ownerStream.Read(buffer, offset, bytesToRead);
     }
 
     public override long Seek(long offset, SeekOrigin origin)
@@ -43,11 +50,11 @@ public class UncompressedPackagedFileStream(Stream ownerStream, PackagedFile own
     public override bool CanRead => true;
     public override bool CanSeek => false;
     public override bool CanWrite => false;
-    public override long Length => (long)ownerFile.SizeOnDisk;
+    public override long Length => (long)_ownerFile.SizeOnDisk;
 
     public override long Position
     {
-        get => ownerStream.Position - (long)ownerFile.OffsetInFile;
+        get => _ownerStream.Position - (long)_ownerFile.OffsetInFile;
         set => throw new NotSupportedException();
     }
 }
