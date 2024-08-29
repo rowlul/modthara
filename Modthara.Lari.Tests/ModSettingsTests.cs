@@ -9,14 +9,14 @@ public class ModSettingsTests
             "e41378521136e6646b5491305373f538",
             "GustavDev",
             new LariUuid("28ac9ce2-2aba-8cda-b3b5-6e922f71b6b8"),
-            144961330997915191
+            new LariVersion(144961330997915191)
         ),
         new Module(
             "ModtharaTest",
             "",
             "Modthara test mod",
             new LariUuid("adc05d68-6d4e-4763-9724-ac47bfb68c7b"),
-            36028797018963968
+            new LariVersion(36028797018963968)
         )
     ];
 

@@ -6,7 +6,7 @@ namespace Modthara.Lari;
 /// Represents an arbitrary version.
 /// </summary>
 [Serializable]
-public readonly struct LariVersion : IComparable<LariVersion>, IComparable<ulong>, IComparable<uint>
+public readonly struct LariVersion : IComparable<LariVersion>, IEquatable<LariVersion>
 {
     public static LariVersion Default = new(1, 0, 0, 0);
 
@@ -84,22 +84,24 @@ public readonly struct LariVersion : IComparable<LariVersion>, IComparable<ulong
         return Build.CompareTo(other.Build);
     }
 
-    /// <inheritdoc />
-    public int CompareTo(ulong other)
-    {
-        return CompareTo(FromUInt64(other));
-    }
-
-    /// <inheritdoc />
-    public int CompareTo(uint other)
-    {
-        return CompareTo(FromUInt32(other));
-    }
-
     public override string ToString() => $"{Major}.{Minor}.{Revision}.{Build}";
 
-    public static implicit operator LariVersion(ulong version) => FromUInt64(version);
-    public static implicit operator LariVersion(uint version) => FromUInt32(version);
-    public static implicit operator ulong(LariVersion version) => ToUInt64(version);
-    public static implicit operator uint(LariVersion version) => ToUInt32(version);
+    public static bool operator ==(LariVersion a, LariVersion b) => a.Major == b.Major &&
+                                                                    a.Minor == b.Minor &&
+                                                                    a.Revision == b.Revision &&
+                                                                    a.Build == b.Build;
+
+    public static bool operator !=(LariVersion a, LariVersion b) => a.Major != b.Major &&
+                                                                    a.Minor != b.Minor &&
+                                                                    a.Revision != b.Revision &&
+                                                                    a.Build != b.Build;
+
+    /// <inheritdoc />
+    public bool Equals(LariVersion other) => this == other;
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is LariVersion other && Equals(other);
+
+    /// <inheritdoc />
+    public override int GetHashCode() => HashCode.Combine(Major, Minor, Revision, Build);
 }

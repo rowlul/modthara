@@ -12,7 +12,7 @@ public class ModMetadataTests
         (
             new LariUuid("adc05d68-6d4e-4763-9724-ac47bfb68c7b"),
             "ModtharaTest",
-            36028797018963968UL,
+            new LariVersion(36028797018963968UL),
             "",
             "Modthara test mod",
             "rowlul",
@@ -24,7 +24,7 @@ public class ModMetadataTests
                     "",
                     "SharedDev",
                     new LariUuid("3d0c5ff8-c95d-c907-ff3e-34b204f1c630"),
-                    36028797022722506UL
+                    new LariVersion(36028797022722506UL)
                 )
             ]
         );

@@ -3,7 +3,7 @@
 /// <summary>
 /// Wrapper for <see cref="System.Guid"/> that accepts non-valid values.
 /// </summary>
-public readonly struct LariUuid
+public readonly struct LariUuid : IEquatable<LariUuid>
 {
     public string Value { get; init; }
 
@@ -64,26 +64,14 @@ public readonly struct LariUuid
         return a != bGuid;
     }
 
-    public bool Equals(LariUuid other)
-    {
-        return Value == other.Value;
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return obj is LariUuid other && Equals(other);
-    }
+    /// <inheritdoc />
+    public bool Equals(LariUuid other) => this == other;
 
     /// <inheritdoc />
-    public override int GetHashCode()
-    {
-        if (this.TryParse(out Guid guid))
-        {
-            return guid.GetHashCode();
-        }
+    public override bool Equals(object? obj) => obj is LariUuid other && Equals(other);
 
-        return Value.GetHashCode();
-    }
+    /// <inheritdoc />
+    public override int GetHashCode() => this.TryParse(out Guid guid) ? guid.GetHashCode() : Value.GetHashCode();
 
     /// <inheritdoc />
     public override string ToString() => Value;
