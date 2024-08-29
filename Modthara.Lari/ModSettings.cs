@@ -74,8 +74,12 @@ public class ModSettings
     /// <summary>
     /// Finds mod by UUID via traversing <c>ModOrder</c> and <c>Mods</c> node children and comparing indices.
     /// </summary>
-    /// <param name="uuid">UUID to search for.</param>
-    /// <returns>Matched mod by UUID and its index in the order.</returns>
+    /// <param name="uuid">
+    /// UUID to search for.
+    /// </param>
+    /// <returns>
+    /// Matched mod by UUID and its index in the order.
+    /// </returns>
     public (Index?, Module?) Find(LariUuid uuid)
     {
         for (var i = 0; i < new[] { ModOrderChildren.Count, ModsChildren.Count, _mods.Count }.Min(); i++)
@@ -95,8 +99,12 @@ public class ModSettings
     /// <summary>
     /// Inserts mod at specified index.
     /// </summary>
-    /// <param name="index">Index of the mod.</param>
-    /// <param name="mod">Mod to be inserted.</param>
+    /// <param name="index">
+    /// Index of the mod.
+    /// </param>
+    /// <param name="mod">
+    /// Mod to be inserted.
+    /// </param>
     public void Insert(int index, Module mod)
     {
         ModOrderChildren.Insert(index, ((ModuleBase)mod).ToNode());
@@ -107,7 +115,9 @@ public class ModSettings
     /// <summary>
     /// Appends mod at the end of the list.
     /// </summary>
-    /// <param name="mod">Mod to be appended.</param>
+    /// <param name="mod">
+    /// Mod to be appended.
+    /// </param>
     public void Append(Module mod)
     {
         ModOrderChildren.Add(((ModuleBase)mod).ToNode());
@@ -118,7 +128,9 @@ public class ModSettings
     /// <summary>
     /// Removes mod from the list.
     /// </summary>
-    /// <param name="mod">Mod to be removed.</param>
+    /// <param name="mod">
+    /// Mod to be removed.
+    /// </param>
     public void Remove(Module mod)
     {
         ModOrderChildren.Remove(((ModuleBase)mod).ToNode());
