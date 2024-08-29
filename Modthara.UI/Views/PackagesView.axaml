@@ -104,6 +104,7 @@
                             <DataGridTextColumn Header="Author"
                                                 Binding="{Binding Author, DataType=vm:ModPackageViewModel, FallbackValue=''}"
                                                 MinWidth="75"
+                                                Width="150"
                                                 IsReadOnly="True" />
 
                             <DataGridTextColumn Header="Last Modified"
@@ -248,6 +249,7 @@
                             <DataGridTextColumn Header="Author"
                                                 Binding="{Binding Author, DataType=vm:ModPackageViewModel, FallbackValue=''}"
                                                 MinWidth="75"
+                                                Width="150"
                                                 IsReadOnly="True" />
 
                             <DataGridTextColumn Header="Last Modified"
