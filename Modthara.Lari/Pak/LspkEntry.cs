@@ -11,13 +11,13 @@ namespace Modthara.Lari.Pak;
     Justification = "Struct is marshalled via an internal method.")]
 internal struct LspkEntry
 {
-    [field: MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
-    public byte[] Name { get; internal set; }
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
+    public byte[] Name;
 
-    public uint OffsetInFile1 { get; internal set; }
-    public ushort OffsetInFile2 { get; internal set; }
-    public byte ArchivePart { get; internal set; }
-    public byte Flags { get; internal set; }
-    public uint SizeOnDisk { get; internal set; }
-    public uint UncompressedSize { get; internal set; }
+    public uint OffsetInFile1;
+    public ushort OffsetInFile2;
+    public byte ArchivePart;
+    public byte Flags;
+    public uint SizeOnDisk;
+    public uint UncompressedSize;
 }
