@@ -3,12 +3,14 @@
 /// <summary>
 /// Wrapper for <see cref="System.Guid"/> that accepts non-valid values.
 /// </summary>
-public readonly struct LariUuid : IEquatable<LariUuid>
+public sealed class LariUuid : IEquatable<LariUuid>
 {
-    public string Value { get; init; }
+    public readonly string Value;
 
     public LariUuid(string guid)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(guid);
+
         Value = guid;
     }
 
