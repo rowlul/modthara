@@ -18,14 +18,18 @@ public sealed class LariUuid : IEquatable<LariUuid>
 
     public static LariUuid NewGuid() => new(new Guid().ToString());
 
-    public static bool operator ==(LariUuid a, LariUuid b) => a.Value == b.Value;
+    public static bool operator ==(LariUuid? a, LariUuid? b) => a?.Value == b?.Value;
 
-    public static bool operator !=(LariUuid a, LariUuid b) => a.Value != b.Value;
+    public static bool operator !=(LariUuid? a, LariUuid? b) => a?.Value != b?.Value;
 
-    public static bool operator ==(LariUuid a, Guid b)
+    public static bool operator ==(LariUuid? a, Guid b)
     {
-        Guid aGuid;
-        if (!a.TryParse(out aGuid))
+        if (a == null)
+        {
+            return false;
+        }
+
+        if (!a.TryParse(out var aGuid))
         {
             return false;
         }
@@ -33,10 +37,14 @@ public sealed class LariUuid : IEquatable<LariUuid>
         return aGuid == b;
     }
 
-    public static bool operator !=(LariUuid a, Guid b)
+    public static bool operator !=(LariUuid? a, Guid b)
     {
-        Guid aGuid;
-        if (!a.TryParse(out aGuid))
+        if (a == null)
+        {
+            return false;
+        }
+
+        if (!a.TryParse(out var aGuid))
         {
             return true;
         }
@@ -44,10 +52,14 @@ public sealed class LariUuid : IEquatable<LariUuid>
         return aGuid != b;
     }
 
-    public static bool operator ==(Guid a, LariUuid b)
+    public static bool operator ==(Guid a, LariUuid? b)
     {
-        Guid bGuid;
-        if (!b.TryParse(out bGuid))
+        if (b == null)
+        {
+            return false;
+        }
+
+        if (!b.TryParse(out var bGuid))
         {
             return false;
         }
@@ -55,10 +67,14 @@ public sealed class LariUuid : IEquatable<LariUuid>
         return a == bGuid;
     }
 
-    public static bool operator !=(Guid a, LariUuid b)
+    public static bool operator !=(Guid a, LariUuid? b)
     {
-        Guid bGuid;
-        if (!b.TryParse(out bGuid))
+        if (b == null)
+        {
+            return false;
+        }
+
+        if (!b.TryParse(out var bGuid))
         {
             return true;
         }
@@ -67,7 +83,7 @@ public sealed class LariUuid : IEquatable<LariUuid>
     }
 
     /// <inheritdoc />
-    public bool Equals(LariUuid other) => this == other;
+    public bool Equals(LariUuid? other) => this == other;
 
     /// <inheritdoc />
     public override bool Equals(object? obj) => obj is LariUuid other && Equals(other);

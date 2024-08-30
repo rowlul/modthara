@@ -4,16 +4,13 @@ public static class LsxNodeFactory
 {
     public static LsxNode CreateModule(LsxModuleAttributes attributes)
     {
-        if (!attributes.Uuid.HasValue)
-        {
-            throw new ArgumentException("UUID must not be null.", nameof(attributes));
-        }
+        ArgumentNullException.ThrowIfNull(attributes.Uuid);
 
         var node = new LsxNode
         {
             Id = "Module",
             Attributes =
-                [new LsxAttribute { Id = "UUID", Type = "FixedString", Value = attributes.Uuid.Value.Value }]
+                [new LsxAttribute { Id = "UUID", Type = "FixedString", Value = attributes.Uuid.Value }]
         };
 
         return node;
@@ -22,11 +19,6 @@ public static class LsxNodeFactory
     public static LsxNode CreateModuleShortDesc(LsxModuleAttributes attributes)
     {
         var (uuid, folder, md5, name, version, _, _, _) = attributes;
-
-        if (!uuid.HasValue)
-        {
-            throw new ArgumentException("UUID must not be null.", nameof(attributes));
-        }
 
         if (!version.HasValue)
         {
@@ -38,6 +30,7 @@ public static class LsxNodeFactory
             throw new ArgumentException("MD5 must not be null", nameof(attributes));
         }
 
+        ArgumentNullException.ThrowIfNull(uuid);
         ArgumentException.ThrowIfNullOrEmpty(folder);
         ArgumentException.ThrowIfNullOrEmpty(name);
 
@@ -49,7 +42,7 @@ public static class LsxNodeFactory
                 new LsxAttribute { Id = "Folder", Type = "LSString", Value = folder },
                 new LsxAttribute { Id = "MD5", Type = "LSString", Value = md5 },
                 new LsxAttribute { Id = "Name", Type = "LSString", Value = name },
-                new LsxAttribute { Id = "UUID", Type = "FixedString", Value = uuid.Value.Value },
+                new LsxAttribute { Id = "UUID", Type = "FixedString", Value = uuid.Value },
                 new LsxAttribute { Id = "Version64", Type = "int64", Value = version.Value.ToUInt64().ToString() }
             ]
         };
@@ -97,11 +90,6 @@ public static class LsxNodeFactory
     {
         var (uuid, folder, md5, name, version, author, description, _) = attributes;
 
-        if (!uuid.HasValue)
-        {
-            throw new ArgumentException("UUID must not be null.", nameof(attributes));
-        }
-
         if (!version.HasValue)
         {
             throw new ArgumentException("Version must not be null.", nameof(attributes));
@@ -112,6 +100,7 @@ public static class LsxNodeFactory
             throw new ArgumentException("MD5 must not be null", nameof(attributes));
         }
 
+        ArgumentNullException.ThrowIfNull(uuid);
         ArgumentException.ThrowIfNullOrEmpty(folder);
         ArgumentException.ThrowIfNullOrEmpty(name);
         ArgumentException.ThrowIfNullOrEmpty(author);
@@ -137,7 +126,7 @@ public static class LsxNodeFactory
                 new LsxAttribute { Id = "StartupLevelName", Type = "FixedString", Value = string.Empty },
                 new LsxAttribute { Id = "Tags", Type = "LSWString", Value = string.Empty },
                 new LsxAttribute { Id = "Type", Type = "FixedString", Value = "Add-on" },
-                new LsxAttribute { Id = "UUID", Type = "FixedString", Value = uuid.Value.Value },
+                new LsxAttribute { Id = "UUID", Type = "FixedString", Value = uuid.Value },
                 new LsxAttribute { Id = "Version64", Type = "int64", Value = version.Value.ToUInt64().ToString() }
             ],
             Children =
