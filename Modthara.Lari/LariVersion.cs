@@ -8,7 +8,7 @@ namespace Modthara.Lari;
 [Serializable]
 public readonly struct LariVersion : IComparable<LariVersion>, IEquatable<LariVersion>
 {
-    public static readonly LariVersion Default = new(1, 0, 0, 0);
+    public static readonly LariVersion Default = new(0, 0, 0, 0);
 
     [XmlAttribute("major")]
     public uint Major { get; init; }
