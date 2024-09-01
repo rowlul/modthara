@@ -180,11 +180,14 @@ public partial class PackagesViewModel : ViewModelBase
 
     public PackagesViewModel(
         IModsService modsService,
-        IModSettingsService modSettingsService)
+        IModSettingsService modSettingsService,
+        IModManagerSettingsService modManagerSettingsService)
     {
         _modsService = modsService;
         _modSettingsService = modSettingsService;
+        _modManagerSettingsService = modManagerSettingsService;
     }
+
 
     public async Task InitializeViewModel()
     {
