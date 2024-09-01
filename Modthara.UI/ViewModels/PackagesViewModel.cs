@@ -1,17 +1,21 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 using Avalonia.Collections;
+using Avalonia.Input.Raw;
+using Avalonia.Interactivity;
 using Avalonia.Threading;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
+using Modthara.Lari;
 using Modthara.Manager;
 using Modthara.UI.Extensions;
 
 namespace Modthara.UI.ViewModels;
 
-public partial class PackagesViewModel : ViewModelBase
+public partial class PackagesViewModelCopy : ViewModelBase
 {
     private readonly IModsService _modsService;
     private readonly IModSettingsService _modSettingsService;
@@ -63,7 +67,24 @@ public partial class PackagesViewModel : ViewModelBase
     [RelayCommand]
     private void OpenModsFolder()
     {
-        throw new NotImplementedException();
+        try {
+            var path = _modManagerSettingsService.GetModsDirectoryPath();
+            var attributes = File.GetAttributes(path);
+            // This check is important, otherwise, a maliciously crafted settings file could
+            // make the following code execute an arbitrary executable.
+            if ((attributes & FileAttributes.Directory) == FileAttributes.Directory) {
+                Process p = new Process();
+                p.StartInfo.UseShellExecute = true;
+                p.StartInfo.FileName = path;
+                p.Start();
+            } else {
+                throw new Exception("ModsPath not a directory"); 
+            }
+            
+        } catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
     }
 
     [RelayCommand]
@@ -192,7 +213,7 @@ public partial class PackagesViewModel : ViewModelBase
 
         _modSettingsService.SaveModSettingsAsync().Wait();
     }
-    
+
     #endregion
 
     #region Package category
@@ -215,7 +236,7 @@ public partial class PackagesViewModel : ViewModelBase
 
     #endregion
 
-    public PackagesViewModel(
+    public PackagesViewModelCopy(
         IModsService modsService,
         IModSettingsService modSettingsService,
         IModManagerSettingsService modManagerSettingsService)
@@ -224,7 +245,6 @@ public partial class PackagesViewModel : ViewModelBase
         _modSettingsService = modSettingsService;
         _modManagerSettingsService = modManagerSettingsService;
     }
-
 
     public async Task InitializeViewModel()
     {
