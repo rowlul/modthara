@@ -16,6 +16,8 @@ public partial class PackagesViewModel : ViewModelBase
     private readonly IModsService _modsService;
     private readonly IModSettingsService _modSettingsService;
 
+    private readonly IModManagerSettingsService _modManagerSettingsService;
+
     [ObservableProperty]
     private bool _isViewReady;
 
@@ -186,6 +188,10 @@ public partial class PackagesViewModel : ViewModelBase
 
     public async Task InitializeViewModel()
     {
+        await _modManagerSettingsService.LoadSettingsAsync();
+        _modsService.Path = _modManagerSettingsService.GetModsDirectoryPath();
+        _modSettingsService.Path = _modManagerSettingsService.GetModSettingsPath();
+
         await Task.WhenAll(_modsService.LoadModPackagesAsync(), _modSettingsService.LoadModSettingsAsync());
 
         var (foundOrderMods, missingOrderMods) =

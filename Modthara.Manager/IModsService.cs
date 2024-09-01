@@ -15,6 +15,8 @@ public interface IModsService
     /// <value>An <see cref="IReadOnlyList{ModPackage}"/> containing the mod packages.</value>
     IReadOnlyList<ModPackage> ModPackages { get; }
 
+    string Path { get; set; }
+
     /// <summary>
     /// Loads packages from the specified path to <see cref="ModPackages"/>.
     /// </summary>

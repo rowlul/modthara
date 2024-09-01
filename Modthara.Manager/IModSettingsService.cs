@@ -12,6 +12,8 @@ public interface IModSettingsService
     /// </summary>
     ModSettings ModSettings { get; }
 
+    string Path { get; set; }
+
     /// <summary>
     /// Loads mod settings from a file to <see cref="ModSettings"/>.
     /// </summary>

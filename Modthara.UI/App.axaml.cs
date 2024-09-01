@@ -67,6 +67,11 @@ public partial class App : Application
             @"\Larian Studios\Baldur's Gate 3\PlayerProfiles\Public\modsettings.lsx",
             s.GetRequiredService<IFileSystem>()));
 
+        services.AddSingleton<IModManagerSettingsService>(s => new ModManagerSettingsService(
+            @"./settings.json",
+            s.GetRequiredService<IFileSystem>()
+        ));
+
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<PackagesViewModel>();
 

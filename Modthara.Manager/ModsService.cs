@@ -11,12 +11,19 @@ namespace Modthara.Manager;
 /// <inheritdoc />
 public class ModsService : IModsService
 {
-    private readonly string _path;
+    private string _path;
+    public string Path { 
+        get => _path;
+        set {
+            _path = value;
+            _modPackages = [];
+        }
+    }
 
     private readonly IFileSystem _fileSystem;
     private readonly IModPackageManager _modPackageManager;
 
-    private readonly List<ModPackage> _modPackages = [];
+    private List<ModPackage> _modPackages = [];
 
     public IReadOnlyList<ModPackage> ModPackages => _modPackages;
 

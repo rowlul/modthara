@@ -10,11 +10,18 @@ namespace Modthara.Manager;
 /// <inheritdoc />
 public class ModSettingsService : IModSettingsService
 {
-    private readonly string _path;
+    private string _path;
+    public string Path { 
+        get => _path;
+        set {
+            _path = value;
+            ModSettings = null;
+        }
+    }
 
     private readonly IFileSystem _fileSystem;
 
-    public ModSettings ModSettings { get; private set; }
+    public ModSettings? ModSettings { get; private set; }
 
     public ModSettingsService(string path, IFileSystem fileSystem)
     {
