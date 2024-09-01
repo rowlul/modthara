@@ -9,7 +9,7 @@ namespace Modthara.UI.ViewModels;
 
 public partial class ModPackageViewModel : ViewModelBase
 {
-    private readonly ModPackage _modPackage;
+    public readonly ModPackage _modPackage;
 
     [ObservableProperty]
     private bool _isEnabled;
