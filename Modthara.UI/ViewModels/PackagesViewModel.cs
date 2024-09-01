@@ -15,7 +15,7 @@ using Modthara.UI.Extensions;
 
 namespace Modthara.UI.ViewModels;
 
-public partial class PackagesViewModelCopy : ViewModelBase
+public partial class PackagesViewModel : ViewModelBase
 {
     private readonly IModsService _modsService;
     private readonly IModSettingsService _modSettingsService;
@@ -236,7 +236,7 @@ public partial class PackagesViewModelCopy : ViewModelBase
 
     #endregion
 
-    public PackagesViewModelCopy(
+    public PackagesViewModel(
         IModsService modsService,
         IModSettingsService modSettingsService,
         IModManagerSettingsService modManagerSettingsService)
