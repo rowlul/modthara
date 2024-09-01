@@ -47,7 +47,7 @@
                 <Grid RowDefinitions="40, *" Margin="0 0 10 0">
                     <Grid
                         VerticalAlignment="Center"
-                        ColumnDefinitions="Auto 5 * 5 Auto">
+                        ColumnDefinitions="Auto 5 auto 5 * 5 Auto">
 
                         <ComboBox Grid.Column="0"
                                   Classes="Small"
@@ -64,13 +64,19 @@
                             </ComboBox.Items>
                         </ComboBox>
 
-                        <TextBox Grid.Column="2"
+                        <Button Grid.Column="2"
+                                Classes="Small Primary"
+                                Content="Update modsettings.lsx"
+                                Command="{Binding OnUpdateClick}"/>
+                        
+
+                        <TextBox Grid.Column="4"
                                  Watermark="Search..."
                                  Classes="Small clearButton"
                                  Text="{Binding OrderSearchText}"
                                  IsVisible="{Binding OrderSearchVisibility}" />
 
-                        <ToggleButton Grid.Column="4"
+                        <ToggleButton Grid.Column="6"
                                       i:Attached.Icon="fa-solid fa-magnifying-glass"
                                       IsChecked="{Binding OrderSearchVisibility}"
                                       Classes="Small Primary" />

@@ -156,6 +156,43 @@ public partial class PackagesViewModel : ViewModelBase
         }
     }
 
+    [RelayCommand]
+    public void OnUpdateClick()
+    {
+
+        // Remove all mods in mod order to make their order irrelevant
+        foreach (var mod in OrderMods)
+        {
+            if(mod._modPackage.Metadata is not null)
+            {
+                _modSettingsService.ModSettings.Remove(mod._modPackage.Metadata);
+            }
+            
+        }
+
+        // Remove all mods in library to disable mods removed from mod order by the user
+        foreach (var mod in LibraryMods)
+        {
+            if(mod._modPackage.Metadata is not null)
+            {
+                _modSettingsService.ModSettings.Remove(mod._modPackage.Metadata);
+            }
+            
+        }
+
+        // Add back, in sequential order, mods in the mod order
+        foreach (var mod in OrderMods)
+        {
+            if(mod._modPackage.Metadata is not null)
+            {
+                _modSettingsService.ModSettings.Append(mod._modPackage.Metadata);
+            }
+            
+        }
+
+        _modSettingsService.SaveModSettingsAsync().Wait();
+    }
+    
     #endregion
 
     #region Package category
