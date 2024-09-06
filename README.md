@@ -1,9 +1,11 @@
 ﻿# Modthara
 
-Cross-platform Baldur's Gate 3 mod manager and library. Currently provides a documented and tested public API for
-reading PAK and LSX files, as well as handling mod order.
+Cross-platform Baldur's Gate 3 mod manager and library. Manage mods without launching the game.
 
 ## Usage
+
+> [!WARNING]
+> Old patches of the game are never supported. Please update to Patch 7 or later and/or buy the game on Steam or GOG.
 
 ### App
 
@@ -19,10 +21,6 @@ and LSX documents via `LsxReader`. `ModMetadata` and `ModSettings` can be used a
 Compiles for any supported .NET platform without unmanaged dependencies.
 
 NuGet release may be coming if it is deemed to be complete (in the scope of this mod manager).
-
-> [!WARNING]  
-> `PackageReader` only accepts PAK files versioned no later than V18 (Baldur's Gate 3 Release). Mod Fixer is one of the
-> famous examples that is V15, which corresponds to Early Access package format.
 
 ## Credits
 
