@@ -13,12 +13,6 @@ public class ModSettings
 {
     private readonly LsxDocument _document;
 
-    private List<LsxNode> ModOrderChildren
-    {
-        get => _document.GetRegion("ModuleSettings").GetNode("ModOrder").Children ??= [];
-        set => _document.GetRegion("ModuleSettings").GetNode("ModOrder").Children = value;
-    }
-
     private List<LsxNode> ModsChildren
     {
         get => _document.GetRegion("ModuleSettings").GetNode("Mods").Children ??= [];
@@ -26,6 +20,13 @@ public class ModSettings
     }
 
     private List<Module> _mods;
+
+    /// <summary>
+    /// Gets the list of mods.
+    /// </summary>
+    /// <value>
+    /// An <see cref="IReadOnlyList{Module}"/> representing the list of mods.
+    /// </value>
     public IReadOnlyList<Module> Mods => _mods;
 
     /// <summary>
@@ -51,6 +52,12 @@ public class ModSettings
     {
     }
 
+    /// <summary>
+    /// Converts the current instance of <see cref="ModSettings"/> to an <see cref="LsxDocument"/>.
+    /// </summary>
+    /// <returns>
+    /// The <see cref="LsxDocument"/> representation of the current <see cref="ModSettings"/>.
+    /// </returns>
     public LsxDocument ToDocument() => _document;
 
     /// <summary>
@@ -59,35 +66,31 @@ public class ModSettings
     /// </summary>
     public void Sanitize()
     {
-        ModOrderChildren = ModOrderChildren.DistinctBy(n => n.GetUuid()).ToList();
-
         ModsChildren = ModsChildren.DistinctBy(n => n.GetUuid())
-            .OrderBy(m =>
-                ModOrderChildren.FindIndex(o => o.GetUuid() == m.GetUuid()))
+            .OrderBy(m => m.GetAttribute("Name").Value)
             .ToList();
 
         _mods = _mods.DistinctBy(x => x.Uuid)
-            .OrderBy(m => ModOrderChildren.FindIndex(o => o.GetUuid() == m.Uuid))
+            .OrderBy(m => m.Name)
             .ToList();
     }
 
     /// <summary>
-    /// Finds mod by UUID via traversing <c>ModOrder</c> and <c>Mods</c> node children and comparing indices.
+    /// Finds a mod by UUID.
     /// </summary>
     /// <param name="uuid">
-    /// UUID to search for.
+    /// The UUID to search for.
     /// </param>
     /// <returns>
-    /// Matched mod by UUID and its index in the order.
+    /// A tuple containing the index of the matched mod and the matched mod itself.
+    /// If no match is found, returns a tuple with `null` values.
     /// </returns>
     public (Index?, Module?) Find(LariUuid uuid)
     {
-        for (var i = 0; i < new[] { ModOrderChildren.Count, ModsChildren.Count, _mods.Count }.Min(); i++)
+        for (var i = 0; i < Math.Min(ModsChildren.Count, _mods.Count); i++)
         {
-            var modOrderUuid = ModOrderChildren[i].GetUuid();
             var modUuid = ModsChildren[i].GetUuid();
-
-            if (modOrderUuid.Value == uuid.Value && modUuid.Value == uuid.Value && _mods[i].Uuid.Value == uuid.Value)
+            if (modUuid.Value == uuid.Value && _mods[i].Uuid.Value == uuid.Value)
             {
                 return (i, new Module(ModsChildren[i]));
             }
@@ -107,7 +110,6 @@ public class ModSettings
     /// </param>
     public void Insert(int index, Module mod)
     {
-        ModOrderChildren.Insert(index, ((ModuleBase)mod).ToNode());
         ModsChildren.Insert(index, mod.ToNode());
         _mods.Insert(index, mod);
     }
@@ -120,7 +122,6 @@ public class ModSettings
     /// </param>
     public void Append(Module mod)
     {
-        ModOrderChildren.Add(((ModuleBase)mod).ToNode());
         ModsChildren.Add(mod.ToNode());
         _mods.Add(mod);
     }
@@ -138,7 +139,6 @@ public class ModSettings
     {
         try
         {
-            ModOrderChildren.RemoveAt(ModOrderChildren.FindIndex(m => m.GetUuid() == mod.Uuid));
             ModsChildren.RemoveAt(ModsChildren.FindIndex(m => m.GetUuid() == mod.Uuid));
             _mods.RemoveAt(_mods.FindIndex(m => m.Uuid == mod.Uuid));
 
