@@ -13,10 +13,12 @@ public sealed class ModMetadata : Module
 
     private LsxNode ModuleInfoNode => _document.GetRegion("Config").GetNode("ModuleInfo");
     private LsxNode? DependenciesNode => _document.GetRegion("Config").GetNodeOrDefault("Dependencies");
+    private LsxNode? ConflictsNode => _document.GetRegion("Config").GetNodeOrDefault("Conflicts");
 
     public string Author { get; set; }
     public string Description { get; set; }
     public IReadOnlyList<Module>? Dependencies { get; set; }
+    public IReadOnlyList<Module>? Conflicts { get; set; }
 
     public ModMetadata(LsxDocument document) : base(document.GetRegion("Config").GetNode("ModuleInfo"))
     {
@@ -28,6 +30,11 @@ public sealed class ModMetadata : Module
         if (DependenciesNode is { Children: not null })
         {
             Dependencies = DependenciesNode.Children.ToShortDescModules();
+        }
+
+        if (ConflictsNode is { Children: not null })
+        {
+            Conflicts = ConflictsNode.Children.ToShortDescModules();
         }
     }
 
