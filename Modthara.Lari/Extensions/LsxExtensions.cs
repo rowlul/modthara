@@ -10,6 +10,5 @@ public static class LsxExtensions
     public static LariUuid GetUuid(this LsxNode node) => new(node.GetAttribute("UUID").Value);
 
     public static LariVersion GetVersion(this LsxNode node) =>
-        new(Convert.ToUInt64((node.GetAttributeOrDefault("Version64") ??
-                              node.GetAttribute("Version")).Value));
+        new(Convert.ToUInt64((node.GetAttribute("Version64")).Value));
 }
