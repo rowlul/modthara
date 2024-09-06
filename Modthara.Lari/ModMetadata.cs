@@ -15,6 +15,7 @@ public sealed class ModMetadata : Module
     private LsxNode? DependenciesNode => _document.GetRegion("Config").GetNodeOrDefault("Dependencies");
     private LsxNode? ConflictsNode => _document.GetRegion("Config").GetNodeOrDefault("Conflicts");
 
+    public int Handle { get; set; }
     public string Author { get; set; }
     public string Description { get; set; }
     public IReadOnlyList<Module>? Dependencies { get; set; }
@@ -24,6 +25,7 @@ public sealed class ModMetadata : Module
     {
         _document = document;
 
+        Handle = ModuleInfoNode.GetAttributeOrDefault("PublishHandle")?.GetInt32() ?? -1;
         Author = ModuleInfoNode.GetAttribute("Author").Value;
         Description = ModuleInfoNode.GetAttribute("Description").Value;
 

@@ -11,4 +11,6 @@ public static class LsxExtensions
 
     public static LariVersion GetVersion(this LsxNode node) =>
         new(Convert.ToUInt64((node.GetAttribute("Version64")).Value));
+
+    public static int GetInt32(this LsxAttribute attribute) => Convert.ToInt32(attribute.Value);
 }
