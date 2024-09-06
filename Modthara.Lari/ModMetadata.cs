@@ -16,7 +16,7 @@ public sealed class ModMetadata : Module
 
     public string Author { get; set; }
     public string Description { get; set; }
-    public ICollection<Module>? Dependencies { get; set; }
+    public IReadOnlyList<Module>? Dependencies { get; set; }
 
     public ModMetadata(LsxDocument document) : base(document.GetRegion("Config").GetNode("ModuleInfo"))
     {
