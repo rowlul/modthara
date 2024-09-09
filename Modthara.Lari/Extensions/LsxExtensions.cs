@@ -4,7 +4,7 @@ namespace Modthara.Lari.Extensions;
 
 public static class LsxExtensions
 {
-    public static List<Module> ToShortDescModules(this IEnumerable<LsxNode> nodes) =>
+    public static List<Module> ToShortDescModules(this List<LsxNode> nodes) =>
         nodes.Where(x => x.Id == "ModuleShortDesc").Select(x => new Module(x)).ToList();
 
     public static LariUuid GetUuid(this LsxNode node) => new(node.GetAttribute("UUID").Value);

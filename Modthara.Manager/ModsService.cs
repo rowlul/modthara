@@ -16,7 +16,7 @@ public class ModsService : IModsService
     private readonly IFileSystem _fileSystem;
     private readonly IModPackageManager _modPackageManager;
 
-    private readonly List<ModPackage> _modPackages = [];
+    private List<ModPackage> _modPackages;
 
     public IReadOnlyList<ModPackage> ModPackages => _modPackages;
 
@@ -31,21 +31,12 @@ public class ModsService : IModsService
     public async Task LoadModPackagesAsync(Action<int, Exception>? onException = null,
         Action<int, ModPackage>? onPackageRead = null)
     {
-        if (_modPackages.Count > 0)
-        {
-            _modPackages.Clear();
-        }
-
-        await foreach (var package in _modPackageManager.ReadModPackagesAsync(_path, onException, onPackageRead)
-                           .ConfigureAwait(false))
-        {
-            _modPackages.Add(package);
-        }
+        _modPackages = await _modPackageManager.ReadModPackagesAsync(_path, onException, onPackageRead)
+            .ConfigureAwait(false);
     }
 
-    public async ValueTask<(IEnumerable<ModPackage> foundMods, IEnumerable<Module> missingMods)>
-        GetModsFromModSettingsAsync(
-            ModSettings modSettings)
+    public async ValueTask<(List<ModPackage> foundMods, List<Module> missingMods)> GetModsFromModSettingsAsync(
+        ModSettings modSettings)
     {
         List<ModPackage> foundMods = [];
         List<Module> missingMods = [];
@@ -76,9 +67,8 @@ public class ModsService : IModsService
         return (foundMods, missingMods);
     }
 
-    public async ValueTask<(IEnumerable<ModPackage> foundMods, IEnumerable<ModOrderEntry> missingMods)>
-        GetModsFromOrderAsync(
-            IAsyncEnumerable<ModOrderEntry> orderEntries)
+    public async ValueTask<(List<ModPackage> foundMods, List<ModOrderEntry> missingMods)> GetModsFromOrderAsync(
+        IAsyncEnumerable<ModOrderEntry> orderEntries)
     {
         List<ModPackage> foundMods = [];
         List<ModOrderEntry> missingMods = [];
@@ -109,7 +99,7 @@ public class ModsService : IModsService
         return (foundMods, missingMods);
     }
 
-    public IEnumerable<(ModPackage, ModPackage)> FindDuplicateModPackages()
+    public List<(ModPackage, ModPackage)> FindDuplicateModPackages()
     {
         var duplicates = new List<(ModPackage, ModPackage)>();
 

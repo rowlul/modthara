@@ -38,6 +38,6 @@ public interface IModPackageManager
     /// <returns>
     /// An <see cref="IAsyncEnumerable{ModPackage}"/> with the loaded mod packages.
     /// </returns>
-    IAsyncEnumerable<ModPackage> ReadModPackagesAsync(string path, Action<int, Exception>? onException = null,
+    ValueTask<List<ModPackage>> ReadModPackagesAsync(string path, Action<int, Exception>? onException = null,
         Action<int, ModPackage>? onPackageRead = null);
 }

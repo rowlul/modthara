@@ -4,9 +4,9 @@ namespace Modthara.Manager.Extensions;
 
 public static class ModPackageExtensions
 {
-    public static ModPackage? FindMatchingMod(this IEnumerable<ModPackage> collection, ModuleBase module)
+    public static ModPackage? FindMatchingMod(this List<ModPackage> packages, ModuleBase module)
     {
-        foreach (var pkg in collection)
+        foreach (var pkg in packages)
         {
             if (pkg.Metadata == null)
             {

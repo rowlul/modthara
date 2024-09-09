@@ -84,10 +84,12 @@ public partial class ModPackageManager : IModPackageManager
         }
     }
 
-    public async IAsyncEnumerable<ModPackage> ReadModPackagesAsync(string path,
+    public async ValueTask<List<ModPackage>> ReadModPackagesAsync(string path,
         Action<int, Exception>? onException = null,
         Action<int, ModPackage>? onPackageRead = null)
     {
+        List<ModPackage> packages = [];
+
         var patterns = new[] { "*.pak", "*.pak.off" };
 
         int i = 0;
@@ -125,9 +127,11 @@ public partial class ModPackageManager : IModPackageManager
                 }
 
                 onPackageRead?.Invoke(i, modPackage);
-                yield return modPackage;
+                packages.Add(modPackage);
             }
         }
+
+        return packages;
     }
 
     private PackagedFile? FindMeta(Package pak)

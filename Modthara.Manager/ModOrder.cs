@@ -7,5 +7,5 @@ public class ModOrder
 {
     [JsonRequired]
     [JsonPropertyName("Order")]
-    public required IAsyncEnumerable<ModOrderEntry> Entries { get; set; }
+    public required List<ModOrderEntry> Entries { get; set; }
 }

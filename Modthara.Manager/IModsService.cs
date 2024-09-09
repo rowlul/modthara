@@ -38,17 +38,17 @@ public interface IModsService
     /// <list type="bullet">
     /// <item>
     /// <description>
-    /// <see cref="IEnumerable{ModPackage}"/> of found mod packages.
+    /// <see cref="List{ModPackage}"/> of found mod packages.
     /// </description>
     /// </item>
     /// <item>
     /// <description>
-    /// <see cref="IEnumerable{Module}"/> of missing mods.
+    /// <see cref="List{Module}"/> of missing mods.
     /// </description>
     /// </item>
     /// </list>
     /// </returns>
-    ValueTask<(IEnumerable<ModPackage> foundMods, IEnumerable<Module> missingMods)> GetModsFromModSettingsAsync(
+    ValueTask<(List<ModPackage> foundMods, List<Module> missingMods)> GetModsFromModSettingsAsync(
         ModSettings modSettings);
 
     /// <summary>
@@ -62,27 +62,27 @@ public interface IModsService
     /// <list type="bullet">
     /// <item>
     /// <description>
-    /// <see cref="IEnumerable{ModPackage}"/> of found mod packages.
+    /// <see cref="List{ModPackage}"/> of found mod packages.
     /// </description>
     /// </item>
     /// <item>
     /// <description>
-    /// <see cref="IEnumerable{ModOrderEntry}"/> of missing mods.
+    /// <see cref="List{ModOrderEntry}"/> of missing mods.
     /// </description>
     /// </item>
     /// </list>
     /// </returns>
-    ValueTask<(IEnumerable<ModPackage> foundMods, IEnumerable<ModOrderEntry> missingMods)> GetModsFromOrderAsync(
+    ValueTask<(List<ModPackage> foundMods, List<ModOrderEntry> missingMods)> GetModsFromOrderAsync(
         IAsyncEnumerable<ModOrderEntry> orderEntries);
 
     /// <summary>
     /// Finds and returns a collection of duplicate mod packages.
     /// </summary>
     /// <returns>
-    /// An <see cref="IEnumerable{T}"/> of tuples, where each tuple contains two <see cref="ModPackage"/> objects
+    /// An <see cref="List{T}"/> of tuples, where each tuple contains two <see cref="ModPackage"/> objects
     /// that are considered duplicates.
     /// </returns>
-    IEnumerable<(ModPackage, ModPackage)> FindDuplicateModPackages();
+    List<(ModPackage, ModPackage)> FindDuplicateModPackages();
 
     /// <summary>
     /// Imports a mod package by copying it to the destination path and adding it to <see cref="ModPackages"/>.
