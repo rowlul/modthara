@@ -100,6 +100,29 @@ public class ModSettings
     }
 
     /// <summary>
+    /// Checks if the mod list contains a mod with the specified UUID.
+    /// </summary>
+    /// <param name="uuid">
+    /// The UUID to search for.
+    /// </param>
+    /// <returns>
+    /// <c>true</c> if a mod with the specified UUID is found; otherwise, <c>false</c>.
+    /// </returns>
+    public bool Contains(LariUuid uuid)
+    {
+        for (var i = 0; i < Math.Min(ModsChildren.Count, _mods.Count); i++)
+        {
+            var modUuid = ModsChildren[i].GetUuid();
+            if (modUuid.Value == uuid.Value && _mods[i].Uuid.Value == uuid.Value)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
     /// Inserts mod at specified index.
     /// </summary>
     /// <param name="index">
