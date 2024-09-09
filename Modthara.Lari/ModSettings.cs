@@ -85,7 +85,7 @@ public class ModSettings
     /// A tuple containing the index of the matched mod and the matched mod itself.
     /// If no match is found, returns a tuple with `null` values.
     /// </returns>
-    public (Index?, Module?) Find(LariUuid uuid)
+    public (Index, Module)? Find(LariUuid uuid)
     {
         for (var i = 0; i < Math.Min(ModsChildren.Count, _mods.Count); i++)
         {
@@ -96,7 +96,7 @@ public class ModSettings
             }
         }
 
-        return (null, null);
+        return null;
     }
 
     /// <summary>
