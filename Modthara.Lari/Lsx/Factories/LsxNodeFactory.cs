@@ -42,7 +42,8 @@ public static class LsxNodeFactory
                 new LsxAttribute { Id = "Folder", Type = "LSString", Value = folder },
                 new LsxAttribute { Id = "MD5", Type = "LSString", Value = md5 },
                 new LsxAttribute { Id = "Name", Type = "LSString", Value = name },
-                new LsxAttribute { Id = "UUID", Type = "FixedString", Value = uuid.Value },
+                new LsxAttribute { Id = "PublishHandle", Type = "uint64", Value = "0" },
+                new LsxAttribute { Id = "UUID", Type = "guid", Value = uuid.Value },
                 new LsxAttribute { Id = "Version64", Type = "int64", Value = version.Value.ToUInt64().ToString() }
             ]
         };
