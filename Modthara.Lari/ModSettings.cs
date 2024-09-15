@@ -19,15 +19,15 @@ public class ModSettings
         set => _document.GetRegion("ModuleSettings").GetNode("Mods").Children = value;
     }
 
-    private List<Module> _mods;
+    private List<Module> _modules;
 
     /// <summary>
-    /// Gets the list of mods.
+    /// Gets the list of modules.
     /// </summary>
     /// <value>
-    /// An <see cref="IReadOnlyList{Module}"/> representing the list of mods.
+    /// An <see cref="IReadOnlyList{Module}"/> representing the list of modules.
     /// </value>
-    public IReadOnlyList<Module> Mods => _mods;
+    public IReadOnlyList<Module> Modules => _modules;
 
     /// <summary>
     /// Creates a new instance of <see cref="ModSettings"/> by parsing <paramref name="document"/>.
@@ -38,7 +38,7 @@ public class ModSettings
     public ModSettings(LsxDocument document)
     {
         _document = document;
-        _mods = ModsChildren.ToShortDescModules();
+        _modules = ModsChildren.ToShortDescModules();
     }
 
     /// <summary>
@@ -66,60 +66,8 @@ public class ModSettings
     /// </summary>
     public void Sanitize()
     {
-        ModsChildren = ModsChildren.DistinctBy(n => n.GetUuid())
-            .OrderBy(m => m.GetAttribute("Name").Value)
-            .ToList();
-
-        _mods = _mods.DistinctBy(x => x.Uuid)
-            .OrderBy(m => m.Name)
-            .ToList();
-    }
-
-    /// <summary>
-    /// Finds a mod by UUID.
-    /// </summary>
-    /// <param name="uuid">
-    /// The UUID to search for.
-    /// </param>
-    /// <returns>
-    /// A tuple containing the index of the matched mod and the matched mod itself.
-    /// If no match is found, returns a tuple with `null` values.
-    /// </returns>
-    public (Index, Module)? Find(LariUuid uuid)
-    {
-        for (var i = 0; i < Math.Min(ModsChildren.Count, _mods.Count); i++)
-        {
-            var modUuid = ModsChildren[i].GetUuid();
-            if (modUuid.Value == uuid.Value && _mods[i].Uuid.Value == uuid.Value)
-            {
-                return (i, new Module(ModsChildren[i]));
-            }
-        }
-
-        return null;
-    }
-
-    /// <summary>
-    /// Checks if the mod list contains a mod with the specified UUID.
-    /// </summary>
-    /// <param name="uuid">
-    /// The UUID to search for.
-    /// </param>
-    /// <returns>
-    /// <c>true</c> if a mod with the specified UUID is found; otherwise, <c>false</c>.
-    /// </returns>
-    public bool Contains(LariUuid uuid)
-    {
-        for (var i = 0; i < Math.Min(ModsChildren.Count, _mods.Count); i++)
-        {
-            var modUuid = ModsChildren[i].GetUuid();
-            if (modUuid.Value == uuid.Value && _mods[i].Uuid.Value == uuid.Value)
-            {
-                return true;
-            }
-        }
-
-        return false;
+        ModsChildren = ModsChildren.DistinctBy(n => n.GetUuid()).ToList();
+        _modules = _modules.DistinctBy(x => x.Uuid).ToList();
     }
 
     /// <summary>
@@ -134,7 +82,7 @@ public class ModSettings
     public void Insert(int index, Module mod)
     {
         ModsChildren.Insert(index, mod.ToNode());
-        _mods.Insert(index, mod);
+        _modules.Insert(index, mod);
     }
 
     /// <summary>
@@ -146,7 +94,7 @@ public class ModSettings
     public void Append(Module mod)
     {
         ModsChildren.Add(mod.ToNode());
-        _mods.Add(mod);
+        _modules.Add(mod);
     }
 
     /// <summary>
@@ -163,7 +111,7 @@ public class ModSettings
         try
         {
             ModsChildren.RemoveAt(ModsChildren.FindIndex(m => m.GetUuid() == mod.Uuid));
-            _mods.RemoveAt(_mods.FindIndex(m => m.Uuid == mod.Uuid));
+            _modules.RemoveAt(_modules.FindIndex(m => m.Uuid == mod.Uuid));
 
             return true;
         }
