@@ -9,7 +9,7 @@ Cross-platform Baldur's Gate 3 mod manager and library. Manage mods without laun
 
 ### App
 
-No release yet, still heavy WIP. See https://github.com/rowlul/modthara/issues/1.
+Feature tracker and discussion: https://github.com/rowlul/modthara/issues/1
 
 ![Modthara packages UI preview](./ui.png)
 
