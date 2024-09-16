@@ -4,8 +4,6 @@ using Modthara.Lari.Lsx.Factories;
 
 namespace Modthara.Lari;
 
-using Index = int;
-
 /// <summary>
 /// Represents <c>ModuleSettings</c> region.
 /// </summary>
@@ -61,13 +59,21 @@ public class ModSettings
     public LsxDocument ToDocument() => _document;
 
     /// <summary>
-    /// Sanitizes the mod list in the correct order according to <c>ModOrder</c> node.
-    /// Removes any duplicates or single unpaired module nodes.
+    /// Sanitizes the mod settings by removing duplicates.
     /// </summary>
     public void Sanitize()
     {
         ModsChildren = ModsChildren.DistinctBy(n => n.GetUuid()).ToList();
         _modules = _modules.DistinctBy(x => x.Uuid).ToList();
+    }
+
+    /// <summary>
+    /// Clears all mod settings by removing all children nodes and modules.
+    /// </summary>
+    public void Clear()
+    {
+        ModsChildren.Clear();
+        _modules.Clear();
     }
 
     /// <summary>
@@ -98,6 +104,51 @@ public class ModSettings
     }
 
     /// <summary>
+    /// Moves a mod from one index to another.
+    /// </summary>
+    /// <param name="oldIndex">
+    /// The current index of the mod.
+    /// </param>
+    /// <param name="newIndex">
+    /// The new index to move the mod to.
+    /// </param>
+    public void Move(int oldIndex, int newIndex)
+    {
+        var mod = _modules[oldIndex];
+        _modules.RemoveAt(oldIndex);
+        _modules.Insert(newIndex, mod);
+
+        var node = ModsChildren[oldIndex];
+        ModsChildren.RemoveAt(oldIndex);
+        ModsChildren.Insert(newIndex, node);
+    }
+
+
+    /// <summary>
+    /// Removes the mod at the specified index.
+    /// </summary>
+    /// <param name="index">
+    /// The index of the mod to remove.
+    /// </param>
+    /// <returns>
+    /// <c>true</c> if the mod was successfully removed; otherwise, <c>false</c> if the index was out of range.
+    /// </returns>
+    public bool RemoveAt(int index)
+    {
+        try
+        {
+            ModsChildren.RemoveAt(index);
+            _modules.RemoveAt(index);
+
+            return true;
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
     /// Removes mod from the list.
     /// </summary>
     /// <param name="mod">
@@ -120,4 +171,6 @@ public class ModSettings
             return false;
         }
     }
+
+    private const string GustavDevUuid = "28ac9ce2-2aba-8cda-b3b5-6e922f71b6b8";
 }

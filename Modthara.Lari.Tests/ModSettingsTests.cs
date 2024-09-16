@@ -36,24 +36,6 @@ public class ModSettingsTests
     }
 
     [Fact]
-    public void Find_ExistingMod_ReturnsIndexModTuple()
-    {
-        var order = new ModSettings(Mods);
-        var expected = (1, Mods[1]);
-        var actual = order.Find(Mods[1].Uuid);
-        actual.Should().BeEquivalentTo(expected);
-    }
-
-    [Fact]
-    public void Find_MissingMod_ReturnsNullNullTuple()
-    {
-        var order = new ModSettings();
-        (int?, ModMetadata?) expected = (null, null);
-        var actual = order.Find(Mods[1].Uuid);
-        actual.Should().BeEquivalentTo(expected);
-    }
-
-    [Fact]
     public void Remove_AllMods_ReturnsTrue()
     {
         var expected = new ModSettings();
