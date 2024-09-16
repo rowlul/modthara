@@ -114,7 +114,7 @@ public partial class PackagesViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void DeleteSelection(IList selectedItems)
+    private async Task DeleteSelection(IList selectedItems)
     {
         // prevent iterating over the same collection
         foreach (var mod in selectedItems.Cast<ModPackageViewModel>().ToArray())
@@ -123,6 +123,8 @@ public partial class PackagesViewModel : ViewModelBase
             mod.DeleteModPackage();
             Mods.Remove(mod);
         }
+
+        await ModManager.SaveModSettingsAsync();
     }
 
     [RelayCommand]
