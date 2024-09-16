@@ -1,217 +1,239 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections;
+using System.Collections.ObjectModel;
 
 using Avalonia.Collections;
 using Avalonia.Threading;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 
+using Modthara.Lari;
 using Modthara.Manager;
 using Modthara.UI.Extensions;
+using Modthara.UI.Services;
 
 namespace Modthara.UI.ViewModels;
 
 public partial class PackagesViewModel : ViewModelBase
 {
-    private readonly IModsService _modsService;
-    private readonly IModSettingsService _modSettingsService;
+    private ModManager ModManager { get; } = Ioc.Default.GetRequiredService<ModManager>();
+    private IPathProvider PathProvider { get; } = Ioc.Default.GetRequiredService<IPathProvider>();
+    private IProcessProxy Process { get; } = Ioc.Default.GetRequiredService<IProcessProxy>();
 
     [ObservableProperty]
     private bool _isViewReady;
 
-    #region Library Mods
+    [ObservableProperty]
+    private ObservableCollection<ModPackageViewModel> _mods = null!;
 
     [ObservableProperty]
-    private ObservableCollection<ModPackageViewModel> _libraryMods;
+    private DataGridCollectionView _modsView = null!;
 
     [ObservableProperty]
-    private DataGridCollectionView _libraryModsView;
+    private bool _modSearchVisibility;
 
     [ObservableProperty]
-    private bool _libraryModsSearchVisibility;
+    private string? _modSearchText;
 
-    [ObservableProperty]
-    private string? _libraryModsSearchText;
-
-    partial void OnLibraryModsSearchVisibilityChanged(bool value)
+    partial void OnModSearchVisibilityChanged(bool value)
     {
-        if (value == false && !string.IsNullOrWhiteSpace(LibraryModsSearchText))
+        if (value == false && !string.IsNullOrWhiteSpace(ModSearchText))
         {
-            LibraryModsSearchText = string.Empty;
+            ModSearchText = string.Empty;
         }
     }
 
-    partial void OnLibraryModsSearchTextChanged(string? oldValue, string? newValue)
+    partial void OnModSearchTextChanged(string? oldValue, string? newValue)
     {
+        // TODO: introduce
         newValue = newValue?.Trim();
 
         if (newValue == string.Empty)
         {
-            LibraryModsView.Filter = SelectedPackageCategory.ToFilter();
+            ModsView.Filter = null;
         }
         else if (oldValue == newValue || newValue == null || newValue.IsWhiteSpace())
         {
         }
         else
         {
-            LibraryModsView.Filter = SelectedPackageCategory.ToFilter(newValue);
+            ModsView.Filter = x =>
+                ((ModPackageViewModel)x).Name.Contains(newValue, StringComparison.OrdinalIgnoreCase);
         }
+    }
+
+    public async Task InitializeViewModelAsync()
+    {
+        await ModManager.LoadModsAsync();
+
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            var (found, missing) = ModManager.MatchMods();
+            ;
+
+            Mods = new ObservableCollection<ModPackageViewModel>(found
+                .Union(ModManager.ModPackages.DistinctBy(m => m.Metadata?.Uuid ?? LariUuid.NewGuid()))
+                .Select(m => new ModPackageViewModel(m)));
+            ModsView = new DataGridCollectionView(Mods);
+        }, DispatcherPriority.Background);
+
+        IsViewReady = true;
+    }
+
+    public void MoveAfterEnabledMods(ModPackageViewModel mod, int shift = 0)
+    {
+        var index = Mods.IndexOf(mod);
+        var last = Mods.LastOrDefault(m => m.IsEnabled && m != mod);
+        var end = Mods.IndexOf(last!);
+
+        if (index > end)
+        {
+            Mods.Move(index, end + 1 + shift);
+        }
+        else
+        {
+            Mods.Move(index, end + shift);
+        }
+
+        ModsView.Refresh();
     }
 
     [RelayCommand]
     private void OpenModsFolder()
     {
-        throw new NotImplementedException();
+        Process.OpenFolder(PathProvider.ModsFolder);
     }
 
     [RelayCommand]
-    private void EnableAllMods()
+    private async Task RefreshAsync()
     {
-        foreach (var mod in LibraryMods)
+        IsViewReady = false;
+        ModSearchVisibility = false;
+        await InitializeViewModelAsync();
+    }
+
+    [RelayCommand]
+    private void DeleteSelection(IList selectedItems)
+    {
+        // prevent iterating over the same collection
+        foreach (var mod in selectedItems.Cast<ModPackageViewModel>().ToArray())
         {
-            if (!mod.IsEnabled)
+            mod.DisableModule();
+            mod.DeleteModPackage();
+            Mods.Remove(mod);
+        }
+    }
+
+    [RelayCommand]
+    private async Task MoveSelectionTopAsync(IList selectedItems)
+    {
+        for (int i = 0; i < selectedItems.Count; i++)
+        {
+            var mod = (ModPackageViewModel)selectedItems[i]!;
+            if (!mod.IsEnabled || !mod.HasMetadata)
             {
-                mod.Enable();
+                continue;
+            }
+
+            var index = Mods.IndexOf(mod);
+            if (index > 0)
+            {
+                int newIndex = 0;
+                if (Mods[newIndex].IsEnabled)
+                {
+                    ModManager.MoveModule(index, newIndex);
+                    Mods.Move(index, newIndex);
+                }
             }
         }
+
+        await ModManager.SaveModSettingsAsync();
+        ModsView.Refresh();
     }
 
     [RelayCommand]
-    private void EnableAllOverrides()
+    private async Task MoveSelectionUpAsync(IList selectedItems)
     {
-        foreach (var mod in LibraryMods.Where(x => x.IsPureOverride))
+        for (int i = 0; i < selectedItems.Count; i++)
         {
-            if (!mod.IsEnabled)
+            var mod = (ModPackageViewModel)selectedItems[i]!;
+            if (!mod.IsEnabled || !mod.HasMetadata)
             {
-                mod.Enable();
+                continue;
+            }
+
+            var index = Mods.IndexOf(mod);
+            if (index > 0)
+            {
+                int newIndex = index - 1;
+                if (Mods[newIndex].IsEnabled)
+                {
+                    ModManager.MoveModule(index, newIndex);
+                    Mods.Move(index, newIndex);
+                }
             }
         }
+
+        await ModManager.SaveModSettingsAsync();
+        ModsView.Refresh();
     }
 
     [RelayCommand]
-    private void DisableAllMods()
+    private async Task MoveSelectionDownAsync(IList selectedItems)
     {
-        foreach (var mod in LibraryMods)
+        for (int i = selectedItems.Count - 1; i >= 0; i--)
         {
-            if (mod.IsEnabled)
+            var mod = (ModPackageViewModel)selectedItems[i]!;
+            if (!mod.IsEnabled || !mod.HasMetadata)
             {
-                mod.Disable();
+                continue;
+            }
+
+            var index = Mods.IndexOf(mod);
+            if (index < Mods.Count - 1)
+            {
+                int newIndex = index + 1;
+                if (Mods[newIndex].IsEnabled)
+                {
+                    ModManager.MoveModule(index, newIndex);
+                    Mods.Move(index, newIndex);
+                }
             }
         }
+
+        await ModManager.SaveModSettingsAsync();
+        ModsView.Refresh();
     }
 
     [RelayCommand]
-    private void DisableAllOverrides()
+    private async Task MoveSelectionBottomAsync(IList selectedItems)
     {
-        foreach (var mod in LibraryMods.Where(x => x.IsPureOverride))
+        var last = Mods.LastOrDefault(m => m.IsEnabled);
+        if (last == null)
         {
-            if (mod.IsEnabled)
+            return;
+        }
+
+        var end = Mods.IndexOf(last);
+        for (int i = selectedItems.Count - 1; i >= 0; i--)
+        {
+            var mod = (ModPackageViewModel)selectedItems[i]!;
+            if (!mod.IsEnabled || !mod.HasMetadata)
             {
-                mod.Disable();
+                continue;
+            }
+
+            var index = Mods.IndexOf(mod);
+            if (index < end)
+            {
+                ModManager.MoveModule(index, end);
+                Mods.Move(index, end);
+                end--;
             }
         }
-    }
 
-    #endregion
-
-    #region Order Mods
-
-    [ObservableProperty]
-    private ObservableCollection<ModPackageViewModel> _orderMods;
-
-    [ObservableProperty]
-    private DataGridCollectionView _orderModsView;
-
-    [ObservableProperty]
-    private bool _orderSearchVisibility;
-
-    [ObservableProperty]
-    private string? _orderSearchText;
-
-    partial void OnOrderSearchVisibilityChanged(bool value)
-    {
-        if (value == false && !string.IsNullOrWhiteSpace(OrderSearchText))
-        {
-            OrderSearchText = string.Empty;
-        }
-    }
-
-    partial void OnOrderSearchTextChanged(string? oldValue, string? newValue)
-    {
-        newValue = newValue?.Trim();
-
-        if (newValue == string.Empty)
-        {
-            OrderModsView.Filter = null;
-        }
-        else if (oldValue == newValue || newValue == null || newValue.IsWhiteSpace())
-        {
-        }
-        else
-        {
-            OrderModsView.Filter = x =>
-                ((ModPackageViewModel)x).Name.Contains(newValue, StringComparison.OrdinalIgnoreCase);
-        }
-    }
-
-    #endregion
-
-    #region Package category
-
-    [ObservableProperty]
-    private PackageCategory _selectedPackageCategory;
-
-    [RelayCommand]
-    private void SetPackageCategory(PackageCategory category)
-    {
-        SelectedPackageCategory = category;
-
-        if (!string.IsNullOrWhiteSpace(LibraryModsSearchText))
-        {
-            LibraryModsSearchText = string.Empty;
-        }
-    }
-
-    partial void OnSelectedPackageCategoryChanged(PackageCategory value) => LibraryModsView.Filter = value.ToFilter();
-
-    #endregion
-
-    public PackagesViewModel(
-        IModsService modsService,
-        IModSettingsService modSettingsService)
-    {
-        _modsService = modsService;
-        _modSettingsService = modSettingsService;
-    }
-
-    public async Task InitializeViewModel()
-    {
-        await Task.WhenAll(_modsService.LoadModPackagesAsync(), _modSettingsService.LoadModSettingsAsync());
-
-        var (foundOrderMods, missingOrderMods) =
-            await _modsService.GetModsFromModSettingsAsync(_modSettingsService.ModSettings);
-
-        await Task.WhenAll(
-            Task.Run(() =>
-            {
-                var mods = _modsService.ModPackages
-                    .Except(foundOrderMods)
-                    .Select(x => new ModPackageViewModel(x));
-                LibraryMods = new ObservableCollection<ModPackageViewModel>(mods);
-            }),
-            Task.Run(() =>
-            {
-                var mods = foundOrderMods.Select(x => new ModPackageViewModel(x));
-                OrderMods = new ObservableCollection<ModPackageViewModel>(mods);
-            }));
-
-        await Dispatcher.UIThread.InvokeAsync(() =>
-        {
-            OrderModsView = new DataGridCollectionView(OrderMods);
-            LibraryModsView = new DataGridCollectionView(LibraryMods);
-        }, DispatcherPriority.Background);
-
-        SelectedPackageCategory = PackageCategory.Standalone;
-        IsViewReady = true;
+        await ModManager.SaveModSettingsAsync();
+        ModsView.Refresh();
     }
 }

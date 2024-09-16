@@ -8,9 +8,6 @@ internal static class Constants
 {
     public const int StreamBufferSize = 0x1000;
 
-    public static readonly JsonSerializerOptions JsonSerializerOptions =
-        new() { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-
     public static readonly List<LariUuid> IgnoredModUuids =
     [
         new("991c9c7a-fb80-40cb-8f0d-b92d4e80e9b1"),
@@ -25,5 +22,17 @@ internal static class Constants
         new("77a2155f-4b35-4f0c-e7ff-4338f91426a4"),
         new("ee4989eb-aab8-968f-8674-812ea2f4bfd7"),
         new("b77b6210-ac50-4cb1-a3d5-5702fb9c744c"),
+    ];
+
+    // TODO: this could be a dynamic list of files in user's Data/ folder
+    public static readonly string[] CommonAlteredGameFiles =
+    [
+        "Assets",
+        "Game",
+        "Engine",
+        "Gustav",
+        "GustavDev",
+        "Shared",
+        "SharedDev"
     ];
 }

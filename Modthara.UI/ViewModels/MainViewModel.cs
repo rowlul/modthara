@@ -27,7 +27,6 @@ public partial class MainViewModel : ViewModelBase
         SelectedItem = SidebarItems[0];
     }
 
-    [SuppressMessage("ReSharper", "ArrangeObjectCreationWhenTypeNotEvident")]
     public static List<SidebarItem> SidebarItems { get; } =
     [
         new("Packages", "fa-solid fa-box", r => r.GoTo<PackagesViewModel>())

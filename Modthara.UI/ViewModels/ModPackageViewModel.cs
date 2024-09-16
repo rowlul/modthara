@@ -9,33 +9,44 @@ namespace Modthara.UI.ViewModels;
 
 public partial class ModPackageViewModel : ViewModelBase
 {
+    private ModManager ModManager { get; } = Ioc.Default.GetRequiredService<ModManager>();
+    private PackagesViewModel PackagesViewModel { get; } = Ioc.Default.GetRequiredService<PackagesViewModel>();
+
     private readonly ModPackage _modPackage;
 
     [ObservableProperty]
     private bool _isEnabled;
 
-    partial void OnIsEnabledChanged(bool value)
+    async partial void OnIsEnabledChanged(bool value)
     {
         if (value)
         {
-            Enable();
+            EnablePackage();
+            EnableModule();
         }
         else
         {
-            Disable();
+            DisableModule();
+            DisablePackage();
         }
+
+        await ModManager.SaveModSettingsAsync();
+
+        // delay prevents visual bug with DataGridCollectionView
+        await Task.Delay(10);
+        // TODO: decouple by using IMessenger
+        PackagesViewModel.MoveAfterEnabledMods(this);
     }
 
-    private IModsService ModsService { get; } = Ioc.Default.GetRequiredService<IModsService>();
-
-    public bool HasOverrides => (_modPackage.Flags & ModFlags.AltersGameFiles) != ModFlags.None;
-    public bool HasModFiles => (_modPackage.Flags & ModFlags.HasModFiles) != ModFlags.None;
-
-    public bool IsModWithOverrides => HasModFiles && HasOverrides;
-    public bool IsPureOverride => HasOverrides && !HasModFiles;
+    public bool IsGameOverride => _modPackage.Flags.HasFlag(ModFlags.GameOverride);
+    public bool IsModAddition => _modPackage.Flags.HasFlag(ModFlags.ModAddition);
+    public bool RequiresScriptExtender => _modPackage.Flags.HasFlag(ModFlags.ScriptExtender);
+    public bool HasForceRecompile => _modPackage.Flags.HasFlag(ModFlags.ForceRecompile);
+    public bool HasMetadata => _modPackage.Metadata != null;
 
     #region Mod Package Properties
 
+    public string Path => _modPackage.Path;
     public string Name => _modPackage.Name;
     public string? Author => _modPackage.Metadata?.Author;
     public string? Description => _modPackage.Metadata?.Description;
@@ -48,18 +59,16 @@ public partial class ModPackageViewModel : ViewModelBase
     {
         _modPackage = modPackage;
 
-        _isEnabled = (_modPackage.Flags & ModFlags.Enabled) != ModFlags.None;
+        _isEnabled = ModManager.IsModuleEnabled(modPackage.Metadata) && ModManager.IsPackageEnabled(modPackage);
     }
 
-    public void Enable()
-    {
-        ModsService.EnableModPackage(_modPackage);
-        IsEnabled = true;
-    }
+    public void EnablePackage() => ModManager.EnablePackage(_modPackage);
 
-    public void Disable()
-    {
-        ModsService.DisableModPackage(_modPackage);
-        IsEnabled = false;
-    }
+    public void EnableModule() => ModManager.EnableModule(_modPackage.Metadata);
+
+    public void DisableModule() => ModManager.DisableModule(_modPackage.Metadata);
+
+    public void DisablePackage() => ModManager.DisablePackage(_modPackage);
+
+    public void DeleteModPackage() => ModManager.DeleteModPackage(_modPackage);
 }

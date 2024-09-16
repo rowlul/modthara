@@ -4,263 +4,182 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:i="https://github.com/projektanker/icons.avalonia"
-             xmlns:b="clr-namespace:Modthara.UI.Behaviors"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
              x:DataType="vm:PackagesViewModel"
              x:Class="Modthara.UI.Views.PackagesView"
              IsEnabled="{Binding IsViewReady}">
 
-    <UserControl.Styles>
-        <StyleInclude Source="../Styles/DragDropDataGrid.axaml" />
-    </UserControl.Styles>
+    <Grid RowDefinitions="40, *">
+        <Grid Grid.Row="0"
+              VerticalAlignment="Center"
+              ColumnDefinitions="Auto 5 * Auto 5 Auto">
 
-    <UserControl.Resources>
-        <DataTemplate x:Key="ToggleCellTemplate" DataType="vm:ModPackageViewModel">
-            <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center"
-                      IsChecked="{Binding IsEnabled, DataType=vm:ModPackageViewModel, Mode=TwoWay}"
-                      Classes="Tertiary" />
-        </DataTemplate>
+            <StackPanel Orientation="Horizontal" Spacing="5">
+                <ComboBox Classes="Small"
+                          SelectedIndex="0"
+                          VerticalAlignment="Center"
+                          FontWeight="Medium"
+                          FontSize="14"
+                          Width="200"
+                          Foreground="{DynamicResource SemiColorPrimary}">
 
-        <DataTemplate x:Key="ModCellTemplate" DataType="vm:ModPackageViewModel">
-            <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center"
-                        Margin="8 0">
-                <Label Content="{Binding Name}"
-                       Theme="{StaticResource TagLabel}"
-                       Classes.Orange="{Binding IsPureOverride}"
-                       Classes.Red="{Binding IsModWithOverrides}" />
+                    <ComboBox.Items>
+                        <ComboBoxItem Content="Current Mod Order" />
+                    </ComboBox.Items>
+                </ComboBox>
 
-                <Label Content="{Binding Version}"
-                       Classes="Tertiary" FontSize="11" VerticalAlignment="Bottom" />
+                <Button i:Attached.Icon="fa-regular fa-folder-open"
+                        ToolTip.Tip="Open Mods folder"
+                        Classes="Small"
+                        Command="{Binding OpenModsFolderCommand}" />
+
+                <Button i:Attached.Icon="fa-solid fa-arrows-rotate"
+                        ToolTip.Tip="Refresh Mods and Mod Order"
+                        Classes="Small"
+                        Command="{Binding RefreshCommand}" />
             </StackPanel>
-        </DataTemplate>
 
-        <b:DataGridDropHandler x:TypeArguments="vm:ModPackageViewModel" x:Key="ModDropHandler" />
-    </UserControl.Resources>
+            <TextBox Grid.Column="3"
+                     Name="ModSearchTextBox"
+                     Watermark="Search..."
+                     Classes="Small clearButton"
+                     Width="250"
+                     Text="{Binding ModSearchText}"
+                     IsVisible="{Binding ModSearchVisibility}" />
 
-    <Grid RowDefinitions="*" ColumnDefinitions="*">
-        <Grid ColumnDefinitions="*, Auto, *">
-            <Border
-                HorizontalAlignment="Stretch"
-                CornerRadius="10"
-                Background="{DynamicResource WindowDefaultBackground}">
+            <StackPanel Grid.Column="5" Orientation="Horizontal" Spacing="5">
+                <ToggleButton i:Attached.Icon="fa-solid fa-magnifying-glass"
+                              ToolTip.Tip="Toggle search"
+                              Classes="Small"
+                              IsChecked="{Binding ModSearchVisibility}"
+                              IsCheckedChanged="ToggleSearchButton_OnIsCheckedChanged" />
+            </StackPanel>
+        </Grid>
 
-                <Grid RowDefinitions="40, *" Margin="0 0 10 0">
-                    <Grid
-                        VerticalAlignment="Center"
-                        ColumnDefinitions="Auto 5 * 5 Auto">
+        <Grid Grid.Row="1" ColumnDefinitions="Auto, 10, *">
+            <StackPanel Grid.Column="0" Spacing="5">
+                <Button i:Attached.Icon="fa-solid fa-angles-up"
+                        ToolTip.Tip="Move selection to the top"
+                        Command="{Binding MoveSelectionTopCommand}"
+                        CommandParameter="{Binding ElementName=ModGrid, Path=SelectedItems}"
+                        Classes="Small" />
+                <Button i:Attached.Icon="fa-solid fa-angle-up"
+                        ToolTip.Tip="Move selection up"
+                        Command="{Binding MoveSelectionUpCommand}"
+                        CommandParameter="{Binding ElementName=ModGrid, Path=SelectedItems}"
+                        Classes="Small" />
+                <Button i:Attached.Icon="fa-solid fa-angle-down"
+                        ToolTip.Tip="Move selection down"
+                        Command="{Binding MoveSelectionDownCommand}"
+                        CommandParameter="{Binding ElementName=ModGrid, Path=SelectedItems}"
+                        Classes="Small" />
+                <Button i:Attached.Icon="fa-solid fa-angles-down"
+                        ToolTip.Tip="Move selection to the bottom"
+                        Classes="Small"
+                        Command="{Binding MoveSelectionBottomCommand}"
+                        CommandParameter="{Binding ElementName=ModGrid, Path=SelectedItems}" />
+            </StackPanel>
+            <DataGrid Grid.Column="2"
+                      Name="ModGrid"
+                      ItemsSource="{Binding ModsView}"
+                      AutoGenerateColumns="False"
+                      CanUserReorderColumns="False"
+                      CanUserResizeColumns="True"
+                      CanUserSortColumns="False"
+                      HeadersVisibility="All"
+                      GridLinesVisibility="Horizontal"
+                      SelectionMode="Extended">
 
-                        <ComboBox Grid.Column="0"
-                                  Classes="Small"
-                                  SelectedIndex="0"
-                                  VerticalAlignment="Center"
-                                  FontWeight="Medium"
-                                  FontSize="14"
-                                  Width="200"
-                                  Foreground="{DynamicResource SemiColorPrimary}">
+                <DataGrid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Command="{Binding DeleteSelectionCommand}"
+                                  CommandParameter="{Binding ElementName=ModGrid, Path=SelectedItems}">
+                            <MenuItem.Header>
+                                <StackPanel Spacing="10" Orientation="Horizontal">
+                                    <i:Icon Value="fa-solid fa-trash-can" Foreground="{StaticResource SemiColorDanger}" />
+                                    <TextBlock Text="Delete" Foreground="{StaticResource SemiColorDanger}" />
+                                </StackPanel>
+                            </MenuItem.Header>
+                        </MenuItem>
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
 
-                            <ComboBox.Items>
-                                <ComboBoxItem Content="Current Mod Order" />
-                                <ComboBoxItem Content="Blank Mod Order" />
-                            </ComboBox.Items>
-                        </ComboBox>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn CanUserResize="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate DataType="vm:ModPackageViewModel">
+                                <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center"
+                                          IsChecked="{Binding IsEnabled, Mode=TwoWay}"
+                                          Classes="Tertiary" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
-                        <TextBox Grid.Column="2"
-                                 Watermark="Search..."
-                                 Classes="Small clearButton"
-                                 Text="{Binding OrderSearchText}"
-                                 IsVisible="{Binding OrderSearchVisibility}" />
+                    <DataGridTemplateColumn CanUserResize="True" Header="Mod">
+                        <DataTemplate DataType="vm:ModPackageViewModel">
+                            <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center" Margin="8 0">
+                                <ToolTip.Tip>
+                                    <StackPanel>
+                                        <TextBlock>
+                                            <Run Text="{Binding Name}" FontWeight="Bold" />
+                                            <Run>by</Run>
+                                            <Run Text="{Binding Author}" />
+                                            <LineBreak />
+                                            <Run>Version</Run>
+                                            <Run Text="{Binding Version}" />
+                                        </TextBlock>
 
-                        <ToggleButton Grid.Column="4"
-                                      i:Attached.Icon="fa-solid fa-magnifying-glass"
-                                      IsChecked="{Binding OrderSearchVisibility}"
-                                      Classes="Small Primary" />
-                    </Grid>
+                                        <StackPanel Orientation="Horizontal" Spacing="2" Margin="0 5">
+                                            <Label Content="Mod" Theme="{StaticResource TagLabel}"
+                                                   Classes="Solid" IsVisible="{Binding IsModAddition}">
+                                                <Classes.Red>
+                                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                        <Binding Path="IsModAddition" />
+                                                        <Binding Path="IsGameOverride" />
+                                                    </MultiBinding>
+                                                </Classes.Red>
+                                            </Label>
+                                            <Label Content="Override" Theme="{StaticResource TagLabel}"
+                                                   Classes="Solid Orange" IsVisible="{Binding IsGameOverride}" />
+                                            <Label Content="Script Extender" Theme="{StaticResource TagLabel}"
+                                                   Classes="Solid Indigo" IsVisible="{Binding RequiresScriptExtender}" />
+                                            <Label Content="Recompile" Theme="{StaticResource TagLabel}"
+                                                   Classes="Solid Red" IsVisible="{Binding HasForceRecompile}" />
+                                        </StackPanel>
 
-                    <DataGrid Grid.Row="1"
-                              ItemsSource="{Binding OrderModsView}"
-                              AutoGenerateColumns="False"
-                              CanUserReorderColumns="True"
-                              CanUserResizeColumns="True"
-                              CanUserSortColumns="False"
-                              HeadersVisibility="All"
-                              GridLinesVisibility="Horizontal"
-                              SelectionMode="Extended"
-                              Classes="draggable">
+                                        <TextBlock Text="{Binding Description}" />
+                                    </StackPanel>
+                                </ToolTip.Tip>
 
-                        <Interaction.Behaviors>
-                            <BehaviorCollection>
-                                <ContextDropBehavior Handler="{StaticResource ModDropHandler}" />
-                            </BehaviorCollection>
-                        </Interaction.Behaviors>
+                                <ToolTip.Placement>Bottom</ToolTip.Placement>
 
-                        <DataGrid.Columns>
-                            <DataGridTemplateColumn CanUserReorder="False" CanUserResize="True"
-                                                    Header="Mod" MinWidth="300">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <StaticResource ResourceKey="ModCellTemplate" />
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
+                                <Label Content="{Binding Name}"
+                                       Theme="{StaticResource TagLabel}">
+                                    <Classes.Red>
+                                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                            <Binding Path="IsModAddition" />
+                                            <Binding Path="IsGameOverride" />
+                                        </MultiBinding>
+                                    </Classes.Red>
+                                    <Classes.Orange>
+                                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                            <Binding Path="!IsModAddition" />
+                                            <Binding Path="IsGameOverride" />
+                                        </MultiBinding>
+                                    </Classes.Orange>
+                                </Label>
 
-                            <DataGridTextColumn Header="Author"
-                                                Binding="{Binding Author, DataType=vm:ModPackageViewModel, FallbackValue=''}"
-                                                MinWidth="75"
-                                                Width="150"
-                                                IsReadOnly="True" />
-
-                            <DataGridTextColumn Header="Last Modified"
-                                                Binding="{Binding LastModified, DataType=vm:ModPackageViewModel}"
-                                                MinWidth="115"
-                                                IsReadOnly="True" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
-            </Border>
-            <GridSplitter Grid.Column="1" />
-            <Border
-                Grid.Column="2"
-                HorizontalAlignment="Stretch"
-                CornerRadius="10"
-                Background="{DynamicResource WindowDefaultBackground}">
-
-                <Grid RowDefinitions="40, *" Margin="10 0 0 0">
-                    <Grid
-                        VerticalAlignment="Center"
-                        ColumnDefinitions="Auto 5 Auto 5 * 5 Auto">
-
-                        <SplitButton
-                            Command="{Binding OpenModsFolderCommand}"
-                            FontWeight="Medium"
-                            VerticalAlignment="Center"
-                            Classes="Small"
-                            FontSize="14">
-
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <i:Icon Value="fa-solid fa-folder" />
-                                <TextBlock Text="Library" />
+                                <Label Content="{Binding Version, FallbackValue=''}"
+                                       Classes="Tertiary" FontSize="11" VerticalAlignment="Bottom" />
                             </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn>
 
-                            <SplitButton.Styles>
-                                <Style Selector="SplitButton">
-                                    <Setter Property="Flyout">
-                                        <MenuFlyout Placement="BottomEdgeAlignedRight">
-                                            <MenuItem Header="Open Mods folder"
-                                                      Command="{Binding OpenModsFolderCommand}" />
-
-                                            <Separator />
-
-                                            <MenuItem Header="Enable">
-                                                <MenuItem Header="All mods"
-                                                          Command="{Binding EnableAllModsCommand}" />
-                                                <MenuItem Header="All overrides"
-                                                          Command="{Binding EnableAllOverridesCommand}" />
-                                            </MenuItem>
-
-                                            <MenuItem Header="Disable">
-                                                <MenuItem Header="All mods"
-                                                          Command="{Binding DisableAllModsCommand}" />
-                                                <MenuItem Header="All overrides"
-                                                          Command="{Binding DisableAllOverridesCommand}" />
-                                            </MenuItem>
-                                            <Separator />
-                                        </MenuFlyout>
-                                    </Setter>
-                                </Style>
-                            </SplitButton.Styles>
-
-                        </SplitButton>
-
-                        <Border Grid.Column="2"
-                                HorizontalAlignment="Left"
-                                Theme="{StaticResource RadioButtonGroupBorder}">
-                            <StackPanel Orientation="Horizontal">
-                                <RadioButton
-                                    GroupName="PackageCategoryGroup"
-                                    Classes="Small"
-                                    Theme="{DynamicResource ButtonRadioButton}"
-                                    IsChecked="True"
-                                    Command="{Binding SetPackageCategoryCommand}"
-                                    CommandParameter="{x:Static vm:PackageCategory.Standalone}">
-                                    Standalone
-                                </RadioButton>
-                                <RadioButton
-                                    GroupName="PackageCategoryGroup"
-                                    Classes="Small"
-                                    Theme="{DynamicResource ButtonRadioButton}"
-                                    Command="{Binding SetPackageCategoryCommand}"
-                                    CommandParameter="{x:Static vm:PackageCategory.Overrides}">
-                                    Overrides
-                                </RadioButton>
-                                <RadioButton
-                                    GroupName="PackageCategoryGroup"
-                                    Classes="Small"
-                                    Theme="{DynamicResource ButtonRadioButton}"
-                                    Command="{Binding SetPackageCategoryCommand}"
-                                    CommandParameter="{x:Static vm:PackageCategory.All}">
-                                    All
-                                </RadioButton>
-                            </StackPanel>
-                        </Border>
-
-                        <TextBox Grid.Column="4"
-                                 Name="LibraryModsSearchTextBox"
-                                 Classes="Small clearButton"
-                                 Text="{Binding LibraryModsSearchText}"
-                                 Watermark="Search..."
-                                 IsVisible="{Binding LibraryModsSearchVisibility}" />
-
-                        <ToggleButton Grid.Column="6"
-                                      i:Attached.Icon="fa-solid fa-magnifying-glass"
-                                      IsChecked="{Binding LibraryModsSearchVisibility}"
-                                      Classes="Small" />
-                    </Grid>
-
-                    <DataGrid Grid.Row="1"
-                              ItemsSource="{Binding LibraryModsView}"
-                              AutoGenerateColumns="False"
-                              CanUserReorderColumns="True"
-                              CanUserResizeColumns="True"
-                              CanUserSortColumns="True"
-                              HeadersVisibility="All"
-                              GridLinesVisibility="Horizontal"
-                              SelectionMode="Extended"
-                              Classes="draggable">
-
-                        <Interaction.Behaviors>
-                            <BehaviorCollection>
-                                <ContextDropBehavior Handler="{StaticResource ModDropHandler}" />
-                            </BehaviorCollection>
-                        </Interaction.Behaviors>
-
-                        <DataGrid.Columns>
-                            <DataGridTemplateColumn CanUserReorder="False" CanUserResize="False" CanUserSort="True"
-                                                    SortMemberPath="IsEnabled">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <StaticResource ResourceKey="ToggleCellTemplate" />
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-
-                            <DataGridTemplateColumn CanUserReorder="False" CanUserResize="True" CanUserSort="True"
-                                                    SortMemberPath="Name" Header="Mod" MinWidth="300">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <StaticResource ResourceKey="ModCellTemplate" />
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-
-                            <DataGridTextColumn Header="Author"
-                                                Binding="{Binding Author, DataType=vm:ModPackageViewModel, FallbackValue=''}"
-                                                MinWidth="75"
-                                                Width="150"
-                                                IsReadOnly="True" />
-
-                            <DataGridTextColumn Header="Last Modified"
-                                                Binding="{Binding LastModified, DataType=vm:ModPackageViewModel}"
-                                                MinWidth="115"
-                                                IsReadOnly="True" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
-
-            </Border>
+                    <DataGridTextColumn Header="Last Modified"
+                                        Binding="{Binding LastModified, DataType=vm:ModPackageViewModel}"
+                                        IsReadOnly="True" />
+                </DataGrid.Columns>
+            </DataGrid>
         </Grid>
     </Grid>
 </UserControl>

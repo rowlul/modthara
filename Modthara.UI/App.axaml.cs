@@ -8,11 +8,13 @@ using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 
 using CommunityToolkit.Mvvm.DependencyInjection;
+using CommunityToolkit.Mvvm.Messaging;
 
 using Microsoft.Extensions.DependencyInjection;
 
 using Modthara.Manager;
 using Modthara.UI.Routing;
+using Modthara.UI.Services;
 using Modthara.UI.ViewModels;
 using Modthara.UI.Views;
 
@@ -27,7 +29,6 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        // https://github.com/AvaloniaUI/Avalonia/discussions/10239
         BindingPlugins.DataValidators.RemoveAt(0);
 
         ServiceProvider services = ConfigureServices();
@@ -40,7 +41,7 @@ public partial class App : Application
 
         services
             .GetRequiredService<PackagesViewModel>()
-            .InitializeViewModel()
+            .InitializeViewModelAsync()
             .SafeFireAndForget();
 
         base.OnFrameworkInitializationCompleted();
@@ -53,19 +54,12 @@ public partial class App : Application
         services.AddSingleton<Router<ViewModelBase>>(s =>
             new Router<ViewModelBase>(v => (ViewModelBase)s.GetRequiredService(v)));
 
-        services.AddScoped<IFileSystem, FileSystem>();
-        services.AddTransient<IModPackageManager, ModPackageManager>();
-        services.AddSingleton<IModsService>(s =>
-            new ModsService(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) +
-                @"\Larian Studios\Baldur's Gate 3\Mods",
-                s.GetRequiredService<IFileSystem>(),
-                s.GetRequiredService<IModPackageManager>()));
-
-        services.AddSingleton<IModSettingsService>(s => new ModSettingsService(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) +
-            @"\Larian Studios\Baldur's Gate 3\PlayerProfiles\Public\modsettings.lsx",
-            s.GetRequiredService<IFileSystem>()));
+        services.AddSingleton<IFileSystem, FileSystem>();
+        services.AddSingleton<IProcessProxy, ProcessProxy>();
+        services.AddSingleton<IPathProvider, WindowsDefaultPaths>();
+        services.AddSingleton<ModPackageService>();
+        services.AddSingleton<ModSettingsService>();
+        services.AddSingleton<ModManager>();
 
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<PackagesViewModel>();

@@ -7,40 +7,36 @@ using static Modthara.Manager.Constants;
 
 namespace Modthara.Manager;
 
-/// <inheritdoc />
-public class ModSettingsService : IModSettingsService
+public class ModSettingsService
 {
-    private readonly string _path;
-
     private readonly IFileSystem _fileSystem;
 
-    public ModSettings ModSettings { get; private set; }
-
-    public ModSettingsService(string path, IFileSystem fileSystem)
+    public ModSettingsService(IFileSystem fileSystem)
     {
-        _path = path;
-
         _fileSystem = fileSystem;
     }
 
-    public async Task LoadModSettingsAsync()
+    public ValueTask<ModSettings> ReadModSettingsAsync(string path)
     {
-        var file = _fileSystem.FileStream.New(_path, FileMode.Open, FileAccess.Read, FileShare.Read,
+        var stream = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read, FileShare.Read,
             bufferSize: StreamBufferSize, useAsync: true);
-
-        var lsx = await Task.Run(() => LsxDocument.FromStream(file)).ConfigureAwait(false);
-        await file.DisposeAsync().ConfigureAwait(false);
-
-        var modSettings = new ModSettings(lsx);
-        await Task.Run(() => modSettings.Sanitize()).ConfigureAwait(false);
-
-        ModSettings = modSettings;
+        return ReadModSettingsAsync(stream);
     }
 
-    public async Task SaveModSettingsAsync()
+    public async ValueTask<ModSettings> ReadModSettingsAsync(Stream stream)
     {
-        await using var stream = ModSettings.ToDocument().ToStream();
-        await using var file = _fileSystem.FileStream.New(_path, FileMode.Create, FileAccess.Write, FileShare.None,
+        var lsx = await Task.Run(() => LsxDocument.FromStream(stream)).ConfigureAwait(false);
+        await stream.DisposeAsync().ConfigureAwait(false);
+
+        var modSettings = new ModSettings(lsx);
+        modSettings.Sanitize();
+        return modSettings;
+    }
+
+    public async Task WriteModSettingsAsync(ModSettings modSettings, string path)
+    {
+        await using var stream = modSettings.ToDocument().ToStream();
+        await using var file = _fileSystem.FileStream.New(path, FileMode.Create, FileAccess.Write, FileShare.Read,
             bufferSize: StreamBufferSize, useAsync: true);
         await stream.CopyToAsync(file).ConfigureAwait(false);
     }
