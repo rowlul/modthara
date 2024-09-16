@@ -32,5 +32,5 @@ public partial class MainViewModel : ViewModelBase
         new("Packages", "fa-solid fa-box", r => r.GoTo<PackagesViewModel>())
     ];
 
-    partial void OnSelectedItemChanged(SidebarItem? value) => value?.OnSelected(_router);
+    partial void OnSelectedItemChanged(SidebarItem value) => value.OnSelected(_router);
 }
