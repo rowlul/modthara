@@ -15,6 +15,12 @@
               ColumnDefinitions="Auto 5 * Auto 5 Auto">
 
             <StackPanel Orientation="Horizontal" Spacing="5">
+                <Button i:Attached.Icon="fa-regular fa-folder-open"
+                        ToolTip.Tip="Open Mods folder"
+                        Classes="Small"
+                        Command="{Binding OpenModsFolderCommand}"
+                        Margin="0 0 3 0" />
+
                 <ComboBox Classes="Small"
                           SelectedIndex="0"
                           VerticalAlignment="Center"
@@ -27,11 +33,6 @@
                         <ComboBoxItem Content="Current Mod Order" />
                     </ComboBox.Items>
                 </ComboBox>
-
-                <Button i:Attached.Icon="fa-regular fa-folder-open"
-                        ToolTip.Tip="Open Mods folder"
-                        Classes="Small"
-                        Command="{Binding OpenModsFolderCommand}" />
 
                 <Button i:Attached.Icon="fa-solid fa-arrows-rotate"
                         ToolTip.Tip="Refresh Mods and Mod Order"
