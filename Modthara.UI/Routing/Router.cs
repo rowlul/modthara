@@ -4,9 +4,14 @@ using Modthara.UI.ViewModels;
 
 namespace Modthara.UI.Routing;
 
-public class Router<TViewModelBase>(Func<Type, ViewModelBase> createViewModel) where TViewModelBase : ObservableObject
+public class Router<TViewModelBase> where TViewModelBase : ObservableObject
 {
     private TViewModelBase? _currentViewModel;
+
+    public Router(Func<Type, ViewModelBase> createViewModel)
+    {
+        CreateViewModel = createViewModel;
+    }
 
     protected TViewModelBase CurrentViewModel
     {
@@ -22,7 +27,7 @@ public class Router<TViewModelBase>(Func<Type, ViewModelBase> createViewModel) w
         }
     }
 
-    protected Func<Type, ViewModelBase> CreateViewModel { get; } = createViewModel;
+    protected Func<Type, ViewModelBase> CreateViewModel { get; }
 
     public event Action<TViewModelBase>? CurrentViewModelChanged;
 

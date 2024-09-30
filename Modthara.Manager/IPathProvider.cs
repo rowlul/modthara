@@ -1,14 +1,14 @@
 ﻿namespace Modthara.Manager;
 
-using static Path;
-
 public interface IPathProvider
 {
-    string LocalRoot { get; }
+    string LocalLarianFolder { get; }
 
-    string ModsFolder => LocalRoot + DirectorySeparatorChar + "Baldur's Gate 3" + DirectorySeparatorChar + "Mods";
+    string LocalGameFolder => Path.Combine(LocalLarianFolder, "Baldur's Gate 3");
 
-    string ModSettingsFile => LocalRoot + DirectorySeparatorChar + "Baldur's Gate 3" + DirectorySeparatorChar +
-                              "PlayerProfiles" + DirectorySeparatorChar + "Public" + DirectorySeparatorChar +
-                              "modsettings.lsx";
+    string ModsFolder => Path.Combine(LocalGameFolder, "Mods");
+
+    string ProfileFolder => Path.Combine(LocalGameFolder, "PlayerProfiles", "Public");
+
+    string ModSettingsFile => Path.Combine(ProfileFolder, "modsettings.lsx");
 }

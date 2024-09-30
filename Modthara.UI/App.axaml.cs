@@ -39,6 +39,10 @@ public partial class App : Application
             desktop.MainWindow = new MainWindow { DataContext = services.GetRequiredService<MainViewModel>() };
         }
 
+        EnsurePaths();
+
+        services.GetRequiredService<ConfigurationService>().LoadConfiguration();
+
         services
             .GetRequiredService<PackagesViewModel>()
             .InitializeViewModelAsync()
@@ -56,7 +60,10 @@ public partial class App : Application
 
         services.AddSingleton<IFileSystem, FileSystem>();
         services.AddSingleton<IProcessProxy, ProcessProxy>();
-        services.AddSingleton<IPathProvider, WindowsDefaultPaths>();
+        // TODO: each OS target should have its own implementation factory with platform specific paths
+        services.AddSingleton<ConfigurationService>(p => new ConfigurationService(p.GetRequiredService<IFileSystem>(),
+            ConfigPath, DefaultWindowsConfigurationModel));
+        services.AddSingleton<IPathProvider>(p => p.GetRequiredService<ConfigurationService>());
         services.AddSingleton<ModPackageService>();
         services.AddSingleton<ModSettingsService>();
         services.AddSingleton<ModManager>();
@@ -66,4 +73,31 @@ public partial class App : Application
 
         return services.BuildServiceProvider();
     }
+
+    private static void EnsurePaths()
+    {
+        if (!Directory.Exists(AppDataPath))
+        {
+            Directory.CreateDirectory(AppDataPath);
+        }
+
+        if (!File.Exists(ConfigPath))
+        {
+            // create a config with default values
+            Ioc.Default.GetRequiredService<ConfigurationService>().SaveConfiguration();
+        }
+    }
+
+    private static readonly string AppDataPath =
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "modthara");
+
+    private static readonly string ConfigPath = Path.Combine(AppDataPath, "config.json");
+
+    // TODO: windows specific portion to be moved to its own target project
+    private static readonly ConfigurationModel DefaultWindowsConfigurationModel = new()
+    {
+        LocalLarianFolder = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "Larian Studios")
+    };
 }
